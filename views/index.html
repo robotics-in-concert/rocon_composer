@@ -1,0 +1,86 @@
+{% extends 'layout.html' %}
+
+{% block content %} 
+  <div class="container0" ng-controller="MainCtrl">
+    <div class="panel left">
+      <div id="blocklyDiv"></div>
+    </div>
+    <div class="panel right">
+      <div class="content">
+        <ul class="actions">
+        <li>
+          <button class="btn btn-default" ng-click="newData()">new</button>
+        </li>
+        <li>
+          title : <input name="title" ng-model="current.title">
+          <button class="btn btn-default" ng-click="save()">save</button>
+        </li>
+        <li><button class="btn btn-default" ng-click="runCurrent()">run current</button></li>
+        <li><button class="btn btn-default" ng-click="clearWorkspace()">clear workspace</button></li>
+        <li><button class="btn btn-default" ng-click="clear()">clear items</button></li>
+        <h4>triggers</h4>
+          <ul class="triggers">
+            <li>
+              <button class="btn btn-default" ng-click="trigger('delivery_request')">Delivery Request</button>
+            </li>
+            <li>
+              <button class="btn btn-default" ng-click="trigger('arrive', arrive_param)">Arrive</button>
+              <input type="text" ng-model="arrive_param">
+            </li>
+            <li>
+              <button class="btn btn-default" ng-click="trigger('confirm', confirm_param)">Confirm</button>
+              <input type="text" ng-model="confirm_param">
+            </li>
+            <li>
+              custom : <input name="event_name"> <button class="btn btn-default" id="trigger">trigger</button>
+            </li>
+          </ul>
+        </ul>
+
+
+        <h2>items</h2>
+        <ul id="data">
+          <li ng-repeat="i in blocks track by i.id">
+          <a href="" ng-click="load(i.id)">[[i.title]]</a>
+          <button class="btn btn-default" ng-click="deleteItem(i.id)">delete</button>
+          <button class="btn btn-default" ng-click="run(i.id)">run</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+    <xml id="toolbox" style="display: none">
+    
+    <category name="entity">
+      <block type="dest_huey"></block>
+      <block type="dest_dwlee"></block>
+      <block type="dest_docking"></block>
+      <block type="entity_phone_start"></block>
+      <block type="entity_robot_button"></block>
+      <block type="entity_phone_deliver"></block>
+      <block type="memory_message"></block>
+      <block type="memory_msg"></block>
+      <block type="memory_dest"></block>
+    </category>
+    <category name="demo">
+      <block type="test_event_handle"></block>
+      <block type="cond_no_brain"></block>
+      <block type="event_delivery_request"></block>
+      <block type="event_confirm"></block>
+      <block type="event_arrive"></block>
+      <block type="action_speak"></block>
+      <block type="action_go_to"></block>
+      <block type="action_set"></block>
+      <block type="action_navigate"></block>
+      <block type="delay"></block>
+    </category>
+    
+    <category name="Logic"><block type="controls_if"></block><block type="logic_compare"></block><block type="logic_operation"></block><block type="logic_negate"></block><block type="logic_boolean"></block><block type="logic_null"></block><block type="logic_ternary"></block></category><category name="Loops"><block type="controls_repeat_ext"><value name="TIMES"><block type="math_number"><field name="NUM">10</field></block></value></block><block type="controls_whileUntil"></block><block type="controls_for"><value name="FROM"><block type="math_number"><field name="NUM">1</field></block></value><value name="TO"><block type="math_number"><field name="NUM">10</field></block></value><value name="BY"><block type="math_number"><field name="NUM">1</field></block></value></block><block type="controls_forEach"></block><block type="controls_flow_statements"></block></category><category name="Math"><block type="math_number"></block><block type="math_arithmetic"></block><block type="math_single"></block><block type="math_trig"></block><block type="math_constant"></block><block type="math_number_property"></block><block type="math_change"><value name="DELTA"><block type="math_number"><field name="NUM">1</field></block></value></block><block type="math_round"></block><block type="math_on_list"></block><block type="math_modulo"></block><block type="math_constrain"><value name="LOW"><block type="math_number"><field name="NUM">1</field></block></value><value name="HIGH"><block type="math_number"><field name="NUM">100</field></block></value></block><block type="math_random_int"><value name="FROM"><block type="math_number"><field name="NUM">1</field></block></value><value name="TO"><block type="math_number"><field name="NUM">100</field></block></value></block><block type="math_random_float"></block></category><category name="Text"><block type="text"></block><block type="text_join"></block><block type="text_append"><value name="TEXT"><block type="text"></block></value></block><block type="text_length"></block><block type="text_isEmpty"></block><block type="text_indexOf"><value name="VALUE"><block type="variables_get"><field name="VAR">text</field></block></value></block><block type="text_charAt"><value name="VALUE"><block type="variables_get"><field name="VAR">text</field></block></value></block><block type="text_getSubstring"><value name="STRING"><block type="variables_get"><field name="VAR">text</field></block></value></block><block type="text_changeCase"></block><block type="text_trim"></block><block type="text_print"></block><block type="text_prompt_ext"><value name="TEXT"><block type="text"></block></value></block></category><category name="Lists"><block type="lists_create_empty"></block><block type="lists_create_with"></block><block type="lists_repeat"><value name="NUM"><block type="math_number"><field name="NUM">5</field></block></value></block><block type="lists_length"></block><block type="lists_isEmpty"></block><block type="lists_indexOf"><value name="VALUE"><block type="variables_get"><field name="VAR">list</field></block></value></block><block type="lists_getIndex"><value name="VALUE"><block type="variables_get"><field name="VAR">list</field></block></value></block><block type="lists_setIndex"><value name="LIST"><block type="variables_get"><field name="VAR">list</field></block></value></block><block type="lists_getSublist"><value name="LIST"><block type="variables_get"><field name="VAR">list</field></block></value></block></category><category name="Colour"><block type="colour_picker"></block><block type="colour_random"></block><block type="colour_rgb"></block><block type="colour_blend"></block></category><category name="Variables" custom="VARIABLE"></category><category name="Functions" custom="PROCEDURE"></category></xml>
+
+<script type="text/javascript">
+  Blockly.inject(document.getElementById('blocklyDiv'),
+    {path: './', toolbox: document.getElementById('toolbox')});
+</script>
+
+{% endblock %}
