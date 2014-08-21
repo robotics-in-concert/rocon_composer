@@ -111,6 +111,27 @@ declare_event("confirm", "Confirm");
 
 declare_event("foo", "Foo");
 
+
+Blockly.Blocks['ros_event_handle'] = {
+  init: function() {
+    this.setColour(10);
+    this.appendValueInput('EVENT').appendField('on ROS event');
+    this.appendStatementInput('DO').appendField(Blockly.Msg.CONTROLS_REPEAT_INPUT_DO);
+    this.setPreviousStatement(false);
+    return this.setNextStatement(false);
+  }
+};
+Blockly.JavaScript['ros_event_handle'] = function(block) {
+  var code, e, event;
+  event = Blockly.JavaScript.valueToCode(block, 'EVENT', Blockly.JavaScript.ORDER_NONE) || "''";
+  code = Blockly.JavaScript.statementToCode(block, 'DO');
+  var en = event;
+  var body = code;
+  return "$engine.subscribe("+en+"); $engine.ee.on(" + en + ", function(data){ " + body + " })";
+};
+
+
+
 Blockly.Blocks['test_event_handle'] = {
   init: function() {
     this.setColour(10);
@@ -119,6 +140,66 @@ Blockly.Blocks['test_event_handle'] = {
     this.setPreviousStatement(false);
     return this.setNextStatement(false);
   }
+};
+
+Blockly.Blocks['turtle_cmd_vel'] = {
+  init: function() {
+    this.setColour(10);
+
+    // this.interpolateMsg(
+        // // TODO: Combine these messages instead of using concatenation.
+        // "x = %1, y = %2, z = %3",
+        // ['X1', 'Number', Blockly.ALIGN_RIGHT],
+        // ['Y1', 'Number', Blockly.ALIGN_RIGHT],
+        // ['Z1', 'Number', Blockly.ALIGN_RIGHT],
+        // Blockly.ALIGN_RIGHT);
+    // var numberInput = new Blockly.FieldTextInput('0');
+    // this.appendValueInput(numberInput, 'xxx');
+    this.appendValueInput('l_x').appendField('cmd_vel linear with x').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('l_y').appendField('y').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('l_z').appendField('z').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('a_x').appendField('angular with x').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('a_y').appendField('y').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('a_z').appendField('z').setAlign(Blockly.ALIGN_RIGHT);
+    this.setPreviousStatement(true);
+    return this.setNextStatement(true);
+  }
+};
+Blockly.JavaScript['turtle_cmd_vel'] = function(block) {
+  var code, e, event;
+  x0 = eval(Blockly.JavaScript.valueToCode(block, 'l_x', Blockly.JavaScript.ORDER_NONE));
+  y0 = eval(Blockly.JavaScript.valueToCode(block, 'l_y', Blockly.JavaScript.ORDER_NONE));
+  z0 = eval(Blockly.JavaScript.valueToCode(block, 'l_z', Blockly.JavaScript.ORDER_NONE));
+  x1 = eval(Blockly.JavaScript.valueToCode(block, 'a_x', Blockly.JavaScript.ORDER_NONE));
+  y1 = eval(Blockly.JavaScript.valueToCode(block, 'a_y', Blockly.JavaScript.ORDER_NONE));
+  z1 = eval(Blockly.JavaScript.valueToCode(block, 'a_z', Blockly.JavaScript.ORDER_NONE));
+
+  x = {
+    linear: {
+              x: x0,
+              y: y0,
+              z: z0
+            },
+    angular: {
+              x: x1,
+              y: y1,
+              z: z1
+            }
+
+
+  }
+
+
+  return "$engine.cmdVel("+JSON.stringify(x)+");";
+  // e = JSON.parse(event);
+  // console.log("event", e);
+  // code = Blockly.JavaScript.statementToCode(block, 'DO');
+  // var en = e.event_name;
+  // var body = code;
+  // if(e.param){
+    // body = "if(data.param === '"+e.param+"'){ "+code+" }";
+  // }
+  // return "$engine.ee.on('" + en + "', function(data){ " + body + " })";
 };
 
 
@@ -150,7 +231,7 @@ Blockly.Blocks['action_speak'] = {
     var arg0;
     arg0 = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_NONE) || "''";
 
-    return 'console.log("SPEAK:", ' + arg0 + ');';
+    return '$engine.log("SPEAK:" + ' + arg0 + ');';
   };
 });
 
@@ -183,7 +264,7 @@ Blockly.Blocks['action_navigate'] = {
   return Blockly.JavaScript[action_key] = function(block) {
     var arg0;
     arg0 = Blockly.JavaScript.valueToCode(block, 'DEST', Blockly.JavaScript.ORDER_NONE) || "''";
-    return 'console.log("NAVIGATE TO:", ' + arg0 + ');';
+    return '$engine.log("NAVIGATE TO:"+ ' + arg0 + ');';
   };
 });
 

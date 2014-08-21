@@ -1,5 +1,6 @@
 var app = angular.module('centoAuthoring', []);
 
+ITEMS_PARAM_KEY = 'cento_authoring_items';
 
 app.config(function ($interpolateProvider) {
   $interpolateProvider.startSymbol('[[');
@@ -9,6 +10,24 @@ app.config(function ($interpolateProvider) {
 app.service('blocksStore', function($http){
 
 
+  this.setParam = function(k, v){
+    return $http.post('/api/param/'+k, {data: v}).then(function(res){
+      return res.data;
+    });
+  }
+  this.publish = function(topic){
+    return $http.post('/api/publish/'+topic).then(function(res){
+      return res.data;
+    });
+  }
+  this.getParam = function(k){
+    return $http.get('/api/param/'+k).then(function(res){
+      if(res.data.data){
+        return res.data.data;
+      }
+      return null;
+    });
+  }
   this.list = function(){
     return $http.get('/api/blocks').then(function(res){
       return res.data;
@@ -49,11 +68,18 @@ app.service('blocksStore', function($http){
       });
     });
   }
+  this.eval = function(code){
+    var that = this;
+    var data = {code: code};
+    $http.post('/api/eval', data).then(function(res){
+      return res.data;
+    });
+  };
 
 
 });
 
-app.controller('MainCtrl', function($scope, blocksStore) {
+app.controller('MainCtrl', function($scope, blocksStore, $http) {
     var items;
     $scope.foo = 'bar';
     $scope.current = null;
@@ -61,66 +87,76 @@ app.controller('MainCtrl', function($scope, blocksStore) {
     $scope.robot_brain = {};
 
 
-    var load = function(){
-      blocksStore.list().then(function(rows){
-        $scope.blocks = rows;
 
-      });
+    blocksStore.getParam(ITEMS_PARAM_KEY).then(function(rows){
+      console.log('loaded ', rows);
+      if(!rows){
+        $scope.items = [];
+      }else{
+        $scope.items = rows;
 
-    };
-    load();
-
-    $scope.deleteItem = function(id) {
-      console.log('will delete ', id);
-
-      blocksStore.remove(id).then(function(res){
-        load();
-      });
-      
-    };
-    $scope.clear = function() {
-      $scope.items = [];
-    };
-    $scope.clearWorkspace = function() {
-      Blockly.mainWorkspace.clear();
-    };
-    $scope.$watch('items', function(newValue, oldValue) {
-      console.log('items watched');
-      if (!_.isEqual(newValue, oldValue)) {
-        console.log('items here');
       }
-    }, true);
-    $scope.test = function() {
-      return $scope.xx = new Date();
+
+      $scope.$watch('items', function(newValue, oldValue) {
+        console.log('items watched');
+        if (!_.isEqual(newValue, oldValue)) {
+          console.log(oldValue, "->", newValue);
+
+          blocksStore.setParam(ITEMS_PARAM_KEY, newValue).then(function(res){
+            console.log('items saved', newValue, res);
+
+          });
+            
+        }
+      }, true);
+
+    });
+
+
+    $scope.triggerEvent = function(topic) {
+      blocksStore.publish(topic).then(function(){
+        alert('ok');
+
+      });
+    };
+    $scope.deleteItem = function(id) {
+      $scope.items = _.reject($scope.items, {id: id})
+      $scope.current = null;
+    };
+
+
+    $scope.engineLoad = function(){
+      $http.post('/api/engine/load').then(function(){
+        alert('ok');
+      });
+
+    };
+    $scope.engineReset = function(){
+      $http.post('/api/engine/reset').then(function(){
+        alert('ok');
+      });
+
     };
     $scope.newData = function() {
       return $scope.current = null;
     };
     $scope.save = function() {
-      var data, dom, idx, js, xml;
-      js = Blockly.JavaScript.workspaceToCode();
-      dom = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
-      xml = Blockly.Xml.domToText(dom);
+      var id = $scope.current.id;
+      var js = Blockly.JavaScript.workspaceToCode();
+      var dom = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
+      var xml = Blockly.Xml.domToText(dom);
       console.log('current.id', $scope.current.id);
-      if ($scope.current.id != null) {
-        blocksStore.update($scope.current.id, {js: js, xml: xml, title: $scope.current.title}).then(function(r){
-          console.log('updated');
-
-
-        });
+      if (id != null) {
+        var idx = _.findIndex($scope.items, {id: $scope.current.id});
+        $scope.items[idx] = {id: id, js: js, xml: xml, title: $scope.current.title};
       } else {
         var data = {
+          id: new Date().getTime() + "",
           js: js,
           xml: xml,
           title: $scope.current.title };
-        blocksStore.insert(data).then(function(res){
-          data.id = res.id
-          $scope.current = data
-
-          load();
-        });
         
-        return $scope.items.push(data);
+        $scope.items.push(data);
       }
     };
     $scope.load = function(id) {
@@ -128,7 +164,9 @@ app.controller('MainCtrl', function($scope, blocksStore) {
 
       var data, dom, js;
       js = Blockly.JavaScript.workspaceToCode();
-      data = _.where($scope.blocks, {
+      console.log($scope.items);
+
+      data = _.where($scope.items, {
         id: id
       })[0];
       $scope.current = data;
@@ -139,20 +177,24 @@ app.controller('MainCtrl', function($scope, blocksStore) {
       Blockly.mainWorkspace.clear();
       Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, dom);
     };
+
+
+    /**
+     * workspace
+     *
+     */
+    $scope.clearWorkspace = function() {
+      Blockly.mainWorkspace.clear();
+    };
     $scope.runCurrent = function() {
       var code;
       code = Blockly.JavaScript.workspaceToCode();
       console.log(code);
-      return eval(code);
-    };
-    $scope.run = function(id) {
+      blocksStore.eval(code);
 
-      var data = _.where($scope.blocks, {
-        id: id
-      })[0];
-      return eval(data.js);
     };
-    return $scope.trigger = function(action) {
+
+    $scope.trigger = function(action) {
       var en;
       en = action;
       if (arguments[1] != null) {
