@@ -16,7 +16,7 @@ app.service('blocksStore', function($http){
     });
   }
   this.publish = function(topic){
-    return $http.post('/api/publish/'+topic).then(function(res){
+    return $http.post('/api/publish', {topic: topic}).then(function(res){
       return res.data;
     });
   }
@@ -26,46 +26,6 @@ app.service('blocksStore', function($http){
         return res.data.data;
       }
       return null;
-    });
-  }
-  this.list = function(){
-    return $http.get('/api/blocks').then(function(res){
-      return res.data;
-    });
-  }
-  this.get = function(id){
-    return $http.get("/api/blocks/"+id).then(function(res){
-      return res.data[0];
-    });
-  }
-  this.update = function(id, data){
-    var that = this;
-    return $http.put("/api/blocks/"+id, data).then(function(res){
-      return that.reload().then(function(){
-        return res.data[0];
-      });
-    });
-  }
-  this.remove = function(id){
-    var that = this;
-    return $http.delete("/api/blocks/"+id).then(function(res){
-      return that.reload().then(function(){
-        return res.data[0];
-      });
-    });
-  }
-  this.reload = function(id){
-    var that = this;
-    return $http.get("/api/reload").then(function(res){
-      return res.data;
-    });
-  }
-  this.insert = function(data){
-    var that = this;
-    return $http.post('/api/blocks', data).then(function(res){
-      return that.reload().then(function(){
-        return res.data;
-      });
     });
   }
   this.eval = function(code){

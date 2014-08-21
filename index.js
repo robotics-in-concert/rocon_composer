@@ -45,7 +45,7 @@ var Engine = function(){
   this.memory = {};
   var ros = this.ros = new ROSLIB.Ros();
   var engine = this;
-  var topic = [];
+  this.topics = [];
 
 
 
@@ -69,6 +69,20 @@ var Engine = function(){
 
 };
 
+Engine.prototype.unsubscribe = function(topic){
+  var t = _.remove(this.topics, {name: topic});
+  t.listener.unsubscribe();
+};
+Engine.prototype.unsubscribeAll = function(){
+  var engine = this;
+  this.topics.forEach(function(t){
+    t.listener.unsubscribe();
+    engine.debug("topic "+t.name+" unsubscribed");
+
+  });
+  this.topics = [];
+};
+
 Engine.prototype.subscribe = function(topic){
   var engine = this;
   var listener = new ROSLIB.Topic({
@@ -78,26 +92,28 @@ Engine.prototype.subscribe = function(topic){
   });
 
   listener.subscribe(function(message) {
-    console.log('Received message on ' + listener.name + ': ' + message.data);
-    engine.ee.emit(message.data);
+    engine.debug('Received message on ' + listener.name + ': ' + message.data);
+    engine.ee.emit(listener.name);
 
   });
+
+  this.topics.push({name: topic, listener: listener});
 
 };
 
 
-Engine.prototype.publish = function(topic){
+Engine.prototype.pub = function(topic){
+
   var topic = new ROSLIB.Topic({
     ros : this.ros,
     name : topic,
     messageType : 'std_msgs/String'
   });
 
-  // Then we create the payload to be published. The object we pass in to ros.Message matches the 
-  // fields defined in the geometry_msgs/Twist.msg definition.
   var msg = new ROSLIB.Message({
     data: ''
   });
+
 
   // And finally, publish.
   topic.publish(msg);
@@ -118,7 +134,6 @@ Engine.prototype.cmdVel = function(options){
   console.log(twist);
 
   cmdVel.publish(twist);
-  console.log('here');
 
 
 };
@@ -132,6 +147,8 @@ Engine.prototype.publish = function(event_name, params){
 Engine.prototype.clear = function(){
   this.ee.removeAllListeners();
   this.memory = {};
+  this.unsubscribeAll();
+
   this.debug('engine cleared');
 
 };
@@ -175,20 +192,20 @@ Engine.prototype.setParam = function(k, v, cb){
 Engine.prototype.load = function(){
   var that = this;
   this.getParam('cento_authoring_items', function(data){
-    console.log(data.data);
+    that.debug(data.data);
 
     var scripts = _.map(data.data, function(row){
       return row.js;
     }).join("\n\n\n");
 
-    console.log("---------------- scripts -----------------".grey);
-    console.log(scripts.grey);
-    console.log("------------------------------------------".grey);
+    that.debug("---------------- scripts -----------------".grey);
+    that.debug(scripts.grey);
+    that.debug("------------------------------------------".grey);
 
     try{
       eval(scripts);
     }catch(e){
-      console.log('invalid block scripts. failed.');
+      console.log('invalid block scripts. failed.', e);
     }
 
 
