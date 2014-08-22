@@ -21,5 +21,11 @@ rocon_authoring
 ```
 $ npm install
 $ PORT=9999 ROS_WS_URL=ws://127.0.0.1:9090 node index.js
-``
+```
+
+or using forever
+
+```
+$ PORT=9999 ROS_WS_URL=ws://127.0.0.1:9090 forever node index.js
+```
 
