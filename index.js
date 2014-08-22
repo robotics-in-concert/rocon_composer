@@ -61,6 +61,17 @@ var Engine = function(){
   });
   ros.on('connection', function(){
     console.log('ros connected');
+    ros.getTopics(function(topics){
+      console.log('topics : ', topics);
+
+
+    });
+    ros.getServices(function(topics){
+      // console.log('services : ', topics);
+
+
+    });
+
   });
   ros.on('close', function(){
     console.log('ros closed');
