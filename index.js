@@ -132,6 +132,27 @@ Engine.prototype.pub = function(topic){
 
 };
 
+
+Engine.prototype.runAction = function(name, type, goal, onResult, onFeedback){
+
+  var ac = new ROSLIB.ActionClient({
+    ros : this.ros,
+    serverName : name,
+    actionName : type
+  });
+
+  var goal = new ROSLIB.Goal({
+    actionClient : ac,
+    goalMessage : goal
+  });
+
+  goal.on('feedback', onFeedback);
+  goal.on('result', onResult);
+
+  goal.send();
+
+};
+
 Engine.prototype.cmdVel = function(options){
   console.log('cmdVel', options);
 
