@@ -112,24 +112,6 @@ declare_event("confirm", "Confirm");
 declare_event("foo", "Foo");
 
 
-Blockly.Blocks['ros_event_handle'] = {
-  init: function() {
-    this.setColour(10);
-    this.appendValueInput('EVENT').appendField('[ROS] on');
-    this.appendStatementInput('DO').appendField(Blockly.Msg.CONTROLS_REPEAT_INPUT_DO);
-    this.setPreviousStatement(false);
-    return this.setNextStatement(false);
-  }
-};
-Blockly.JavaScript['ros_event_handle'] = function(block) {
-  var code, e, event;
-  event = Blockly.JavaScript.valueToCode(block, 'EVENT', Blockly.JavaScript.ORDER_NONE) || "''";
-  code = Blockly.JavaScript.statementToCode(block, 'DO');
-  var en = event;
-  var body = code;
-  return "$engine.subscribe("+en+"); $engine.ee.on(" + en + ", function(data){ " + body + " })";
-};
-
 
 
 Blockly.Blocks['test_event_handle'] = {
@@ -217,23 +199,6 @@ Blockly.JavaScript['test_event_handle'] = function(block) {
   return "$engine.ee.on('" + en + "', function(data){ " + body + " })";
 };
 
-Blockly.Blocks['action_publish'] = {
-  init: function() {
-    this.setColour(ACTION_COLOR);
-    this.appendValueInput('VALUE').appendField('[ROS] Publish');
-    this.setPreviousStatement(true);
-    return this.setNextStatement(true);
-  }
-};
-
-['action_publish'].forEach(function(action_key) {
-  return Blockly.JavaScript[action_key] = function(block) {
-    var arg0;
-    arg0 = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_NONE) || "''";
-
-    return '$engine.pub(' + arg0 + ');';
-  };
-});
 Blockly.Blocks['action_speak'] = {
   init: function() {
     this.setColour(ACTION_COLOR);

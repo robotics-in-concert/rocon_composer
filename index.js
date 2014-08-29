@@ -7,6 +7,7 @@ var _ = require('lodash'),
   express = require('express'),
   ROSLIB = require('roslib');
 
+
 /*
  * Express
  */
@@ -113,17 +114,15 @@ Engine.prototype.subscribe = function(topic){
 };
 
 
-Engine.prototype.pub = function(topic){
+Engine.prototype.pub = function(topic, type, msg){
 
   var topic = new ROSLIB.Topic({
     ros : this.ros,
     name : topic,
-    messageType : 'std_msgs/String'
+    messageType : type
   });
 
-  var msg = new ROSLIB.Message({
-    data: ''
-  });
+  var msg = new ROSLIB.Message(msg);
 
 
   // And finally, publish.
@@ -132,6 +131,10 @@ Engine.prototype.pub = function(topic){
 
 };
 
+
+Engine.prototype.runCode = function(code){
+  eval(code);
+};
 
 Engine.prototype.runAction = function(name, type, goal, onResult, onFeedback){
 
@@ -235,7 +238,7 @@ Engine.prototype.load = function(){
     that.debug("------------------------------------------".grey);
 
     try{
-      eval(scripts);
+      that.runCode(scripts);
     }catch(e){
       console.log('invalid block scripts. failed.', e);
     }

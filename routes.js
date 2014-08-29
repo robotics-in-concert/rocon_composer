@@ -1,5 +1,9 @@
 _ = require('lodash');
 
+
+
+
+
 module.exports = function(app, redis){
 
   app.get('/', function(req, res){
@@ -45,7 +49,7 @@ module.exports = function(app, redis){
   });
   app.post('/api/eval', function(req, res){
     var code = req.body.code;
-    eval(code)
+    $engine.runCode(code);
     res.send({result: true});
 
 
