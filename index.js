@@ -110,8 +110,66 @@ Engine.prototype.pub = function(topic, type, msg){
 };
 
 
+
+Engine.prototype.sleep = function(ms){
+  var _sleep = function(ms){
+    var future = new Future;
+    setTimeout(function(){
+      future.return();
+    }, ms);
+    return future;
+  };
+  console.log('sleeping for '+ms+'ms');
+
+  _sleep(ms).wait();
+
+};
+Engine.prototype.runService = function(name, type, request){
+  var e = this;
+  this.sleep(5000);
+  var wrap = function(name, type, request, cb){
+    console.log('arguments', arguments);
+
+    var service = new ROSLIB.Service({
+     ros : e.ros,
+     name : name,
+     servicetype : type
+    });
+    console.log('service > ', service);
+    console.log('cb > ', cb);
+
+
+    var request = new ROSLIB.ServiceRequest(request);
+
+    service.callService(request, function(result){
+      console.log("XX", result);
+      if(cb){
+        cb(null, result);
+      }
+    });
+  };
+
+  var data = sync.await(wrap(name, type, request, sync.defer()))
+
+
+  console.log(data);
+
+  return data;
+  // var f = sync(wrap);
+  // console.log('zzzzzzzzzz');
+
+
+  // return f(name, type, request);
+  // var data = sync.await(wrap(sync.defer()));
+  // // var f = sync(wrap);
+
+  // return data;
+};
+
 Engine.prototype.runCode = function(code){
+  code = "Fiber(function(){"+code+"}).run();";
   eval(code);
+
 };
 
 Engine.prototype.runAction = function(name, type, goal, onResult, onFeedback){

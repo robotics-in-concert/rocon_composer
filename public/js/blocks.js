@@ -497,3 +497,24 @@ Blockly.Blocks['object_create_with_container'] = {
     this.contextMenu = false;
   }
 };
+
+
+
+
+
+/*
+ * Sleep
+ */
+Blockly.Blocks['action_sleep'] = {
+  init: function() {
+    this.setColour(ACTION_COLOR);
+    this.appendValueInput('VALUE').appendField('sleep');
+    this.setPreviousStatement(true);
+    return this.setNextStatement(true);
+  }
+};
+
+Blockly.JavaScript['action_sleep'] = function(block) {
+  var arg0 = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_NONE) || "''";
+  return _.template('$engine.sleep(<%= ms %>);')({ms: arg0});
+};
