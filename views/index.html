@@ -108,6 +108,7 @@
       <block type="action_sleep">
           <value name="VALUE"><block type="math_number"></block></value>
       </block>
+      <block type="json"></block>
     </category>
     <category name="demo">
       <block type="test_event_handle"></block>
@@ -196,6 +197,15 @@
 <script type="text/javascript">
   Blockly.inject(document.getElementById('blocklyDiv'),
     {path: './', toolbox: document.getElementById('toolbox')});
+
+
+  // test
+  setTimeout(function(){
+      var x = $('<xml><category name="test"><block type="text_print"></block></category></xml>')
+      console.log(x.get(0));
+
+
+      }, 3000);
 </script>
 
 {% endblock %}

@@ -125,44 +125,27 @@ Engine.prototype.sleep = function(ms){
 };
 Engine.prototype.runService = function(name, type, request){
   var e = this;
-  this.sleep(5000);
-  var wrap = function(name, type, request, cb){
-    console.log('arguments', arguments);
+
+  var _runService = function(name, type, request){
+    var future = new Future;
 
     var service = new ROSLIB.Service({
      ros : e.ros,
      name : name,
      servicetype : type
     });
-    console.log('service > ', service);
-    console.log('cb > ', cb);
 
 
     var request = new ROSLIB.ServiceRequest(request);
 
     service.callService(request, function(result){
       console.log("XX", result);
-      if(cb){
-        cb(null, result);
-      }
+      future.return(result);
     });
+    return future;
+
   };
-
-  var data = sync.await(wrap(name, type, request, sync.defer()))
-
-
-  console.log(data);
-
-  return data;
-  // var f = sync(wrap);
-  // console.log('zzzzzzzzzz');
-
-
-  // return f(name, type, request);
-  // var data = sync.await(wrap(sync.defer()));
-  // // var f = sync(wrap);
-
-  // return data;
+  return _runService(name, type, request).wait();
 };
 
 Engine.prototype.runCode = function(code){
