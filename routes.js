@@ -4,7 +4,7 @@ _ = require('lodash');
 
 
 
-module.exports = function(app, redis){
+module.exports = function(app, db){
 
   app.get('/', function(req, res){
     res.render('index');
@@ -19,21 +19,26 @@ module.exports = function(app, redis){
     $engine.pub(topic);
     res.send({result: true})
   });
+
   app.post('/api/param/:key', function(req, res){
+    var col = db.collection('settings');
     var k = req.params.key;
-    $engine.setParam(k, req.body, function(){
+    col.update({key: k}, {$set: {value: req.body}}, {w: 1, upsert: true}, function(err, doc){
       res.send({result: true})
     });
 
   });
   app.get('/api/param/:key', function(req, res){
     var k = req.params.key;
+    var col = db.collection('settings');
+    col.findOne({key: k}, function(err, doc){
+      if(!doc){
+        res.send([]);
+      }else{
+        res.send(doc.value);
+      }
 
-
-    $engine.getParam(k, function(value){
-      res.send(value);
     });
-
   });
 
 

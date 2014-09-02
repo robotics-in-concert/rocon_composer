@@ -5,43 +5,21 @@ var _ = require('lodash'),
   bodyParser = require('body-parser'),
   swig = require('swig'),
   express = require('express'),
-  ROSLIB = require('roslib');
+  ROSLIB = require('roslib'),
+  Fiber = require('fibers')
+  Future = require('fibers/future'),
+  wait = Future.wait,
+  MongoClient = require('mongodb').MongoClient;
 
 
-/*
- * Express
- */
 
-var app = express();
-app.use(express.static('public'));
-app.use(bodyParser.json());
-
-// This is where all the magic happens!
-app.engine('html', swig.renderFile);
-
-app.set('view engine', 'html');
-app.set('views', __dirname + '/views');
-
-app.set('view cache', false);
-swig.setDefaults({ cache: false });
-
-
-require('./routes')(app);
-
-server = app.listen(process.env.PORT, function(){
-  console.log('Listening on port %d (%s)', server.address().port, process.env.NODE_ENV);
-});
-
-
-/*
- *
- */
 
 /*
  * Engine class
  */
 
-var Engine = function(){
+var Engine = function(db){
+  this.db = db;
   this.ee = new EventEmitter();
   this.memory = {};
   var ros = this.ros = new ROSLIB.Ros();
@@ -258,8 +236,45 @@ Engine.prototype.reload = function(){
   this.load();
 };
 
+MongoClient.connect(process.env.MONGO_URL, function(e, db){
+  if(e) throw e;
+  console.log('mongo connected');
 
-$engine = new Engine();
+  /*
+   * Express
+   */
+
+  var app = express();
+  app.use(express.static('public'));
+  app.use(bodyParser.json());
+
+  // This is where all the magic happens!
+  app.engine('html', swig.renderFile);
+
+  app.set('view engine', 'html');
+  app.set('views', __dirname + '/views');
+
+  app.set('view cache', false);
+  swig.setDefaults({ cache: false });
+
+
+  require('./routes')(app, db);
+
+  server = app.listen(process.env.PORT, function(){
+    console.log('Listening on port %d (%s)', server.address().port, process.env.NODE_ENV);
+  });
+
+
+  /*
+   *
+   */
+
+
+  $engine = new Engine(db);
+
+
+
+});
 
 
 
