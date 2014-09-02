@@ -5,7 +5,10 @@ var _ = require('lodash'),
   bodyParser = require('body-parser'),
   swig = require('swig'),
   express = require('express'),
-  ROSLIB = require('roslib');
+  ROSLIB = require('roslib'),
+  Fiber = require('fibers')
+  Future = require('fibers/future'),
+  wait = Future.wait;
 
 
 /*
@@ -132,11 +135,18 @@ Engine.prototype.pub = function(topic, type, msg){
 };
 
 
+
 Engine.prototype.sleep = function(ms){
-  var wrap = function(ms, cb){
-    setTimeout(cb, ms);
+  var _sleep = function(ms){
+    var future = new Future;
+    setTimeout(function(){
+      future.return();
+    }, ms);
+    return future;
   };
-  sync(wrap)(ms);
+  console.log('sleeping for '+ms+'ms');
+
+  _sleep(ms).wait();
 
 };
 Engine.prototype.runService = function(name, type, request){
@@ -182,6 +192,7 @@ Engine.prototype.runService = function(name, type, request){
 };
 
 Engine.prototype.runCode = function(code){
+  code = "Fiber(function(){"+code+"}).run();";
   eval(code);
 
 };
