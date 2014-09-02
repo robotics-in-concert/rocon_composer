@@ -83,7 +83,7 @@ Engine.prototype.subscribe = function(topic){
 
   listener.subscribe(function(message) {
     engine.debug('Received message on ' + listener.name + ': ' + message.data);
-    engine.ee.emit(listener.name);
+    engine.ee.emit(listener.name, message.data);
 
   });
 
@@ -119,7 +119,6 @@ Engine.prototype.sleep = function(ms){
     }, ms);
     return future;
   };
-  console.log('sleeping for '+ms+'ms');
 
   _sleep(ms).wait();
 
@@ -168,6 +167,9 @@ Engine.prototype.runService = function(name, type, request){
 
 Engine.prototype.runCode = function(code){
   code = "Fiber(function(){"+code+"}).run();";
+  this.debug("---------------- scripts -----------------".grey);
+  this.debug(code.grey);
+  this.debug("------------------------------------------".grey);
   eval(code);
 
 };
@@ -269,9 +271,6 @@ Engine.prototype.load = function(){
       return row.js;
     }).join("\n\n\n");
 
-    that.debug("---------------- scripts -----------------".grey);
-    that.debug(scripts.grey);
-    that.debug("------------------------------------------".grey);
 
     try{
       that.runCode(scripts);
