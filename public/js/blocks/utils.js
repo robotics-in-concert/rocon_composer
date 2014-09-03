@@ -21,3 +21,22 @@ Blockly.JavaScript['json'] = function(block) {
 
   return [json, Blockly.JavaScript.ORDER_ATOMIC];
 };
+
+/*
+ * defer
+ */
+Blockly.Blocks['defer'] = {
+  init: function() {
+    // this.setColour(ACTION_COLOR);
+    this.appendStatementInput('DO')
+      .appendField('defer')
+
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+  }
+};
+
+Blockly.JavaScript['defer'] = function(block) {
+  var code = Blockly.JavaScript.statementToCode(block, 'DO');
+  return _.template("setTimeout(function(){Fiber(function(){ <%= code %> }).run();}, 0);")({code: code});
+};
