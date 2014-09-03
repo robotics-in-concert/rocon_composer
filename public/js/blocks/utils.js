@@ -29,7 +29,7 @@ Blockly.Blocks['defer'] = {
   init: function() {
     // this.setColour(ACTION_COLOR);
     this.appendStatementInput('DO')
-      .appendField('defer')
+      .appendField('background')
 
     this.setPreviousStatement(true);
     this.setNextStatement(true);
