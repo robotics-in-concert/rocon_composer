@@ -73,12 +73,12 @@ Engine.prototype.unsubscribeAll = function(){
   this.topics = [];
 };
 
-Engine.prototype.subscribe = function(topic){
+Engine.prototype.subscribe = function(topic, type){
   var engine = this;
   var listener = new ROSLIB.Topic({
     ros : this.ros,
     name : topic,
-    messageType : 'std_msgs/String'
+    messageType : type
   });
 
   listener.subscribe(function(message) {

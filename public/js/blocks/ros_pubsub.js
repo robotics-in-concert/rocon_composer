@@ -4,7 +4,8 @@ Blockly.Blocks['ros_subscribe'] = {
     this.setColour(10);
     this.appendDummyInput()
       .appendField('[ROS] subscribe')
-      .appendField(new Blockly.FieldTextInput('name', null), 'EVENT');
+      .appendField(new Blockly.FieldTextInput('name', null), 'EVENT')
+      .appendField(new Blockly.FieldTextInput('type', null), 'TYPE');
 
     this.appendStatementInput('DO')
       .appendField('do')
@@ -21,11 +22,12 @@ Blockly.Blocks['ros_subscribe'] = {
 
 Blockly.JavaScript['ros_subscribe'] = function(block) {
   var event = block.getFieldValue('EVENT');
+  var type = block.getFieldValue('EVENT');
   var param0 = block.getFieldValue('DO_PARAM');
   var code = Blockly.JavaScript.statementToCode(block, 'DO');
-  var tpl = "$engine.subscribe('<%= event %>'); $engine.ee.on('<%= event %>', function(<%= param0 %>){ <%= code %> })";
+  var tpl = "$engine.subscribe('<%= event %>', '<%= type %>'); $engine.ee.on('<%= event %>', function(<%= param0 %>){ <%= code %> })";
 
-  return _.template(tpl)({event: event, code: code, param0: param0});
+  return _.template(tpl)({event: event, code: code, param0: param0, type: type});
 };
 
 Blockly.Blocks['ros_publish'] = {
