@@ -22,7 +22,7 @@ Blockly.Blocks['ros_subscribe'] = {
 
 Blockly.JavaScript['ros_subscribe'] = function(block) {
   var event = block.getFieldValue('EVENT');
-  var type = block.getFieldValue('EVENT');
+  var type = block.getFieldValue('TYPE');
   var param0 = block.getFieldValue('DO_PARAM');
   var code = Blockly.JavaScript.statementToCode(block, 'DO');
   var tpl = "$engine.subscribe('<%= event %>', '<%= type %>'); $engine.ee.on('<%= event %>', function(<%= param0 %>){ <%= code %> })";
