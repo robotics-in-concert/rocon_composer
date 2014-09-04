@@ -96,6 +96,8 @@ Blockly.Blocks['ros_action'] = {
       .appendField("Feedback")
       .appendField(new Blockly.FieldVariable('item'), 'ON_FEEDBACK_PARAM');
     // this.setMutator(new Blockly.Mutator(['object_create_with_item']));
+    this.setPreviousStatement(true);
+    return this.setNextStatement(true);
   },
 
   getVars: function(){
