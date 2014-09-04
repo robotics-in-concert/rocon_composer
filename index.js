@@ -82,8 +82,8 @@ Engine.prototype.subscribe = function(topic, type){
   });
 
   listener.subscribe(function(message) {
-    engine.debug('Received message on ' + listener.name + ': ' + message.data);
-    engine.ee.emit(listener.name, message.data);
+    engine.debug('Received message on ' + listener.name + ': ' + message);
+    engine.ee.emit(listener.name, message);
 
   });
 
