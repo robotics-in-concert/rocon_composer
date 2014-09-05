@@ -23,8 +23,10 @@
 // }
 
 Blockly.JavaScript['ros_action'] = function(block){
-  var name = block.getFieldValue('NAME');
-  var type = block.getFieldValue('TYPE');
+  // var name = block.getFieldValue('NAME');
+  // var type = block.getFieldValue('TYPE');
+  var name = Blockly.JavaScript.valueToCode(block, 'NAME', Blockly.JavaScript.ORDER_NONE) || "''";
+  var type = Blockly.JavaScript.valueToCode(block, 'TYPE', Blockly.JavaScript.ORDER_NONE) || "''";
   var codeOnResult = Blockly.JavaScript.statementToCode(block, 'ON_RESULT');
   var paramNameOnResult = block.getFieldValue('ON_RESULT_PARAM');
   var codeOnFeedback = Blockly.JavaScript.statementToCode(block, 'ON_FEEDBACK');
@@ -32,7 +34,7 @@ Blockly.JavaScript['ros_action'] = function(block){
 
   var goal = Blockly.JavaScript.valueToCode(block, 'GOAL', Blockly.JavaScript.ORDER_NONE) || "''";
 
-  var tpl = '$engine.runAction("<%= name %>", "<%= type %>", <%= goal %>, ';
+  var tpl = '$engine.runAction(<%= name %>, <%= type %>, <%= goal %>, ';
   tpl += 'function(<%= param1 %>){ <%=code1%>}, function(<%= param2 %>){ <%=code2%>});';
 
   var code = _.template(tpl)({name: name, type: type, goal: goal, 
