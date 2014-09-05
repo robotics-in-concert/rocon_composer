@@ -82,11 +82,11 @@ Blockly.Blocks['ros_action'] = {
    */
   init: function() {
     this.setColour(260);
-    this.appendValueInput('GOAL')
-      .appendField("[ROS] action")
-      .appendField(new Blockly.FieldTextInput('name', null), 'NAME')
-      .appendField(new Blockly.FieldTextInput('type', null), 'TYPE')
-      .appendField("goal :").setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('NAME').appendField('[ROS] action name :');
+    this.appendValueInput('TYPE').appendField('type :');
+    this.appendValueInput('GOAL').appendField("goal :").setAlign(Blockly.ALIGN_RIGHT)
+
+    this.setInputsInline(true);
 
     this.appendStatementInput('ON_RESULT')
       .appendField("Result")
