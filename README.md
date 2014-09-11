@@ -2,7 +2,7 @@ rocon_authoring
 ===============
 
 ## Pre-requisites
-* install in ubuntu
+* install nodejs in ubuntu
     *  https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager#ubuntu-debian-linux-mint-elementary-os-etc
 
 * libcairo to build node-canvas
