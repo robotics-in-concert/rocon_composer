@@ -24,7 +24,7 @@ Blockly.JavaScript['ros_subscribe'] = function(block) {
   var type = Blockly.JavaScript.valueToCode(block, 'TYPE', Blockly.JavaScript.ORDER_NONE) || "''";
   var param0 = block.getFieldValue('DO_PARAM');
   var code = Blockly.JavaScript.statementToCode(block, 'DO');
-  var tpl = "$engine.subscribe(<%= name %>, <%= type %>); $engine.ee.on('<%= event %>', function(<%= param0 %>){ <%= code %> })";
+  var tpl = "$engine.subscribe(<%= name %>, <%= type %>); $engine.ee.on('<%= name %>', function(<%= param0 %>){ <%= code %> })";
 
   return _.template(tpl)({name: name, code: code, param0: param0, type: type});
 };
