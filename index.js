@@ -9,7 +9,8 @@ var _ = require('lodash'),
   Fiber = require('fibers')
   Future = require('fibers/future'),
   wait = Future.wait,
-  MongoClient = require('mongodb').MongoClient;
+  MongoClient = require('mongodb').MongoClient,
+  Utils = require('./utils')
 
 
 
@@ -40,6 +41,18 @@ var Engine = function(db){
   });
   ros.on('connection', function(){
     console.log('ros connected');
+    ros.getMessageDetails('simple_delivery_msgs/DeliveryStatus', function(detail){
+      console.log('detail', detail);
+
+
+
+    });
+    ros.getMessageDetails('simple_delivery_msgs/DeliveryOrder', function(detail){
+      console.log('detail', detail);
+
+
+
+    });
     ros.getTopics(function(topics){
       console.log('topics : ', topics);
 
