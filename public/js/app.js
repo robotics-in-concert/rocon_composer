@@ -1,3 +1,20 @@
+$(function(){
+  $('#right_switch a').click(function(){
+    $('.right').toggle();
+
+    if($('.right').is(':visible')){
+      $('.left').css('width', '70%');
+      $('.right').css('width', '30%');
+
+    }else{
+      $('.left').css('width', '100%');
+    }
+    Blockly.fireUiEvent(window, 'resize');
+
+  });
+
+});
+
 var app = angular.module('centoAuthoring', []);
 
 ITEMS_PARAM_KEY = 'cento_authoring_items';
