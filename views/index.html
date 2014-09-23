@@ -13,6 +13,9 @@
         <ul class="list-inline">
           <li><button class="btn btn-sm btn-default" ng-click="runCurrent()">run current</button></li>
           <li><button class="btn btn-sm btn-default" ng-click="clearWorkspace()">clear workspace</button></li>
+          <li><button class="btn btn-sm btn-default" ng-click="export()">export</button></li>
+          <li><button class="btn btn-sm btn-default" ng-click="import()">import</button></li>
+          <input type="file" style="display:none" id="file" name='file' onchange="angular.element(this).scope().fileNameChanged(this)" >
         </ul>
 
 

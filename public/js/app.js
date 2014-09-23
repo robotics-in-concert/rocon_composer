@@ -99,6 +99,41 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
 
     });
 
+    $scope.import = function(){
+      $('#file').click();
+
+    };
+    $scope.export = function(){
+      var dom = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
+      var xml = Blockly.Xml.domToText(dom);
+      var pom = document.createElement('a');
+      pom.setAttribute('href', 'data:text/xml;charset=utf-8,' + encodeURIComponent(xml));
+      pom.setAttribute('download', "export.xml");
+      pom.click();
+
+    };
+    $scope.fileNameChanged = function(e){
+      console.log(e);
+      var files = e.files;
+      var f = files[0];
+
+      var r = new FileReader();
+      r.onload = function(e) { 
+        var xml = e.target.result;
+        Blockly.mainWorkspace.clear();
+        var dom = Blockly.Xml.textToDom(xml);
+        console.log(dom);
+
+        Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, dom);
+
+
+      }
+      r.readAsText(f);
+
+
+
+
+    };
 
     $scope.triggerEvent = function(topic) {
       blocksStore.publish(topic).then(function(){
