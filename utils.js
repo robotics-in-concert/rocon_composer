@@ -13,6 +13,30 @@ var fs = require('fs'),
 
 module.exports = {
 
+  retry: function(f, n, ms){
+    var op = {};
+    var remains = (n <= 0) ? Infinity : n;
+
+    var f2 = function(){
+      try{
+        f();
+      }catch(e){
+        op.retry();
+      }
+
+    };
+
+    op.retry = function(){
+      if(remains-- <= 0) throw new Error('retry failed');
+      _.delay(f2, ms);
+    };
+
+    _.defer(f2);
+
+    return op;
+
+  },
+
   extract_rapp_meta: function(url, callback){
 
     var dest = os.tmpdir() + "cento_authoring_rapp." + new Date().getTime();

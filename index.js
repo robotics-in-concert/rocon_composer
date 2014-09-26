@@ -15,6 +15,7 @@ var _ = require('lodash'),
 
 
 
+
 /*
  * Engine class
  */
@@ -26,49 +27,39 @@ var Engine = function(db){
   var ros = this.ros = new ROSLIB.Ros();
   var engine = this;
   this.topics = [];
+  var that = this;
 
+  var retry_op = Utils.retry(function(){
+    console.log('trying to connect to ros');
 
+    var ros = that.ros = new ROSLIB.Ros();
 
-   // First, we create a Param object with the name of the param.
-  var engineStartedParam = new ROSLIB.Param({
-    ros : ros,
-    name : 'cento_engine_started'
-  });
-
-
-  ros.on('error', function(e){
-    console.log('ros error', e);
-  });
-  ros.on('connection', function(){
-    console.log('ros connected');
-    ros.getMessageDetails('simple_delivery_msgs/DeliveryStatus', function(detail){
-      console.log('detail', detail);
-
-
+    ros.on('error', function(e){
+      console.log('ros error', e);
+    });
+    ros.on('connection', function(){
+      console.log('ros connected');
+      // ros.getMessageDetails('simple_delivery_msgs/DeliveryStatus', function(detail){
+        // console.log('detail', detail);
+      // });
+      // ros.getMessageDetails('simple_delivery_msgs/DeliveryOrder', function(detail){
+        // console.log('detail', detail);
+      // });
+      // ros.getTopics(function(topics){
+        // console.log('topics : ', topics);
+      // });
+      // ros.getServices(function(topics){
+        // // console.log('services : ', topics);
+      // });
 
     });
-    ros.getMessageDetails('simple_delivery_msgs/DeliveryOrder', function(detail){
-      console.log('detail', detail);
-
-
-
+    ros.on('close', function(){
+      console.log('ros closed');
+      retry_op.retry();
     });
-    ros.getTopics(function(topics){
-      console.log('topics : ', topics);
+    ros.connect(process.env.ROS_WS_URL);
 
-
-    });
-    ros.getServices(function(topics){
-      // console.log('services : ', topics);
-
-
-    });
-
-  });
-  ros.on('close', function(){
-    console.log('ros closed');
-  });
-  ros.connect(process.env.ROS_WS_URL);
+  }, 0, 1000);
 
 };
 
