@@ -158,16 +158,20 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
       blocksStore.loadRapp(url).then(function(x){
         console.log(x);
 
-        _.each(x, function(meta){
+        _.each(x.interfaces, function(meta){
           _.each(meta.subscribers, function(sub){
             Blockly.register_publish_block(sub.name, sub.type);
             var $tb = $('#toolbox');
             $tb.find('category[name=ROS]').append('<block type="ros_publish_'+sub.name+'"></block>');
+            console.log("register publish block", sub);
+
 
           });
 
         });
 
+
+        console.log($('#toolbox').get(0));
 
         Blockly.updateToolbox($('#toolbox').get(0));
 
