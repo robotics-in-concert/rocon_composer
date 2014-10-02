@@ -19,7 +19,7 @@
         </ul>
 
 
-        <h2>triggers</h2>
+        <h3>triggers</h3>
         <ul class="list-unstyled">
           <!-- <li> -->
             <!-- <button class="btn btn-sm btn-default" ng-click="trigger('delivery_request')">Delivery Request</button> -->
@@ -39,8 +39,14 @@
             ROS : <input name="event_name" ng-model="new_topic_name"> <button class="btn btn-sm btn-default" id="trigger" ng-click="triggerEvent(new_topic_name)">trigger</button>
           </li>
         </ul>
+        <h3>load rapp</h3>
+        <ul class="list-unstyled">
+          <li>
+            URL : <input name="rapp_url" ng-model="rapp_url"> <button class="btn btn-sm btn-default" id="trigger" ng-click="loadRapp(rapp_url)">load</button>
+          </li>
+        </ul>
 
-        <h2>engine</h2>
+        <h3>engine</h3>
         <ul class="list-inline">
           <li>
             <button class="btn btn-sm btn-default" ng-click="engineReset()">Reset</button>
@@ -50,7 +56,7 @@
           </li>
         </ul>
 
-        <h2>items</h2>
+        <h3>items</h3>
         <form class="form-inline well">
           <div class="form-group">
             <button class="btn btn-default" ng-click="newData()">new</button>
@@ -71,6 +77,19 @@
     <xml id="toolbox" style="display: none">
     
     <category name="entity">
+      <block type="dest_huey"></block>
+      <block type="dest_huey"></block>
+      <block type="dest_huey"></block>
+      <block type="dest_huey"></block>
+      <block type="dest_huey"></block>
+      <block type="dest_huey"></block>
+      <block type="dest_huey"></block>
+      <block type="dest_huey"></block>
+      <block type="dest_huey"></block>
+      <block type="dest_huey"></block>
+      <block type="dest_huey"></block>
+      <block type="dest_huey"></block>
+      <block type="dest_huey"></block>
       <block type="dest_huey"></block>
       <block type="dest_dwlee"></block>
       <block type="dest_docking"></block>
@@ -215,13 +234,6 @@
     {path: './', toolbox: document.getElementById('toolbox')});
 
 
-  // test
-  setTimeout(function(){
-      var x = $('<xml><category name="test"><block type="text_print"></block></category></xml>')
-      console.log(x.get(0));
-
-
-      }, 3000);
 </script>
 
 {% endblock %}

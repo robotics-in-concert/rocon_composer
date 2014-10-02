@@ -55,6 +55,14 @@ app.service('blocksStore', function($http, $q){
       return res.data;
     });
   }
+
+  this.loadRapp = function(url){
+    var that = this;
+    var data = {url: url};
+    return $http.post('/api/load_rapp', data).then(function(res){
+      return res.data;
+    });
+  };
   this.eval = function(code){
     var that = this;
     var data = {code: code};
@@ -70,6 +78,7 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
     var items;
     $scope.foo = 'bar';
     $scope.current = null;
+    $scope.rapp_url = "http://files.yujinrobot.com/rocon/rapp_repository/office_rapp.tar.gz";
     items = $scope.items = []
     $scope.robot_brain = {};
 
@@ -144,6 +153,27 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
     $scope.deleteItem = function(id) {
       $scope.items = _.reject($scope.items, {id: id})
       $scope.current = null;
+    };
+    $scope.loadRapp = function(url){
+      blocksStore.loadRapp(url).then(function(x){
+        console.log(x);
+
+        _.each(x, function(meta){
+          _.each(meta.subscribers, function(sub){
+            Blockly.register_publish_block(sub.name, sub.type);
+            var $tb = $('#toolbox');
+            $tb.find('category[name=ROS]').append('<block type="ros_publish_'+sub.name+'"></block>');
+
+          });
+
+        });
+
+
+        Blockly.updateToolbox($('#toolbox').get(0));
+
+
+      });
+
     };
 
 

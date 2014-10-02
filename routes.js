@@ -1,4 +1,5 @@
 _ = require('lodash');
+Utils = require('./utils');
 
 
 
@@ -11,6 +12,28 @@ module.exports = function(app, db){
   });
   app.get('/ping', function(req, res){
     res.send('pong')
+  });
+
+
+  app.post('/api/load_rapp', function(req, res){
+    var url = req.body.url;
+    Utils.extract_rapp_meta(url, function(e, data){
+      types_to_load = _.map(data, function(interface){
+        return _.map(interface, function(v, k){
+          if(k == 'subscribers'){
+            return _.pluck(v, 'type');
+          }
+
+        });
+
+      });
+      types_to_load = _.compact(_.flatten(types_to_load));
+
+      
+      
+      res.send({interfaces: data, types: _.flatten(types_to_load)});
+    });
+
   });
 
 
