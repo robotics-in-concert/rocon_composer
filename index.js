@@ -10,7 +10,9 @@ var _ = require('lodash'),
   Future = require('fibers/future'),
   wait = Future.wait,
   MongoClient = require('mongodb').MongoClient,
-  Utils = require('./utils')
+  Utils = require('./utils'),
+  request = require('request');
+
 
 
 
@@ -61,6 +63,17 @@ var Engine = function(db){
 
   }, 0, 1000);
 
+};
+
+
+Engine.prototype.getMessageDetails = function(type, cb){
+  request(process.env.MSG_DATABASE + "/api/message_details", {qs: {type: type}, json: true}, function(e, res, body){
+    console.log("BODY", body, typeof body);
+
+    
+    cb(null, body);
+
+  });
 };
 
 Engine.prototype.unsubscribe = function(topic){

@@ -1,5 +1,6 @@
 _ = require('lodash');
 Utils = require('./utils');
+async = require('async');
 
 
 
@@ -27,11 +28,21 @@ module.exports = function(app, db){
         });
 
       });
+      console.log(types_to_load);
+
       types_to_load = _.compact(_.flatten(types_to_load));
+      async.map(types_to_load, _.bind($engine.getMessageDetails, $engine), function(e, types){
+        var z = _.zipObject(types_to_load, types)
+        var types = _.mapValues(z, function(mv, k){
+          return _.mapValues(_.groupBy(mv, 'type'), function(x){ return x[0]; });
+        });
+        res.send({interfaces: data, types: types});
+      });
+
 
       
       
-      res.send({interfaces: data, types: _.flatten(types_to_load)});
+      // res.send({interfaces: data, types: _.flatten(types_to_load)});
     });
 
   });
