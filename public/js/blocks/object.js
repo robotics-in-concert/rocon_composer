@@ -102,7 +102,7 @@ Blockly.JavaScript['object_item_set'] = function(block){
   var value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_NONE) || "null";
   var code = _.template(tpl)({va: va, key: key, value: value});
 
-  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+  return code;
 
 }
 Blockly.JavaScript['object_create_with'] = function(block){
