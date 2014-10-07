@@ -169,6 +169,16 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
 
           });
         });
+
+
+        var singleBlock = function(fieldtype){
+            if(fieldtype.match(/string/)){
+              return $('<block type="text"><field name="TEXT"></field></block>');
+            }else if(fieldtype.match(/float|uint|int|time/)){
+              return $('<block type="math_number"><field name="NUM">0</field></block>');
+            }
+        };
+
         var buildBlockTree = function(lst, meta, parent){
           console.log('build block tree', meta);
 
@@ -181,29 +191,33 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
           
           _.each(meta.fieldtypes, function(fieldtype, idx){
             var arrlen = meta.fieldarraylen[idx];
+            var fn = meta.fieldnames[idx];
+            var $val = null;
+            var $child = null;
 
-            // single value
+
             if(arrlen == -1){
-              if(fieldtype.match(/string/)){
-                p.append('<value name="'+meta.fieldnames[idx].toUpperCase()+'"><block type="text"><field name="TEXT"></field></block></value>');
-              }else if(fieldtype.match(/float|uint|int|time/)){
-                p.append('<value name="'+meta.fieldnames[idx].toUpperCase()+'"><block type="math_number"><field name="NUM">0</field></block></value>');
-              }
-              
-              else if(fieldtype.match(/.+\/.+/)){
-                var $val = $('<value name="'+meta.fieldnames[idx].toUpperCase()+'" />');
-                var subtype = _.detect(lst, function(e, k){ console.log(k, meta.fieldtypes[idx]); return meta.fieldtypes[idx] == k })
-                console.log("SUB", subtype);
-
-                var $subDom = buildBlockTree(lst, subtype);
-            
-
-                $val.append($subDom);
-                p.append($val);
-              }
-
+              $child = $val = $('<value name="'+fn.toUpperCase()+'" />');
+            }else if(arrlen >= 0){
+              $child = $('<value name="'+fn.toUpperCase()+'"></value>');
+              var $list = $('<block type="lists_create_with"><mutation items="1"></mutation><value name="ADD0"></value></block>');
+              $val = $list.find('value[name=ADD0]');
+              $child.append($list);
 
             }
+
+
+
+            if(fieldtype.match(/.+\/.+/)){
+              var subtype = _.detect(lst, function(e, k){ console.log(k, meta.fieldtypes[idx]); return meta.fieldtypes[idx] == k })
+              var $subDom = buildBlockTree(lst, subtype);
+              $val.append($subDom);
+            }else{
+              $val.append(singleBlock(fieldtype));
+
+            }
+            p.append($child);
+
 
           });
 
