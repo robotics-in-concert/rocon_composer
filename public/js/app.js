@@ -158,6 +158,82 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
       blocksStore.loadRapp(url).then(function(x){
         console.log(x);
 
+        var $tb = $('#toolbox');
+
+
+        _.each(x.types, function(topType){
+          _.each(topType, function(tt){
+            Blockly.register_message_block(tt.type, tt);
+            var blockKey = tt.type.replace('/', '-');
+            console.log('register msg block', tt.type);
+
+          });
+        });
+        var buildBlockTree = function(lst, meta, parent){
+          console.log('build block tree', meta);
+
+          if(!parent)
+            var p = $('<block />').attr('type', 'ros_msg_'+meta.type.replace('/', '-'));
+          else
+            p = parent;
+
+          
+          
+          _.each(meta.fieldtypes, function(fieldtype, idx){
+            var arrlen = meta.fieldarraylen[idx];
+
+            // single value
+            if(arrlen == -1){
+              if(fieldtype.match(/string/)){
+                p.append('<value name="'+meta.fieldnames[idx].toUpperCase()+'"><block type="text"><field name="TEXT"></field></block></value>');
+              }else if(fieldtype.match(/float|uint|int|time/)){
+                p.append('<value name="'+meta.fieldnames[idx].toUpperCase()+'"><block type="math_number"><field name="NUM">0</field></block></value>');
+              }
+              
+              else if(fieldtype.match(/.+\/.+/)){
+                var $val = $('<value name="'+meta.fieldnames[idx].toUpperCase()+'" />');
+                var subtype = _.detect(lst, function(e, k){ console.log(k, meta.fieldtypes[idx]); return meta.fieldtypes[idx] == k })
+                console.log("SUB", subtype);
+
+                var $subDom = buildBlockTree(lst, subtype);
+            
+
+                $val.append($subDom);
+                p.append($val);
+              }
+
+
+            }
+
+          });
+
+
+          console.info("built", meta.type, p.get(0));
+
+          return p;
+        };
+
+
+        // var $el = buildBlockTree(x.types['nav_msgs/MapMetaData'], x.types['nav_msgs/MapMetaData']['nav_msgs/MapMetaData']);
+        // console.log($el.get(0));
+        // $tb.find('category[name=ROS]').append($el.get(0));
+
+        // var $el = buildBlockTree(x.types['std_msgs/String'], x.types['std_msgs/String']['std_msgs/String']);
+        // console.log($el.get(0));
+        // $tb.find('category[name=ROS]').append($el.get(0));
+
+        _.each(x.types, function(subTypes, k){
+          var $el = buildBlockTree(subTypes, subTypes[k]);
+          console.log($el.get(0));
+          $el.attr('collapsed', true);
+          $tb.find('category[name=ROS]').append($el.get(0));
+
+        });
+
+        
+
+
+
         _.each(x.interfaces, function(meta){
           _.each(meta.subscribers, function(sub){
             Blockly.register_publish_block(sub.name, sub.type);
