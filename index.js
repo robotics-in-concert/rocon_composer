@@ -360,9 +360,7 @@ MongoClient.connect(process.env.MONGO_URL, function(e, db){
 
   var args = process.argv.slice(2);
   if(args.length){
-    console.log('here0');
     $engine.once('started', function(){
-      console.log('here');
 
 
       $engine.runBlocks(args);
