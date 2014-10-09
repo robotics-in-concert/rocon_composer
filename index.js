@@ -11,6 +11,7 @@ var _ = require('lodash'),
   wait = Future.wait,
   MongoClient = require('mongodb').MongoClient,
   Utils = require('./utils'),
+  util = require('util'),
   request = require('request');
 
 
@@ -41,6 +42,7 @@ var Engine = function(db){
     });
     ros.on('connection', function(){
       console.log('ros connected');
+      engine.emit('started');
       // ros.getMessageDetails('simple_delivery_msgs/DeliveryStatus', function(detail){
         // console.log('detail', detail);
       // });
@@ -63,7 +65,13 @@ var Engine = function(db){
 
   }, 0, 1000);
 
+  _.defer(function(){
+    // engine.emit('started');
+
+  });
+
 };
+util.inherits(Engine, EventEmitter);
 
 
 Engine.prototype.getMessageDetails = function(type, cb){
@@ -232,10 +240,30 @@ Engine.prototype.print = function(msg){
 
 Engine.prototype.log = function(args){
   console.log(args.green);
-}
+};
+
 Engine.prototype.debug = function(args){
   console.log(args.grey);
-}
+};
+
+Engine.prototype.runBlocks = function(blocks){
+  console.log(blocks, '--');
+  var engine = this;
+
+  var col = this.db.collection('settings');
+  col.findOne({key: 'cento_authoring_items'}, function(e, data){
+    var items = data.value.data;
+    var x = _.where(items, function(i){
+      return _.include(blocks, i.title);
+    });
+
+    var code = _.pluck(x, 'js').join("\n// ----\n\n");
+    engine.runCode(code);
+
+    console.log('loaded blocks', blocks);
+  });
+
+};
 
 
 Engine.prototype.getParam = function(k, cb){
@@ -293,6 +321,7 @@ Engine.prototype.reload = function(){
   this.load();
 };
 
+
 MongoClient.connect(process.env.MONGO_URL, function(e, db){
   if(e) throw e;
   console.log('mongo connected');
@@ -328,6 +357,19 @@ MongoClient.connect(process.env.MONGO_URL, function(e, db){
 
 
   $engine = new Engine(db);
+
+  var args = process.argv.slice(2);
+  if(args.length){
+    console.log('here0');
+    $engine.once('started', function(){
+      console.log('here');
+
+
+      $engine.runBlocks(args);
+    });
+
+  }
+
 
 
 
