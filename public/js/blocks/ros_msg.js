@@ -18,6 +18,19 @@ Blockly.register_message_block = function(type, meta){
         return this.setNextStatement(false);
       }
     };
+    Blockly.JavaScript[blockKey] = function(block){
+      var msg = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_NONE) || '""';
+      var tpl = '$engine.pub("<%= name %>", "<%= type %>", <%= msg %>);';
+      var code = '';
+      var kv = [];
+      _.each(meta.fieldnames, function(fn, idx){
+        var v = Blockly.JavaScript.valueToCode(block, fn.toUpperCase(), Blockly.JavaScript.ORDER_NONE) || "''";
+        kv.push("\"" + fn + "\":" + v);
+
+      });
+      return ["({"+kv.join(",")+"})", Blockly.JavaScript.ORDER_ATOMIC ];
+
+    };
 
 
     msg_registered.push(type);
