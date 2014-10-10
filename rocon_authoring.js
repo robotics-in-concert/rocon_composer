@@ -367,7 +367,7 @@ MongoClient.connect(process.env.MONGO_URL, function(e, db){
 
   $engine = new Engine(db);
 
-  var args = process.argv.slice(2);
+  var args = process.argv.slice(1);
   if(args.length){
     $engine.once('started', function(){
 
