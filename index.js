@@ -174,7 +174,7 @@ Engine.prototype.runService = function(name, type, request){
 };
 
 Engine.prototype.runCode = function(code){
-  code = "Fiber(function(){"+code+"}).run();";
+  code = Utils.js_beautify(code);
   this.debug("---------------- scripts -----------------".grey);
   this.debug(code.grey);
   this.debug("------------------------------------------".grey);
@@ -246,6 +246,16 @@ Engine.prototype.debug = function(args){
   console.log(args.grey);
 };
 
+Engine.prototype.itemsToCode = function(items){
+  var js = _.map(items, function(i){
+    return "// "+i.title+"\n"+i.js;
+  }).join("\n\n");
+
+
+  return ["Fiber(function(){", js, "}).run();"].join("\n");
+
+};
+
 Engine.prototype.runBlocks = function(blocks){
   console.log(blocks, '--');
   var engine = this;
@@ -261,6 +271,15 @@ Engine.prototype.runBlocks = function(blocks){
     engine.runCode(code);
 
     console.log('loaded blocks', blocks);
+  });
+
+};
+
+Engine.prototype.getItems = function(cb){
+  var col = this.db.collection('settings');
+  col.findOne({key: 'cento_authoring_items'}, function(e, data){
+    var items = data.value.data;
+    cb(e, items);
   });
 
 };
@@ -291,14 +310,13 @@ Engine.prototype.setParam = function(k, v, cb){
 };
 
 Engine.prototype.load = function(){
+
   var that = this;
-  this.getParam('cento_authoring_items', function(data){
-    that.debug(data.data);
+  this.getItems(function(err, items){
+    console.log(items);
 
-    var scripts = _.map(data.data, function(row){
-      return row.js;
-    }).join("\n\n\n");
 
+    var scripts = that.itemsToCode(items);
 
     try{
       that.runCode(scripts);
