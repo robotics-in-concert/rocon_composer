@@ -1,0 +1,5 @@
+<launch>
+  <arg name="scripts" default="office_delivery_wf welcoming_wf" />
+   <node pkg="rocon_authoring" type="rocon_authoring.js" name="rocon_authoring" args="$(arg scripts)">
+  </node>
+</launch>
