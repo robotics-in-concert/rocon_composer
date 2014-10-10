@@ -176,7 +176,7 @@ Engine.prototype.runService = function(name, type, request){
 Engine.prototype.runCode = function(code){
   code = Utils.js_beautify(code);
   this.debug("---------------- scripts -----------------".grey);
-  this.debug(code.grey);
+  this.debug(_.map(code.split(/\n/), function(line){ return line.grey; }).join("\n"));
   this.debug("------------------------------------------".grey);
   eval(code);
 
@@ -257,20 +257,29 @@ Engine.prototype.itemsToCode = function(items){
 };
 
 Engine.prototype.runBlocks = function(blocks){
-  console.log(blocks, '--');
-  var engine = this;
+  var that = this;
+  this.getItems(function(err, items){
 
-  var col = this.db.collection('settings');
-  col.findOne({key: 'cento_authoring_items'}, function(e, data){
-    var items = data.value.data;
-    var x = _.where(items, function(i){
-      return _.include(blocks, i.title);
-    });
 
-    var code = _.pluck(x, 'js').join("\n// ----\n\n");
-    engine.runCode(code);
+    if(blocks && blocks.length > 0){
+      items = _.where(items, function(i){
+        return _.include(blocks, i.title);
+      });
+    }
 
-    console.log('loaded blocks', blocks);
+    var scripts = that.itemsToCode(items);
+
+    try{
+      that.runCode(scripts);
+      console.log("scripts evaluated.");
+    }catch(e){
+      console.log('invalid block scripts. failed.', e);
+    }
+
+
+
+
+
   });
 
 };
@@ -310,27 +319,7 @@ Engine.prototype.setParam = function(k, v, cb){
 };
 
 Engine.prototype.load = function(){
-
-  var that = this;
-  this.getItems(function(err, items){
-    console.log(items);
-
-
-    var scripts = that.itemsToCode(items);
-
-    try{
-      that.runCode(scripts);
-    }catch(e){
-      console.log('invalid block scripts. failed.', e);
-    }
-
-
-
-    console.log("scripts evaluated.");
-
-
-  });
-
+  this.runBlocks(null);
 
 };
 Engine.prototype.reload = function(){
