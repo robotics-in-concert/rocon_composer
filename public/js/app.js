@@ -15,6 +15,15 @@ $(function(){
 
 });
 
+
+Mousetrap.bind('ctrl+alt+c', function() { 
+  var sel = Blockly.selected;
+  if(sel){
+    sel.setCollapsed(!sel.collapsed_);
+
+  }
+});
+
 var app = angular.module('centoAuthoring', []);
 
 ITEMS_PARAM_KEY = 'cento_authoring_items';
