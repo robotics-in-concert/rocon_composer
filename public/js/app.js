@@ -16,6 +16,13 @@ $(function(){
 });
 
 
+Mousetrap.bind('ctrl+alt+d', function() { 
+  var sel = Blockly.selected;
+  Blockly.copy_(sel);
+  if (Blockly.clipboard_) {
+    Blockly.mainWorkspace.paste(Blockly.clipboard_);
+  }
+});
 Mousetrap.bind('ctrl+alt+c', function() { 
   var sel = Blockly.selected;
   if(sel){
@@ -23,6 +30,7 @@ Mousetrap.bind('ctrl+alt+c', function() {
 
   }
 });
+
 
 var app = angular.module('centoAuthoring', []);
 
