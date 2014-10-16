@@ -253,11 +253,14 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
         // console.log($el.get(0));
         // $tb.find('category[name=ROS]').append($el.get(0));
 
+        var typesBlocks = {};
         _.each(x.types, function(subTypes, k){
           var $el = buildBlockTree(subTypes, subTypes[k]);
           console.log($el.get(0));
           $el.attr('collapsed', true);
           $tb.find('category[name=ROS]').append($el.get(0));
+
+          typesBlocks[k] = $el.get(0);
 
         });
 
@@ -268,8 +271,13 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
         _.each(x.interfaces, function(meta){
           _.each(meta.subscribers, function(sub){
             Blockly.register_publish_block(sub.name, sub.type);
+            var typeBlock = typesBlocks[sub.type];
             var $tb = $('#toolbox');
-            $tb.find('category[name=ROS]').append('<block type="ros_publish_'+sub.name+'"></block>');
+            var $pubBlock = $('<block type="ros_publish_'+sub.name+'"></block>');
+            var $valueBlock = $('<value name="VALUE"></value>');
+            $valueBlock.append(typeBlock);
+            $pubBlock.append($valueBlock);
+            $tb.find('category[name=ROS]').append($pubBlock);
             console.log("register publish block", sub);
 
 

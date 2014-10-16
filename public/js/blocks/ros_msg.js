@@ -7,7 +7,7 @@ Blockly.register_message_block = function(type, meta){
         var block = this;
         this.setColour(77);
         //
-        this.appendDummyInput().appendField('[ROS] msg '+type);
+        this.appendDummyInput().appendField(type);
         _.each(meta.fieldnames, function(fn, idx){
           block.appendValueInput(fn.toUpperCase()).appendField(fn);
 

@@ -5,7 +5,7 @@ Blockly.register_publish_block = function(name, type){
   Blockly.Blocks['ros_publish_'+name] = {
     init: function() {
       this.setColour(ACTION_COLOR);
-      this.appendValueInput('VALUE').appendField('[ROS] publish ' + name + ' ('+ type + ') ');
+      this.appendValueInput('VALUE').appendField('[Publish] ' + name);
       this.setInputsInline(true);
       this.setPreviousStatement(true);
       return this.setNextStatement(true);
