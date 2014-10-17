@@ -302,6 +302,17 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
       });
 
     };
+    $scope.engineLoadChecked = function(){
+      var items = $scope.itemSelection;
+      if(items.length < 1){
+        alert('select items to load.');
+      }else{
+        $http.post('/api/engine/load', {blocks: $scope.itemSelection}).then(function(){
+          alert('ok');
+        });
+      }
+
+    };
     $scope.engineReset = function(){
       $http.post('/api/engine/reset').then(function(){
         alert('ok');
@@ -347,6 +358,21 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
       dom = Blockly.Xml.textToDom(data.xml);
       Blockly.mainWorkspace.clear();
       Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, dom);
+    };
+
+
+
+    /**
+     * items checkbox
+     */
+    $scope.itemSelection = [];
+    $scope.toggleItemSelection = function(title){
+      console.log(title);
+
+      _.include($scope.itemSelection, title) ?
+        _.pull($scope.itemSelection, title) :
+        $scope.itemSelection.push(title)
+
     };
 
 
