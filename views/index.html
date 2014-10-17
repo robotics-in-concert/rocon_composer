@@ -60,6 +60,15 @@
         </ul>
 
         <h3>items</h3>
+        <input type="file" style="display:none" id="itemsFile" name='file' onchange="angular.element(this).scope().itemsFileNameChanged(this)" >
+        <ul class="list-inline">
+          <li>
+            <button class="btn btn-sm btn-default" ng-click="exportItems()">export items</button>
+          </li>
+          <li>
+            <button class="btn btn-sm btn-default" ng-click="importItems()">import items</button>
+          </li>
+        </ul>
         <form class="form-inline well">
           <div class="form-group">
             <button class="btn btn-default" ng-click="newData()">new</button>

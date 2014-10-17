@@ -138,6 +138,48 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
       pom.click();
 
     };
+    $scope.exportItems = function(){
+      var pom = document.createElement('a');
+      console.log($scope.items);
+      console.log('data:application/json;charset=utf-8,' + JSON.stringify($scope.items));
+
+
+      pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + JSON.stringify($scope.items))
+      pom.setAttribute('download', "items.json");
+      pom.click();
+
+    };
+    $scope.importItems = function(){
+      $('#itemsFile').click()
+    };
+    $scope.itemsFileNameChanged = function(e){
+      var files = e.files;
+      var f = files[0];
+
+      var r = new FileReader();
+      r.onload = function(e) { 
+        var json = e.target.result;
+        var items = JSON.parse(json);
+
+        console.log("items to import ", items);
+
+        $scope.$apply(function(){
+          $scope.items = _.uniq(_.flatten([items, $scope.items]), 'title');
+
+        });
+
+        console.log($scope.items);
+
+
+
+
+      }
+      r.readAsText(f);
+
+
+
+
+    };
     $scope.fileNameChanged = function(e){
       console.log(e);
       var files = e.files;
