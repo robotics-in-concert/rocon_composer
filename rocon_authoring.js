@@ -289,7 +289,8 @@ Engine.prototype.runBlocks = function(blocks){
 Engine.prototype.getItems = function(cb){
   var col = this.db.collection('settings');
   col.findOne({key: 'cento_authoring_items'}, function(e, data){
-    var items = data.value.data;
+
+    var items = data ? data.value.data : [];
     cb(e, items);
   });
 
@@ -370,8 +371,6 @@ MongoClient.connect(process.env.MONGO_URL, function(e, db){
   var args = process.argv.slice(1);
   if(args.length){
     $engine.once('started', function(){
-
-
       $engine.runBlocks(args);
     });
 

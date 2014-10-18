@@ -1,1 +1,1 @@
-www: ./rocon_authoring.js
+www: nodemon ./rocon_authoring.js

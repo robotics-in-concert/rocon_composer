@@ -138,6 +138,48 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
       pom.click();
 
     };
+    $scope.exportItems = function(){
+      var pom = document.createElement('a');
+      console.log($scope.items);
+      console.log('data:application/json;charset=utf-8,' + JSON.stringify($scope.items));
+
+
+      pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + JSON.stringify($scope.items))
+      pom.setAttribute('download', "items.json");
+      pom.click();
+
+    };
+    $scope.importItems = function(){
+      $('#itemsFile').click()
+    };
+    $scope.itemsFileNameChanged = function(e){
+      var files = e.files;
+      var f = files[0];
+
+      var r = new FileReader();
+      r.onload = function(e) { 
+        var json = e.target.result;
+        var items = JSON.parse(json);
+
+        console.log("items to import ", items);
+
+        $scope.$apply(function(){
+          $scope.items = _.uniq(_.flatten([items, $scope.items]), 'title');
+
+        });
+
+        console.log($scope.items);
+
+
+
+
+      }
+      r.readAsText(f);
+
+
+
+
+    };
     $scope.fileNameChanged = function(e){
       console.log(e);
       var files = e.files;
@@ -253,11 +295,14 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
         // console.log($el.get(0));
         // $tb.find('category[name=ROS]').append($el.get(0));
 
+        var typesBlocks = {};
         _.each(x.types, function(subTypes, k){
           var $el = buildBlockTree(subTypes, subTypes[k]);
           console.log($el.get(0));
           $el.attr('collapsed', true);
           $tb.find('category[name=ROS]').append($el.get(0));
+
+          typesBlocks[k] = $el.get(0);
 
         });
 
@@ -268,8 +313,13 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
         _.each(x.interfaces, function(meta){
           _.each(meta.subscribers, function(sub){
             Blockly.register_publish_block(sub.name, sub.type);
+            var typeBlock = typesBlocks[sub.type];
             var $tb = $('#toolbox');
-            $tb.find('category[name=ROS]').append('<block type="ros_publish_'+sub.name+'"></block>');
+            var $pubBlock = $('<block type="ros_publish_'+sub.name+'"></block>');
+            var $valueBlock = $('<value name="VALUE"></value>');
+            $valueBlock.append(typeBlock);
+            $pubBlock.append($valueBlock);
+            $tb.find('category[name=ROS]').append($pubBlock);
             console.log("register publish block", sub);
 
 
@@ -292,6 +342,17 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
       $http.post('/api/engine/load').then(function(){
         alert('ok');
       });
+
+    };
+    $scope.engineLoadChecked = function(){
+      var items = $scope.itemSelection;
+      if(items.length < 1){
+        alert('select items to load.');
+      }else{
+        $http.post('/api/engine/load', {blocks: $scope.itemSelection}).then(function(){
+          alert('ok');
+        });
+      }
 
     };
     $scope.engineReset = function(){
@@ -339,6 +400,21 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
       dom = Blockly.Xml.textToDom(data.xml);
       Blockly.mainWorkspace.clear();
       Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, dom);
+    };
+
+
+
+    /**
+     * items checkbox
+     */
+    $scope.itemSelection = [];
+    $scope.toggleItemSelection = function(title){
+      console.log(title);
+
+      _.include($scope.itemSelection, title) ?
+        _.pull($scope.itemSelection, title) :
+        $scope.itemSelection.push(title)
+
     };
 
 

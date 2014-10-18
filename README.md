@@ -39,7 +39,15 @@ rocon_authoring
 ### Authoring Tool & Engine
 ```
 $ npm install
-$ MONGO_URL=mongodb://localhost:27017/cento_authoring PORT=9999 ROS_WS_URL=ws://127.0.0.1:9090 node index.js
+$ MONGO_URL=mongodb://localhost:27017/cento_authoring PORT=9999 ROS_WS_URL=ws://127.0.0.1:9090 node rocon_authoring.js
+```
+or
+```
+>> export MONGO_URL=mongodb://localhost:27017/cento_authoring
+>> export PORT=9999
+>> export ROS_WS_URL=ws://:9090
+>> node rocon_authoring.js
+
 ```
 
 * Reason of using ROS_WS_URL port, 9090
