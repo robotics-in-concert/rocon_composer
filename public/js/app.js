@@ -381,6 +381,7 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
           title: $scope.current.title };
         
         $scope.items.push(data);
+        $scope.current = data;
       }
     };
     $scope.load = function(id) {
