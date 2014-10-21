@@ -213,7 +213,7 @@ Blockly.Blocks['action_speak'] = {
     var arg0;
     arg0 = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_NONE) || "''";
 
-    return '$engine.log("SPEAK:" + JSON.stringify(' + arg0 + '));';
+    return '$engine.print("SPEAK:" + JSON.stringify(' + arg0 + '));';
   };
 });
 
@@ -246,7 +246,7 @@ Blockly.Blocks['action_navigate'] = {
   return Blockly.JavaScript[action_key] = function(block) {
     var arg0;
     arg0 = Blockly.JavaScript.valueToCode(block, 'DEST', Blockly.JavaScript.ORDER_NONE) || "''";
-    return '$engine.log("NAVIGATE TO:"+ ' + arg0 + ');';
+    return '$engine.print("NAVIGATE TO:"+ ' + arg0 + ');';
   };
 });
 
