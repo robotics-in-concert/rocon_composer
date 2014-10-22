@@ -106,7 +106,7 @@ Engine.prototype.subscribe = function(topic, type){
   });
 
   listener.subscribe(function(message) {
-    engine.log('Received message on ' + listener.name + ': ' + message);
+    engine.debug('Received message on ' + listener.name + ': ' + message);
     engine.ee.emit(listener.name, message);
 
   });
