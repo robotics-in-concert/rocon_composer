@@ -21,9 +21,7 @@ module.exports = function(app, db){
     Utils.extract_rapp_meta(url, function(e, data){
       types_to_load = _.map(data, function(interface){
         return _.map(interface, function(v, k){
-          if(k == 'subscribers'){
-            return _.pluck(v, 'type');
-          }
+          return _.pluck(v, 'type');
 
         });
 

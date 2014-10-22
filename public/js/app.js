@@ -311,6 +311,20 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
 
 
         _.each(x.interfaces, function(meta){
+          _.each(meta.action_servers, function(sub){
+            var typeBlock = typesBlocks[sub.type];
+            var $valueBlock = $('<value name="GOAL"></value>');
+            $valueBlock.append(typeBlock);
+
+            Blockly.register_action_block(sub.name, sub.type);
+            var $tb = $('#toolbox');
+            var $block = $('<block type="ros_action_'+sub.name+'"></block>');
+            $block.append($valueBlock);
+            $tb.find('category[name=ROS]').append($block);
+            console.log("register action block", sub);
+
+
+          });
           _.each(meta.subscribers, function(sub){
             Blockly.register_publish_block(sub.name, sub.type);
             var typeBlock = typesBlocks[sub.type];
