@@ -9,7 +9,8 @@ var _ = require('lodash'),
   wait = Future.wait,
   Utils = require('./utils'),
   util = require('util'),
-  request = require('request');
+  request = require('request'),
+  URL = require('url');
 
 
 DEBUG = process.env.DEBUG || false
@@ -74,7 +75,8 @@ util.inherits(Engine, EventEmitter);
 
 Engine.prototype.getMessageDetails = function(type, cb){
   var engine = this;
-  request(process.env.MSG_DATABASE + "/api/message_details", {qs: {type: type}, json: true}, function(e, res, body){
+  var url = URL.resolve(process.env.MSG_DATABASE, "/api/message_details");
+  request(url, {qs: {type: type}, json: true}, function(e, res, body){
     engine.log("BODY", body, typeof body);
 
     

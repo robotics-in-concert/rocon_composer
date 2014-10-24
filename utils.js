@@ -6,7 +6,8 @@ var fs = require('fs'),
   glob = require('glob'),
   tar = require('tar'),
   _ = require('lodash'),
-  yaml = require('js-yaml');
+  yaml = require('js-yaml'),
+  Path = require('path');
   
   
 
@@ -39,7 +40,7 @@ module.exports = {
 
   extract_rapp_meta: function(url, callback){
 
-    var dest = os.tmpdir() + "cento_authoring_rapp." + new Date().getTime();
+    var dest = Path.join(os.tmpdir(), "cento_authoring_rapp." + new Date().getTime());
     console.log(dest);
     gzstrm = request(url).pipe(zlib.createGunzip());
     gzstrm.on('error', callback);
