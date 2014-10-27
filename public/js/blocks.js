@@ -213,7 +213,7 @@ Blockly.Blocks['action_speak'] = {
     var arg0;
     arg0 = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_NONE) || "''";
 
-    return '$engine.print("SPEAK:" + JSON.stringify(' + arg0 + '));';
+    return '$engine.print("Rocon Authoring :" + JSON.stringify(' + arg0 + '));';
   };
 });
 
