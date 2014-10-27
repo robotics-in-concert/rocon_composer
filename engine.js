@@ -17,7 +17,6 @@ DEBUG = process.env.DEBUG || false
 
 
 
-
 /*
  * Engine class
  */
@@ -239,17 +238,17 @@ Engine.prototype.clear = function(){
 
 };
 Engine.prototype.print = function(msg){
-  console.log(msg.green);
+  console.log(new Date().toString() + " - " + msg.green);
 
 };
 
 Engine.prototype.log = function(args){
-  console.log(args);
+  console.log(new Date().toString(), "-", args);
 };
 
 Engine.prototype.debug = function(args){
   if(DEBUG){
-    console.log(args);
+    console.log(new Date().toString(), "-", args);
   }
 };
 
