@@ -20,7 +20,7 @@ MongoClient.connect(process.env.MONGO_URL, function(e, db){
 
   var app = express();
   app.use(express.static('public'));
-  app.use(bodyParser.json());
+  app.use(bodyParser.json({limit: '50mb'}));
 
   // This is where all the magic happens!
   app.engine('html', swig.renderFile);
