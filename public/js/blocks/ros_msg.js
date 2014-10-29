@@ -13,6 +13,7 @@ Blockly.register_message_block = function(type, meta){
 
         });
         this.setOutput(true);
+        this.setHelpUrl(MSG_DATABASE + "/message_detail?type="+type);
 
         this.setPreviousStatement(false);
         return this.setNextStatement(false);
