@@ -19,6 +19,21 @@ Blockly.Blocks['object_item'] = {
     this.contextMenu = false;
   }
 };
+Blockly.Blocks['object_item_get2'] = {
+  /**
+   * Mutator bolck for adding items.
+   * @this Blockly.Block
+   */
+  init: function() {
+    this.setColour(260);
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldVariable('item', null), 'VAR')
+    this.appendValueInput('KEY').appendField('.');
+    this.setInputsInline(true);
+    this.setOutput(true);
+    this.contextMenu = false;
+  }
+};
 Blockly.Blocks['object_item_get'] = {
   /**
    * Mutator bolck for adding items.
@@ -78,6 +93,17 @@ Blockly.JavaScript['object_item'] = function(block){
   var key = block.getFieldValue('KEY');
   var value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_NONE) || "''";
   var code = key + ":" + value;
+
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+
+}
+Blockly.JavaScript['object_item_get2'] = function(block){
+
+  // var key = Blockly.JavaScript.valueToCode(block, 'KEY', Blockly.JavaScript.ORDER_NONE) || "''";
+  var va = block.getFieldValue('VAR');
+  var key = Blockly.JavaScript.valueToCode(block, 'KEY', Blockly.JavaScript.ORDER_NONE) || "''";
+  var tpl = "<%= va %>[<%= key %>]";
+  var code = _.template(tpl)({va: va, key: key});
 
   return [code, Blockly.JavaScript.ORDER_ATOMIC];
 

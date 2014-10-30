@@ -101,7 +101,7 @@ var reload_udf_blocks = function(items){
     var xml = parser.parseFromString(item.xml, "text/xml");
 
     $(xml).find('block[type=procedures_defreturn],block[type=procedures_defnoreturn]').each(function(b){
-      var fname = $(this).find('field[name]').text();
+      var fname = $(this).find('> field[name]').text();
       var args = $(this).find('mutation arg').map(function(e){ return $(this).attr('name'); }).toArray();
       Blockly.register_function_block(fname, args, $(this).attr('type') == 'procedures_defreturn');
 
