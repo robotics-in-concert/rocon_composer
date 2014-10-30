@@ -1,3 +1,53 @@
+/*
+ * functions
+ */
+
+Blockly.register_function_block = function(name, args, has_return){
+  Blockly.Blocks['udf_'+name] = {
+    init: function() {
+      this.setColour(240);
+      this.appendDummyInput().appendField(name);
+      var blk = this;
+
+      _.each(args, function(arg){
+        blk.appendValueInput(arg.toUpperCase()).appendField(arg);
+
+      });
+
+      this.setInputsInline(false);
+
+
+      if(has_return){
+        this.setOutput(true);
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);
+      }else{
+        this.setOutput(false);
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+      }
+    }
+  };
+  Blockly.JavaScript['udf_'+name] = function(block) {
+    var funcName = name;
+    var _args = _.map(args, function(a){
+      return Blockly.JavaScript.valueToCode(block, a.toUpperCase(), Blockly.JavaScript.ORDER_COMMA) || 'null';
+    });
+    var code = funcName + '(' + _args.join(', ') + ');';
+    if(has_return){
+      return [code, Blockly.JavaScript.ORDER_ATOMIC];
+    }
+    return code;
+  };
+
+
+  // Blockly.JavaScript['ros_publish_'+name] = function(block) {
+    // var msg = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_NONE) || "''";
+    // var tpl = '$engine.pub("<%= name %>", "<%= type %>", <%= msg %>);';
+    // return _.template(tpl)({name: name, type: type, msg: msg});
+  // };
+
+};
 
 /*
  * Sleep

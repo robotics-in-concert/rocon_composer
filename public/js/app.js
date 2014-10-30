@@ -91,6 +91,31 @@ app.service('blocksStore', function($http, $q){
 
 });
 
+
+var reload_udf_blocks = function(items){
+
+
+  $('category[name=UDF] block').remove();
+  _.each(items, function(item){
+    var parser = new DOMParser();
+    var xml = parser.parseFromString(item.xml, "text/xml");
+
+    $(xml).find('block[type=procedures_defreturn],block[type=procedures_defnoreturn]').each(function(b){
+      var fname = $(this).find('field[name]').text();
+      var args = $(this).find('mutation arg').map(function(e){ return $(this).attr('name'); }).toArray();
+      Blockly.register_function_block(fname, args, $(this).attr('type') == 'procedures_defreturn');
+
+      var $cat = $('category[name=UDF]');
+      $cat.append('<block type="udf_'+fname+'"></block>');
+
+
+    });
+    Blockly.updateToolbox($('#toolbox').get(0));
+
+  });
+
+};
+
 app.controller('MainCtrl', function($scope, blocksStore, $http) {
     var items;
     $scope.foo = 'bar';
@@ -107,6 +132,7 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
         $scope.items = [];
       }else{
         $scope.items = rows;
+        reload_udf_blocks($scope.items);
 
       }
 
@@ -116,6 +142,7 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
           console.log(oldValue, "->", newValue);
 
           blocksStore.setParam(ITEMS_PARAM_KEY, newValue).then(function(res){
+            reload_udf_blocks($scope.items);
             console.log('items saved', newValue, res);
 
           });
@@ -222,7 +249,7 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
 
         _.each(x.types, function(topType){
           _.each(topType, function(tt){
-            Blockly.register_message_block(tt.type, tt);
+            Blockly.register_message_block(tt.type, tt, tt.text);
             var blockKey = tt.type.replace('/', '-');
             console.log('register msg block', tt.type);
 

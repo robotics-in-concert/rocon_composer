@@ -1,5 +1,5 @@
 var msg_registered = [];
-Blockly.register_message_block = function(type, meta){
+Blockly.register_message_block = function(type, meta, tooltip){
   if(!_.include(msg_registered, type)){
     var blockKey = "ros_msg_" + type.replace("/", "-");
     Blockly.Blocks[blockKey] = {
@@ -12,6 +12,8 @@ Blockly.register_message_block = function(type, meta){
           block.appendValueInput(fn.toUpperCase()).appendField(fn);
 
         });
+        // this.setTooltip(tooltip);
+        this.setHelpUrl(MSG_DATABASE + "/message_detail?type="+type);
         this.setOutput(true);
         this.setHelpUrl(MSG_DATABASE + "/message_detail?type="+type);
 
