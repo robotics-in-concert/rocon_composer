@@ -1,3 +1,16 @@
+_js = function(prettify){
+  var js = Blockly.JavaScript.workspaceToCode();
+  if(prettify) js = js_beautify(js);
+  return js;
+};
+
+_xml = function(prettify){
+  var dom = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
+  var xml = Blockly.Xml.domToText(dom);
+  if(prettify) xml = vkbeautify.xml(xml);
+  return xml;
+};
+
 $(function(){
   $('#right_switch a').click(function(){
     $('.right').toggle();
@@ -30,6 +43,26 @@ Mousetrap.bind('ctrl+alt+c', function() {
 
   }
 });
+Mousetrap.bind('ctrl+alt+j', function() { 
+  $('.code-modal .modal-title').text('Javascript');
+  var $code = $('.code-modal code');
+  $code.text(_js(true));
+  $code.attr('class', 'javascript');
+  hljs.highlightBlock($('.code-modal code').get(0));
+  jQuery('.code-modal').modal({});
+
+});
+Mousetrap.bind('ctrl+alt+l', function() { 
+  $('.code-modal .modal-title').text('XML');
+
+  var $code = $('.code-modal code');
+  $code.text(_xml(true));
+  $code.attr('class', 'xml');
+  hljs.highlightBlock($('.code-modal code').get(0));
+  jQuery('.code-modal').modal({});
+
+});
+
 
 
 var app = angular.module('centoAuthoring', []);
@@ -466,6 +499,7 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
      */
     $scope.clearWorkspace = function() {
       Blockly.mainWorkspace.clear();
+      $scope.current = null;
     };
     $scope.runCurrent = function() {
       var code;

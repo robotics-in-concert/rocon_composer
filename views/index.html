@@ -1,6 +1,25 @@
 {% extends 'layout.html' %}
 
 {% block content %} 
+<!-- Large modal -->
+
+  <div class="modal fade code-modal" id="my-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+          <h4 class="modal-title" id="myModalLabel"></h4>
+        </div>
+        <div class="modal-body">
+          <pre class="code" style="font-size:11px;">
+            <code class="javascript"></code>
+          </pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <div class="container0" ng-controller="MainCtrl">
     <div id="right_switch">
       <a href="#">Hide/Show</a>
