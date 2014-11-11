@@ -43,6 +43,11 @@ Mousetrap.bind('ctrl+alt+c', function() {
 
   }
 });
+Mousetrap.bind('?', function(){
+  $('.shortcut-modal').modal();
+
+});
+
 Mousetrap.bind('ctrl+alt+j', function() { 
   $('.code-modal .modal-title').text('Javascript');
   var $code = $('.code-modal code');

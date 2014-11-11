@@ -3,6 +3,28 @@
 {% block content %} 
 <!-- Large modal -->
 
+  <div class="modal shortcut-modal" id="my-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+          <h4 class="modal-title">Keyboard Shortcuts</h4>
+        </div>
+        <div class="modal-body">
+          <dl class="dl-horizontal">
+            <dt>ctrl + alt + c</dt>
+            <dd>Collapse Toggle</dd>
+            <dt>ctrl + alt + d</dt>
+            <dd>Duplicate Block</dd>
+            <dt>ctrl + alt + j</dt>
+            <dd>Show javascript code</dd>
+            <dt>ctrl + alt + l</dt>
+            <dd>Show xml code</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="modal fade code-modal" id="my-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
