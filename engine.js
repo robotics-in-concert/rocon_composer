@@ -32,15 +32,20 @@ var Engine = function(db){
 
   var retry_op = Utils.retry(function(){
     engine.log('trying to connect to ros');
+    var connected = false;
 
     var ros = that.ros = new ROSLIB.Ros();
 
     ros.on('error', function(e){
       engine.log('ros error', e);
+      if(!connected){
+        retry_op.retry();
+      }
     });
     ros.on('connection', function(){
       engine.log('ros connected');
       engine.emit('started');
+      connected = true;
       // ros.getMessageDetails('simple_delivery_msgs/DeliveryStatus', function(detail){
         // console.log('detail', detail);
       // });
@@ -57,7 +62,7 @@ var Engine = function(db){
     });
     ros.on('close', function(){
       engine.log('ros closed');
-      retry_op.retry();
+      // retry_op.retry();
     });
     ros.connect(process.env.ROS_WS_URL);
 
