@@ -25,7 +25,7 @@ var Engine = function(db){
   this.db = db;
   this.ee = new EventEmitter();
   this.memory = {};
-  var ros = this.ros = new ROSLIB.Ros();
+  var ros = this.ros = new ROSLIB.Ros({encoding: 'utf8'});
   var engine = this;
   this.topics = [];
   var that = this;
@@ -34,7 +34,7 @@ var Engine = function(db){
     engine.log('trying to connect to ros');
     var connected = false;
 
-    var ros = that.ros = new ROSLIB.Ros();
+    var ros = that.ros = new ROSLIB.Ros({encoding: 'utf8'});
 
     ros.on('error', function(e){
       engine.log('ros error', e);
