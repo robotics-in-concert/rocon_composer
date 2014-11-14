@@ -43,6 +43,51 @@ Mousetrap.bind('ctrl+alt+c', function() {
 
   }
 });
+
+window.searching_keyword = null;
+
+
+findNext = function(keyword){
+  var blks = $(_xml()).find('block[type=text]');
+  blks.each(function(){
+    var txt = $(this).text().trim().toLowerCase();
+    var id = $(this).attr('id');
+    var b = Blockly.mainWorkspace.getBlockById(id);
+
+    if( $(this).text().indexOf(keyword) >= 0 && b != Blockly.selected ){
+      console.log(id);
+
+      b.select();
+      return false;
+    }
+
+  });
+
+};
+
+Mousetrap.bind('esc', function() { 
+  if(Blockly.selected){
+    Blockly.selected.unselect();
+    window.searching_keyword = null;
+  }
+
+});
+Mousetrap.bind('ctrl+alt+r', function() { 
+  if(window.searching_keyword){
+    findNext(window.searching_keyword);
+  };
+
+});
+
+Mousetrap.bind('ctrl+alt+f', function() { 
+  var keyword = prompt("search block").toLowerCase();
+  window.searching_keyword = keyword;
+  findNext(keyword);
+
+  
+});
+
+
 Mousetrap.bind('?', function(){
   $('.shortcut-modal').modal();
 
