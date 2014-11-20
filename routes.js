@@ -1,6 +1,9 @@
 _ = require('lodash');
 Utils = require('./utils');
 async = require('async');
+request = require('request');
+path = require('path');
+URL = require('url');
 
 
 
@@ -17,8 +20,14 @@ module.exports = function(app, db){
 
 
   app.post('/api/load_rapp', function(req, res){
-    var url = req.body.url;
-    Utils.extract_rapp_meta(url, function(e, data){
+
+
+    var apiPath = URL.resolve(process.env.MSG_DATABASE, "api/interfaces");
+    console.log(apiPath);
+
+    request.get(apiPath, function(e, res0, body){
+      var data = JSON.parse(body)
+
       types_to_load = _.map(data, function(interface){
         return _.map(interface, function(v, k){
           return _.pluck(v, 'type');

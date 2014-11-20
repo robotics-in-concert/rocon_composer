@@ -156,9 +156,9 @@ app.service('blocksStore', function($http, $q){
     });
   }
 
-  this.loadRapp = function(url){
+  this.loadRapp = function(){
     var that = this;
-    var data = {url: url};
+    var data = {};
     return $http.post('/api/load_rapp', data).then(function(res){
       return res.data;
     });
