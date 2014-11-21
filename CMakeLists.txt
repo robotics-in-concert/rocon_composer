@@ -8,7 +8,7 @@ project(rocon_authoring)
 ##############################################################################
 # Catkin
 ##############################################################################
-find_package(catkin REQUIRED cmake_node_hook)
+find_package(catkin REQUIRED)
 
 #catkin_npm_update() Under development
 
