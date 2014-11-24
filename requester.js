@@ -162,16 +162,32 @@ Requester = function(engine, uuid, options){
   this.engine.ee.on(this.feedback_topic(), _.bind(this._handleFeedback, this)); 
 };
 
+Requester.prototype.send_allocation_request = function(res){
+  var reqId = this.new_request([res]);
+  this.send_requests();
+
+
+  // TODO : check GRANTED status on feedback function with timeout
+
+
+  return reqId;
+};
+
+Requester.prototype.send_releasing_request = function(reqId){
+  this.requests[UUID.unparse(reqId)].cancel();
+  this.send_requests();
+};
+
 Requester.prototype.send_requests = function(){
   this.engine.publish(SCHEDULER_TOPIC, MSG_SCHEDULER_REQUEST, requests.to_msg());
 };
 
 Requester.prototype.new_request = function(resources){
-  var _uuid = new Array(16);
-  var uuid = UUID.v4(null, _uuid);
-  var req = new ResourceRequest(uuid);
+  var uuid = new_uuid();
+  var req = new Request(uuid);
+  req.resources = resources;
 
-  this.requests[uuid] = req;
+  this.requests[UUID.unparse(uuid)] = req;
 
   return uuid;
 };
