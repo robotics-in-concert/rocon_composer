@@ -229,11 +229,15 @@ Engine.prototype.cmdVel = function(options){
 };
 
 
-Engine.prototype.publish = function(event_name, params){
-  var data = {event: event_name};
-  _.assign(data, params);
-
+Engine.prototype.publish = function(topic, type, msg){
+  this.pub(topic, type, msg);
 };
+
+// Engine.prototype.publish = function(event_name, params){
+  // var data = {event: event_name};
+  // _.assign(data, params);
+
+// };
 Engine.prototype.clear = function(){
   this.ee.removeAllListeners();
   this.memory = {};
