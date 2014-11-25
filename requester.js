@@ -179,7 +179,7 @@ Requester.prototype.send_allocation_request = function(res, callback){
     function(cb){ setTimeout(cb, RESOURCE_STATUS_CHECK_INTERVAL); },
     function(e){ 
       that.allocated_requests.push(reqId);
-      callback(e, null); 
+      callback(e, reqId); 
     }
   );
 
