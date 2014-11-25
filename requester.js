@@ -3,6 +3,7 @@
 // * cancel
 
 var _ = require('lodash'),
+    async = require('async'),
     UUID = require('node-uuid');
     
 
@@ -16,6 +17,7 @@ new_uuid = function(){
 MSG_SCHEDULER_REQUEST = "scheduler_msgs/SchedulerRequests";
 SCHEDULER_TOPIC = 'rocon_scheduler';
 HEARTBEAT_HZ =  1.0 / 4.0;
+RESOURCE_STATUS_CHECK_INTERVAL = 500;
 
 
 
@@ -146,6 +148,9 @@ Requester = function(engine, uuid, options){
   this.id = new_uuid();
   this.requests = new SchedulerRequests(this.id);
 
+  this.pending_requests = []; // uuid list
+  this.allocated_requests = []; // uuid list
+
 
   var default_options = {
     priority: 0,
@@ -162,9 +167,22 @@ Requester = function(engine, uuid, options){
   this.engine.ee.on(this.feedback_topic(), _.bind(this._handleFeedback, this)); 
 };
 
-Requester.prototype.send_allocation_request = function(res){
+Requester.prototype.send_allocation_request = function(res, callback){
+  var that = this;
   var reqId = this.new_request([res]);
+  this.pending_requests.push(reqId);
   this.send_requests();
+
+
+  async.until(
+    function(){ return !_.include(that.pending_requests, reqId); },
+    function(cb){ setTimeout(cb, RESOURCE_STATUS_CHECK_INTERVAL); },
+    function(e){ 
+      that.allocated_requests.push(reqId);
+      callback(e, null); 
+    }
+  );
+
 
 
   // TODO : check GRANTED status on feedback function with timeout
@@ -173,9 +191,17 @@ Requester.prototype.send_allocation_request = function(res){
   return reqId;
 };
 
-Requester.prototype.send_releasing_request = function(reqId){
-  this.requests[UUID.unparse(reqId)].cancel();
+Requester.prototype.send_releasing_request = function(reqId, callback){
+  var that = this;
+  this.requests[reqId].cancel();
   this.send_requests();
+  async.until(
+    function(){ return _.include(that.allocated_requests, reqId); },
+    function(cb){ setTimeout(cb, RESOURCE_STATUS_CHECK_INTERVAL); },
+    function(e){ 
+      callback(e, null); 
+    }
+  );
 };
 
 Requester.prototype.send_requests = function(){
@@ -189,7 +215,7 @@ Requester.prototype.new_request = function(resources){
 
   this.requests[UUID.unparse(uuid)] = req;
 
-  return uuid;
+  return UUID.unparse(uuid);
 };
 
 Requester.prototype._handleFeedback = function(msg){
@@ -199,6 +225,29 @@ Requester.prototype._handleFeedback = function(msg){
     this.handleFeedback(this.requests);
     this.send_requests();
   }
+
+};
+
+
+// TODO : template method? (subclass) or ....
+
+Request.prototype.handleFeedback = function(requests){
+  var that = this;
+
+  _.each(requests.requests, function(req, uuid){
+
+    if(req.status == STATUS_GRANTED){
+      // handle granted resource
+      _.pull(that.pending_requests, uuid);
+
+    }else if(req.status == STATUS_CLOSED){
+      // handle closed resource
+      _.pull(that.pending_requests, uuid);
+      _.pull(that.allocated_requests, uuid);
+
+    };
+
+  });
 
 };
 
