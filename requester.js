@@ -120,10 +120,10 @@ SchedulerRequests.prototype.to_msg = function(){
   };
 };
 SchedulerRequests.prototype.deepClone = function(){
-  return Object.create(SchedulerRequests, _.cloneDeep(this));
+  return _.cloneDeep(this);
 };
 SchedulerRequests.prototype.merge = function(props){
-  return Object.create(SchedulerRequests, _.merge(_.cloneDeep(this), props));
+  return _.merge(_.cloneDeep(this), props);
 };
 
 SchedulerRequests.prototype.cancel_all = function(){
