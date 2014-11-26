@@ -13,6 +13,23 @@ new_uuid = function(){
   return _uuid;
 };
 
+
+var uuid2UniqueId = function(uuid){
+  if(typeof uuid == 'string'){
+  }else{
+    return {uuid: uuid};
+  }
+
+};
+var uuid2key = function(uuid){
+  if(typeof uuid == 'string'){
+    return uuid;
+  }else{
+    return UUID.unparse(uuid);
+  }
+
+};
+
 // https://github.com/robotics-in-concert/rocon_scheduler_requests/blob/hydro-devel/src/rocon_scheduler_requests/requester.py
 MSG_SCHEDULER_REQUEST = "scheduler_msgs/SchedulerRequests";
 // SCHEDULER_TOPIC = 'rocon_scheduler';
@@ -58,7 +75,7 @@ PRI_CRITICAL_PRIORITY = 20000         // Mission-critical task
 
 Resource = function(){
   this.rapp = null;
-  this.id = null;
+  this.id = new_uuid();
   this.uri = null;
   this.remappings = [];
   this.parameters = [];
@@ -68,10 +85,11 @@ Resource.prototype.addRemapping = function(from, to){
   this.remappings.push({remap_from: from, remap_to: to});
 };
 Resource.prototype.addParameter = function(k, v){
-  this.remappings.push({key: k, value: v});
+  this.parameters.push({key: k, value: v});
 };
 Resource.prototype.to_msg = function(){
-  var msg = _.pick(this, 'rapp', 'id', 'uri', 'remappings', 'parameters');
+  var msg = _.pick(this, 'rapp', 'uri', 'remappings', 'parameters');
+  msg.id = uuid2UniqueId(this.id);
   return msg;
 };
 
@@ -86,8 +104,8 @@ Request = function(){
   this.id = new_uuid();
   this.resources = [];
   this.status = STATUS_NEW;
-  this.reason = null;
-  this.problem = null;
+  this.reason = REASON_NONE;
+  this.problem = "";
   this.availability = 0;
   this.hold_time = 0;
   this.priority = PRI_DEFAULT_PRIORITY;
@@ -95,7 +113,8 @@ Request = function(){
 };
 
 Request.prototype.to_msg = function(){
-  var msg = _.pick(this, "id,status,reason,problem,availability,hold_time,priority".split(/,/));
+  var msg = _.pick(this, "status,reason,problem,availability,hold_time,priority".split(/,/));
+  msg.id = uuid2UniqueId(this.id);
   msg.resources = _.map(this.resources, function(e){ return e.to_msg(); });
   return msg;
 };
@@ -112,13 +131,18 @@ Request.prototype.cancel = function(){
  */
 
 SchedulerRequests = function(requester, resp){
-  this.requester = requster;
+  this.requester = requester;
   this.requests = {};
+};
+
+
+SchedulerRequests.prototype.add_request = function(req){
+  this.requests[uuid2key(req.id)] = req;
 };
 
 SchedulerRequests.prototype.to_msg = function(){
   return {
-    requester: this.requester,
+    requester: uuid2UniqueId(this.requester),
     requests: _.map(_.values(this.requests), function(e){ return e.to_msg(); })
   };
 };
@@ -143,7 +167,7 @@ SchedulerRequests.prototype.cancel_all = function(){
  *
  */
 
-Requester = function(engine, uuid, options){
+Requester = function(engine, options){
   this.engine = engine;
   this.ros = engine.ros;
   this.id = new_uuid();
@@ -164,8 +188,8 @@ Requester = function(engine, uuid, options){
 
 
   // subscribe feedback topic
-  this.engine.subscribe(this.feedback_topic(), MSG_SCHEDULER_REQUEST);
   this.engine.ee.on(this.feedback_topic(), _.bind(this._handleFeedback, this)); 
+  this.engine.subscribe(this.feedback_topic(), MSG_SCHEDULER_REQUEST);
 };
 
 Requester.prototype.send_allocation_request = function(res, callback){
@@ -206,7 +230,20 @@ Requester.prototype.send_releasing_request = function(reqId, callback){
 };
 
 Requester.prototype.send_requests = function(){
-  this.engine.publish(SCHEDULER_TOPIC, MSG_SCHEDULER_REQUEST, requests.to_msg());
+  console.log("DDDDDD", this);
+
+  console.log("SEND REQ : ", this.requests.to_msg());
+  console.log("REQ RES");
+  _.each(this.requests.requests, function(req){
+    _.each(req.resources, function(res){
+      console.log(res.to_msg());
+
+
+    });
+
+  });
+
+  this.engine.publish(SCHEDULER_TOPIC, MSG_SCHEDULER_REQUEST, this.requests.to_msg());
 };
 
 Requester.prototype.new_request = function(resources){
@@ -214,12 +251,32 @@ Requester.prototype.new_request = function(resources){
   var req = new Request(uuid);
   req.resources = resources;
 
-  this.requests[UUID.unparse(uuid)] = req;
+  this.requests.add_request(req);
 
   return UUID.unparse(uuid);
 };
 
+
+Requester.prototype.unserialize_message = function(msg){
+  // {"requests":[
+  //   {"status":2,"availability":{"secs":0,"nsecs":0},"priority":0,"reason":0,"problem":"","hold_time":{"secs":0,"nsecs":0},"id":{"uuid":"rK2tRopaQ+asCKBzn8FaEg=="},
+  //     "resources":[{"remappings":[{"remap_to":"/ssseeennnddd","remap_from":"/send_order"}],"rapp":"concert_common_rapps/waiter","id":{"uuid":"rjUQrEzfRoCoPIGj3l6ziA=="},"parameters":[],"uri":"rocon:/pc"}]}],
+  //  "requester":{"uuid":"4Yf/op4cSMW0qWjt7dhK2A=="}}
+
+  var requests = _.cloneDeep(this.requests);
+
+  
+
+  return requests;
+
+};
+
 Requester.prototype._handleFeedback = function(msg){
+  console.log("FEEDBACK:", msg);
+  console.log(JSON.stringify(msg));
+  return;
+
+
   var prev_rs = this.requests.deepClone();
   this.requests = this.requests.merge(msg);
   if(!_.isEqual(prev_rs, this.requests)){ // if diff
@@ -232,7 +289,7 @@ Requester.prototype._handleFeedback = function(msg){
 
 // TODO : template method? (subclass) or ....
 
-Request.prototype.handleFeedback = function(requests){
+Requester.prototype.handleFeedback = function(requests){
   var that = this;
 
   _.each(requests.requests, function(req, uuid){
@@ -253,7 +310,9 @@ Request.prototype.handleFeedback = function(requests){
 };
 
 Requester.prototype.feedback_topic = function(){
-  return [SCHEDULER_TOPIC, UUID.unparse(this.id)].join("_");
+  var uuid = UUID.unparse(this.id).replace(/-/g, "");
+
+  return [SCHEDULER_TOPIC, uuid].join("_");
 
 };
 
@@ -267,5 +326,10 @@ Requester.prototype.cancel_all = function(){
 
 
 module.exports = {
-  Requester: Requester
+  Requester: Requester,
+  Resource: Resource,
+  Request: Request,
+  SchedulerRequests: SchedulerRequests
+
+
 };
