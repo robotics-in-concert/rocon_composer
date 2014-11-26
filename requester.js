@@ -15,7 +15,8 @@ new_uuid = function(){
 
 // https://github.com/robotics-in-concert/rocon_scheduler_requests/blob/hydro-devel/src/rocon_scheduler_requests/requester.py
 MSG_SCHEDULER_REQUEST = "scheduler_msgs/SchedulerRequests";
-SCHEDULER_TOPIC = 'rocon_scheduler';
+// SCHEDULER_TOPIC = 'rocon_scheduler';
+SCHEDULER_TOPIC = '/concert/scheduler/requests'
 HEARTBEAT_HZ =  1.0 / 4.0;
 RESOURCE_STATUS_CHECK_INTERVAL = 500;
 
