@@ -64,7 +64,7 @@ var Engine = function(db){
       engine.log('ros closed');
       // retry_op.retry();
     });
-    ros.connect(process.env.ROS_WS_URL);
+    ros.connect(process.env.ROCON_AUTHORING_ROSBRIDGE_URL);
 
   }, 0, 1000);
 

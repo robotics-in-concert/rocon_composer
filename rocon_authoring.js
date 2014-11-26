@@ -10,7 +10,7 @@ var _ = require('lodash'),
   Engine = require('./engine');
   
 
-MongoClient.connect(process.env.MONGO_URL, function(e, db){
+MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
   if(e) throw e;
   console.log('mongo connected');
 
@@ -34,7 +34,7 @@ MongoClient.connect(process.env.MONGO_URL, function(e, db){
 
   require('./routes')(app, db);
 
-  server = app.listen(process.env.PORT, function(){
+  server = app.listen(process.env.ROCON_AUTHORING_SERVER_PORT, function(){
     console.log('Listening on port %d (%s)', server.address().port, process.env.NODE_ENV);
   });
 
