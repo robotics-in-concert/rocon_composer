@@ -24,6 +24,12 @@ MongoClient.connect(process.env.MONGO_URL, function(e, db){
 
   $engine = new Engine(db);
 
+  process.on('SIGINT', function() {
+    $engine.ros.close();
+    process.exit();
+    
+  });
+
 
   $engine.on('started', function(){
     console.log('engine started');

@@ -7,28 +7,6 @@ var _ = require('lodash'),
     UUID = require('node-uuid');
     
 
-new_uuid = function(){
-  var _uuid = new Array(16);
-  UUID.v4(null, _uuid);
-  return _uuid;
-};
-
-
-var uuid2UniqueId = function(uuid){
-  if(typeof uuid == 'string'){
-  }else{
-    return {uuid: uuid};
-  }
-
-};
-var uuid2key = function(uuid){
-  if(typeof uuid == 'string'){
-    return uuid;
-  }else{
-    return UUID.unparse(uuid);
-  }
-
-};
 
 // https://github.com/robotics-in-concert/rocon_scheduler_requests/blob/hydro-devel/src/rocon_scheduler_requests/requester.py
 MSG_SCHEDULER_REQUEST = "scheduler_msgs/SchedulerRequests";
@@ -68,6 +46,45 @@ PRI_DEFAULT_PRIORITY = 0              // Sane default priority
 PRI_HIGH_PRIORITY = 10000             // High-priority task
 PRI_CRITICAL_PRIORITY = 20000         // Mission-critical task
 
+
+
+var UniqueId = function(val){
+
+  if(val){
+    if(typeof val == 'string'){
+      if(val.replace(/-/g, "").length == 32){
+        this.bytes = UUID.parse(val);
+      }else{ // base64 encoded
+        decoded = atob(val)
+        this.bytes = _.map(decoded, function(c){
+          return c.charCodeAt(0);
+        });
+      }
+    }else{
+      this.bytes = val;
+    };
+  }else{
+    this.bytes = this._new_uuid();
+
+  }
+
+};
+
+UniqueId.prototype._new_uuid = function(){
+  var _uuid = new Array(16);
+  UUID.v4(null, _uuid);
+  return _uuid;
+};
+
+UniqueId.prototype.to_msg = function(){
+  return {'uuid': this.bytes};
+};
+
+UniqueId.prototype.toString = function(){ // ros style uuid string
+  return UUID.unparse(this.bytes).replace(/-/g, "");
+};
+
+
 /*
  * Resource
  *
@@ -75,7 +92,7 @@ PRI_CRITICAL_PRIORITY = 20000         // Mission-critical task
 
 Resource = function(){
   this.rapp = null;
-  this.id = new_uuid();
+  this.id = new UniqueId();
   this.uri = null;
   this.remappings = [];
   this.parameters = [];
@@ -89,7 +106,7 @@ Resource.prototype.addParameter = function(k, v){
 };
 Resource.prototype.to_msg = function(){
   var msg = _.pick(this, 'rapp', 'uri', 'remappings', 'parameters');
-  msg.id = uuid2UniqueId(this.id);
+  msg.id = this.id.to_msg();
   return msg;
 };
 
@@ -101,7 +118,7 @@ Resource.prototype.to_msg = function(){
 
 Request = function(){
 
-  this.id = new_uuid();
+  this.id = new UniqueId();
   this.resources = [];
   this.status = STATUS_NEW;
   this.reason = REASON_NONE;
@@ -114,7 +131,7 @@ Request = function(){
 
 Request.prototype.to_msg = function(){
   var msg = _.pick(this, "status,reason,problem,availability,hold_time,priority".split(/,/));
-  msg.id = uuid2UniqueId(this.id);
+  msg.id = this.id.to_msg();
   msg.resources = _.map(this.resources, function(e){ return e.to_msg(); });
   return msg;
 };
@@ -137,12 +154,12 @@ SchedulerRequests = function(requester, resp){
 
 
 SchedulerRequests.prototype.add_request = function(req){
-  this.requests[uuid2key(req.id)] = req;
+  this.requests[req.id.toString()] = req;
 };
 
 SchedulerRequests.prototype.to_msg = function(){
   return {
-    requester: uuid2UniqueId(this.requester),
+    requester: this.requester.to_msg(),
     requests: _.map(_.values(this.requests), function(e){ return e.to_msg(); })
   };
 };
@@ -170,7 +187,7 @@ SchedulerRequests.prototype.cancel_all = function(){
 Requester = function(engine, options){
   this.engine = engine;
   this.ros = engine.ros;
-  this.id = new_uuid();
+  this.id = new UniqueId();
   this.requests = new SchedulerRequests(this.id);
 
   this.pending_requests = []; // uuid list
@@ -247,7 +264,7 @@ Requester.prototype.send_requests = function(){
 };
 
 Requester.prototype.new_request = function(resources){
-  var uuid = new_uuid();
+  var uuid = new UniqueId();
   var req = new Request(uuid);
   req.resources = resources;
 
@@ -310,9 +327,7 @@ Requester.prototype.handleFeedback = function(requests){
 };
 
 Requester.prototype.feedback_topic = function(){
-  var uuid = UUID.unparse(this.id).replace(/-/g, "");
-
-  return [SCHEDULER_TOPIC, uuid].join("_");
+  return [SCHEDULER_TOPIC, this.id.toString()].join("_");
 
 };
 
