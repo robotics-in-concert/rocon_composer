@@ -91,6 +91,7 @@ Engine.prototype.getMessageDetails = function(type, cb){
 
 Engine.prototype.unsubscribe = function(topic){
   var t = _.remove(this.topics, {name: topic});
+  t = t[0];
   t.listener.unsubscribe();
 };
 Engine.prototype.unsubscribeAll = function(){
@@ -135,6 +136,9 @@ Engine.prototype.pub = function(topic, type, msg){
 
   // And finally, publish.
   topic.publish(msg);
+
+
+  return topic;
 
 
 };
@@ -230,7 +234,7 @@ Engine.prototype.cmdVel = function(options){
 
 
 Engine.prototype.publish = function(topic, type, msg){
-  this.pub(topic, type, msg);
+  return this.pub(topic, type, msg);
 };
 
 // Engine.prototype.publish = function(event_name, params){

@@ -4,6 +4,7 @@
 
 var _ = require('lodash'),
     async = require('async'),
+    Util = require('util'),
     UUID = require('node-uuid');
     
 
@@ -55,10 +56,12 @@ var UniqueId = function(val){
       if(val.replace(/-/g, "").length == 32){
         this.bytes = UUID.parse(val);
       }else{ // base64 encoded
-        decoded = new Buffer(val, 'base64').toString();
-        this.bytes = _.map(decoded, function(c){
-          return c.charCodeAt(0);
-        });
+        var bb = [];
+        buf = new Buffer(val, 'base64');
+        for(ii = 0; ii < buf.length; ii++){
+          bb.push(buf.readUInt8(ii));
+        }
+        this.bytes = bb;
       }
     }else{
       this.bytes = val;
@@ -77,7 +80,7 @@ UniqueId.prototype._new_uuid = function(){
 };
 
 UniqueId.prototype.to_msg = function(){
-  return {'uuid': this.bytes};
+  return {'uuid': new Buffer(this.bytes).toString('base64')};
 };
 
 UniqueId.prototype.toString = function(){ // ros style uuid string
@@ -120,6 +123,8 @@ Resource.from_msg = function(msg){
   res.id = new UniqueId(msg.id.uuid);
   return res;
 };
+
+
 
 
 /*
@@ -168,6 +173,7 @@ Request.from_msg = function(msg){
   req.resources = _.map(msg.resources, function(res){
     return Resource.from_msg(res);
   });
+  req.id = new UniqueId(msg.id.uuid);
 
 
   return req;
@@ -211,6 +217,33 @@ SchedulerRequests.prototype.cancel_all = function(){
 
 };
 
+SchedulerRequests.prototype.debug = function(){
+  var msgs = [];
+  msgs.push('requester : '+ this.requester.toString());
+  _.each(this.requests, function(req){
+    msgs.push("request : " + req.id.toString());
+    var keys = "status availability priority reason problem hold_time".split(/ /);
+    var kv = _.map(keys, function(k){ return (k + " : " + req[k]); });
+    msgs.push("\t" + kv.join(" "));
+
+
+    _.each(req.resources, function(res){
+      msgs.push("\tresource "+res.id.toString());
+      msgs.push("\t\trapp "+res.rapp);
+      msgs.push("\t\turi "+res.uri);
+      msgs.push("\t\tremappings "+JSON.stringify(res.remappings));
+      msgs.push("\t\tparameters "+JSON.stringify(res.parameters));
+      
+
+    });
+  
+
+  });
+
+  return msgs.join("\n");
+
+};
+
 
 
 /*
@@ -243,11 +276,25 @@ Requester = function(engine, options){
   this.engine.subscribe(this.feedback_topic(), MSG_SCHEDULER_REQUEST);
 };
 
+Requester.prototype.finish = function(){
+  console.log("unadvertise publish topic");
+  this.publish_topic.unadvertise();
+  console.log("unsubscribe topic : ", this.feedback_topic());
+  this.engine.unsubscribe(this.feedback_topic());
+
+};
+
 Requester.prototype.send_allocation_request = function(res, callback){
   var that = this;
   var reqId = this.new_request([res]);
   this.pending_requests.push(reqId);
   this.send_requests();
+
+
+  setInterval(function(){
+    that.send_requests({debug: false});
+
+  }, 500);
 
 
   async.until(
@@ -280,21 +327,16 @@ Requester.prototype.send_releasing_request = function(reqId, callback){
   );
 };
 
-Requester.prototype.send_requests = function(){
-  console.log("DDDDDD", this);
+Requester.prototype.send_requests = function(options){
+  opts = _.defaults(options || {}, {debug: true});
 
-  console.log("SEND REQ : ", this.requests.to_msg());
-  console.log("REQ RES");
-  _.each(this.requests.requests, function(req){
-    _.each(req.resources, function(res){
-      console.log(res.to_msg());
+  if(opts.debug){
+    console.log("SEND REQS ----------------------------------------");
+    console.log(this.requests.debug());
+    console.log(Util.inspect(this.requests.to_msg(), {depth: 10, color: true}));
+  }
 
-
-    });
-
-  });
-
-  this.engine.publish(SCHEDULER_TOPIC, MSG_SCHEDULER_REQUEST, this.requests.to_msg());
+  this.publish_topic = this.engine.publish(SCHEDULER_TOPIC, MSG_SCHEDULER_REQUEST, this.requests.to_msg());
 };
 
 Requester.prototype.new_request = function(resources){
@@ -316,29 +358,33 @@ Requester.prototype.unserialize_message = function(msg){
 
 
   var reqs = new SchedulerRequests();
-  reqs.requests = _.map(msg.requests, function(r){ Request.from_msg(r); });
+
+  reqs.requests = _.map(msg.requests, function(r){ return Request.from_msg(r); });
   reqs.requester = new UniqueId(msg.requester.uuid);
   return reqs;
 
 };
 
 Requester.prototype._handleFeedback = function(msg){
-  // console.log("FEEDBACK:", msg);
-  // console.log(JSON.stringify(msg));
-  // return;
+  console.log("FEEDBACK : ", JSON.stringify(msg));
 
 
   try{
     var prev_rs = this.requests.deepClone();
     this.requests = this.unserialize_message(msg);
+
+
+    console.log("RECV REQS ----------------------------------------");
+    console.log(this.requests.debug());
     if(!_.isEqual(prev_rs, this.requests)){ // if diff
       this.handleFeedback(this.requests);
       if(!_.isEqual(prev_rs, this.requests)){ // if diff
-        this.send_requests();
+        // this.send_requests();
       }
     }
   }catch(err){
     console.error(err);
+    console.error(err.stack);
   }
 
 };

@@ -21,6 +21,8 @@ var _R = require('../requester'),
 // ROS_WS_URL="ws://192.168.10.112:9090"
 // MONGO_URL="mongodb://localhost:27017/cento_authoring"
 
+console.log("ros : ", process.env.ROS_WS_URL);
+
 MongoClient.connect(process.env.MONGO_URL, function(e, db){
   if(e) throw e;
   console.log('mongo connected');
@@ -28,13 +30,6 @@ MongoClient.connect(process.env.MONGO_URL, function(e, db){
 
   $engine = new Engine(db);
 
-  process.on('SIGINT', function() {
-    console.log('interrupted, closing ros');
-
-    $engine.ros.close();
-    process.exit();
-    
-  });
 
 
   $engine.on('started', function(){
@@ -43,9 +38,21 @@ MongoClient.connect(process.env.MONGO_URL, function(e, db){
     var r = new Requester($engine);
 
     var res = new Resource();
+
+    process.on('SIGINT', function() {
+      console.log('interrupted, closing ros');
+
+
+      r.finish();
+      $engine.ros.close();
+      process.exit();
+      
+    });
+    
     res.rapp = 'concert_common_rapps/waiter';
     res.uri = 'rocon:/pc';
-    res.addRemapping('/send_order', '/ssseeennnddd');
+    res.addRemapping('delivery_order/goal', 'deli/goal');
+    res.addRemapping('delivery_order/feedback', 'deli/feedback');
     // res.addParameter('key1', 'value1');
 
     console.log('here');
