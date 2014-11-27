@@ -55,7 +55,7 @@ var UniqueId = function(val){
       if(val.replace(/-/g, "").length == 32){
         this.bytes = UUID.parse(val);
       }else{ // base64 encoded
-        decoded = atob(val)
+        decoded = new Buffer(val, 'base64').toString();
         this.bytes = _.map(decoded, function(c){
           return c.charCodeAt(0);
         });
@@ -84,6 +84,10 @@ UniqueId.prototype.toString = function(){ // ros style uuid string
   return UUID.unparse(this.bytes).replace(/-/g, "");
 };
 
+UniqueId.prototype.clone = function(){
+  return new UniqueId(_.clone(this.bytes));
+};
+
 
 /*
  * Resource
@@ -109,6 +113,13 @@ Resource.prototype.to_msg = function(){
   msg.id = this.id.to_msg();
   return msg;
 };
+Resource.from_msg = function(msg){
+  // {"remappings":[{"remap_to":"/ssseeennnddd","remap_from":"/send_order"}],"rapp":"concert_common_rapps/waiter","id":{"uuid":"rjUQrEzfRoCoPIGj3l6ziA=="},"parameters":[],"uri":"rocon:/pc"}
+  var res = new Resource();
+  _.assign(res, msg);
+  res.id = new UniqueId(msg.id.uuid);
+  return res;
+};
 
 
 /*
@@ -127,6 +138,7 @@ Request = function(){
   this.hold_time = 0;
   this.priority = PRI_DEFAULT_PRIORITY;
 
+
 };
 
 Request.prototype.to_msg = function(){
@@ -138,6 +150,28 @@ Request.prototype.to_msg = function(){
 
 Request.prototype.cancel = function(){
   this.status = STATUS_CANCELING;
+
+};
+Request.from_msg = function(msg){
+  //   {"status":2,"availability":{"secs":0,"nsecs":0},"priority":0,"reason":0,"problem":"","hold_time":{"secs":0,"nsecs":0},
+  //     "id":{"uuid":"rK2tRopaQ+asCKBzn8FaEg=="},
+  //     "resources":[...]}],
+  //
+  //
+  var req = new Request();
+  req.status = msg.status;
+  req.availability = msg.availability.secs;
+  req.priority = msg.priority;
+  req.reason = msg.reason;
+  req.problem = msg.problem;
+  req.hold_time = msg.hold_time.secs;
+  req.resources = _.map(msg.resources, function(res){
+    return Resource.from_msg(res);
+  });
+
+
+  return req;
+  
 
 };
 
@@ -280,25 +314,31 @@ Requester.prototype.unserialize_message = function(msg){
   //     "resources":[{"remappings":[{"remap_to":"/ssseeennnddd","remap_from":"/send_order"}],"rapp":"concert_common_rapps/waiter","id":{"uuid":"rjUQrEzfRoCoPIGj3l6ziA=="},"parameters":[],"uri":"rocon:/pc"}]}],
   //  "requester":{"uuid":"4Yf/op4cSMW0qWjt7dhK2A=="}}
 
-  var requests = _.cloneDeep(this.requests);
 
-  
-
-  return requests;
+  var reqs = new SchedulerRequests();
+  reqs.requests = _.map(msg.requests, function(r){ Request.from_msg(r); });
+  reqs.requester = new UniqueId(msg.requester.uuid);
+  return reqs;
 
 };
 
 Requester.prototype._handleFeedback = function(msg){
-  console.log("FEEDBACK:", msg);
-  console.log(JSON.stringify(msg));
-  return;
+  // console.log("FEEDBACK:", msg);
+  // console.log(JSON.stringify(msg));
+  // return;
 
 
-  var prev_rs = this.requests.deepClone();
-  this.requests = this.requests.merge(msg);
-  if(!_.isEqual(prev_rs, this.requests)){ // if diff
-    this.handleFeedback(this.requests);
-    this.send_requests();
+  try{
+    var prev_rs = this.requests.deepClone();
+    this.requests = this.unserialize_message(msg);
+    if(!_.isEqual(prev_rs, this.requests)){ // if diff
+      this.handleFeedback(this.requests);
+      if(!_.isEqual(prev_rs, this.requests)){ // if diff
+        this.send_requests();
+      }
+    }
+  }catch(err){
+    console.error(err);
   }
 
 };
@@ -344,7 +384,8 @@ module.exports = {
   Requester: Requester,
   Resource: Resource,
   Request: Request,
-  SchedulerRequests: SchedulerRequests
-
+  SchedulerRequests: SchedulerRequests,
+  UniqueId: UniqueId
+    
 
 };

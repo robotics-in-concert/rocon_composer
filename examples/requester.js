@@ -7,11 +7,15 @@ var _ = require('lodash'),
   swig = require('swig'),
   express = require('express'),
   MongoClient = require('mongodb').MongoClient,
+  clone = require('clone'),
   Engine = require('../engine');
   
 var _R = require('../requester'),
     Requester = _R.Requester,
     Resource = _R.Resource;
+    
+
+
 
 
 // ROS_WS_URL="ws://192.168.10.112:9090"
@@ -25,6 +29,8 @@ MongoClient.connect(process.env.MONGO_URL, function(e, db){
   $engine = new Engine(db);
 
   process.on('SIGINT', function() {
+    console.log('interrupted, closing ros');
+
     $engine.ros.close();
     process.exit();
     
