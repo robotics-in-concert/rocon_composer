@@ -259,6 +259,7 @@ Requester = function(engine, options){
 
   this.pending_requests = []; // uuid list
   this.allocated_requests = []; // uuid list
+  this.heartbeat_timer = null;
 
 
   var default_options = {
@@ -291,9 +292,9 @@ Requester.prototype.send_allocation_request = function(res, callback){
   this.send_requests();
 
 
-  setInterval(function(){
+  this.heartbeat_timer = setInterval(function(){
+    console.log(".");
     that.send_requests({debug: false});
-
   }, 500);
 
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var _ = require('lodash'),
+    net = require('net'),
   MongoClient = require('mongodb').MongoClient,
   colors = require('colors'),
   bodyParser = require('body-parser'),
@@ -48,11 +49,32 @@ MongoClient.connect(process.env.MONGO_URL, function(e, db){
       process.exit();
       
     });
-    
+
+
+    net.createServer(function(socket){
+      socket.on('data', function(data){
+        data = data.toString('utf-8');
+        console.log("<", data);
+
+        if(data == 'close'){
+          r.cancel_all();
+        }
+      });
+
+    }).listen(30000);
+
+
+
+
     res.rapp = 'concert_common_rapps/waiter';
     res.uri = 'rocon:/pc';
-    res.addRemapping('delivery_order/goal', 'deli/goal');
-    res.addRemapping('delivery_order/feedback', 'deli/feedback');
+    res.addRemapping('delivery_order', '/deli_111');
+    res.addRemapping('map', '/map');
+    res.addRemapping("map_metadata", "/map_metadata");
+    res.addRemapping("table_pose_list", "/annotation/tables");
+    res.addRemapping("marker_pose_list", "/annotation/ar_markers");
+    res.addRemapping("viz_marker_pose_list", "/annotation/viz_markers");
+    
     // res.addParameter('key1', 'value1');
 
     console.log('here');
