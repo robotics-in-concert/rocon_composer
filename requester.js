@@ -5,7 +5,9 @@
 var _ = require('lodash'),
     async = require('async'),
     Util = require('util'),
+    R = require('ramda'),
     UUID = require('node-uuid');
+R.invoker0 = R.curry(R.invokerN)(0);
     
 
 
@@ -56,12 +58,8 @@ var UniqueId = function(val){
       if(val.replace(/-/g, "").length == 32){
         this.bytes = UUID.parse(val);
       }else{ // base64 encoded
-        var bb = [];
         buf = new Buffer(val, 'base64');
-        for(ii = 0; ii < buf.length; ii++){
-          bb.push(buf.readUInt8(ii));
-        }
-        this.bytes = bb;
+        this.bytes = _.map(buf);
       }
     }else{
       this.bytes = val;
@@ -149,7 +147,7 @@ Request = function(){
 Request.prototype.to_msg = function(){
   var msg = _.pick(this, "status,reason,problem,availability,hold_time,priority".split(/,/));
   msg.id = this.id.to_msg();
-  msg.resources = _.map(this.resources, function(e){ return e.to_msg(); });
+  msg.resources = R.map(R.invoker0('to_msg'), this.resources);
   return msg;
 };
 
@@ -170,9 +168,7 @@ Request.from_msg = function(msg){
   req.reason = msg.reason;
   req.problem = msg.problem;
   req.hold_time = msg.hold_time.secs;
-  req.resources = _.map(msg.resources, function(res){
-    return Resource.from_msg(res);
-  });
+  req.resources = _.map(msg.resources, Resource.from_msg);
   req.id = new UniqueId(msg.id.uuid);
 
 
