@@ -1,5 +1,7 @@
 _ = require('lodash');
 Utils = require('./utils');
+util = require('util');
+R = require('ramda');
 async = require('async');
 request = require('request');
 path = require('path');
@@ -28,7 +30,19 @@ module.exports = function(app, db){
     request.get(apiPath, function(e, res0, body){
       var data = JSON.parse(body)
 
-      types_to_load = _.map(data, function(interface){
+      var ifs = R.pipe(
+          R.map(R.prop('rapps')),
+          R.map(R.mapObj(R.prop('interfaces'))),
+          R.map(R.values),
+          R.flatten
+        )(data);
+
+
+      console.log(util.inspect(ifs, false, 10, true));
+      console.log(ifs);
+
+
+      types_to_load = _.map(ifs, function(interface){
         return _.map(interface, function(v, k){
           return _.pluck(v, 'type');
 
