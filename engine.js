@@ -31,7 +31,7 @@ var Engine = function(db){
   var that = this;
 
   var retry_op = Utils.retry(function(){
-    engine.log('trying to connect to ros');
+    engine.log('trying to connect to ros ' + process.env.ROCON_AUTHORING_ROSBRIDGE_URL);
     var connected = false;
 
     var ros = that.ros = new ROSLIB.Ros({encoding: 'utf8'});
