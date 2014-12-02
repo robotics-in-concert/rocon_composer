@@ -31,7 +31,7 @@ module.exports = function(app, db){
       var data = JSON.parse(body)
 
       var ifs = R.pipe(
-          R.map(R.prop('rapps')),
+          R.map(R.prop('rocon_apps')),
           R.map(R.mapObj(R.prop('interfaces'))),
           R.map(R.values),
           R.flatten
@@ -57,7 +57,7 @@ module.exports = function(app, db){
         var types = _.mapValues(z, function(mv, k){
           return _.mapValues(_.groupBy(mv, 'type'), function(x){ return x[0]; });
         });
-        res.send({interfaces: data, types: types});
+        res.send({rapps: data, types: types});
       });
 
 

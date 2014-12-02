@@ -1,3 +1,4 @@
+
 var msg_registered = [];
 Blockly.register_message_block = function(type, meta, tooltip){
   if(!_.include(msg_registered, type)){
@@ -9,6 +10,7 @@ Blockly.register_message_block = function(type, meta, tooltip){
         //
         this.appendDummyInput().appendField(type);
         _.each(meta.fieldnames, function(fn, idx){
+
           block.appendValueInput(fn.toUpperCase()).appendField(fn);
 
         });

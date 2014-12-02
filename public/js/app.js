@@ -349,6 +349,12 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
         };
 
         var buildBlockTree = function(lst, meta, parent){
+
+
+
+
+
+
           console.log('build block tree', meta);
 
           if(!parent)
@@ -361,6 +367,13 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
           _.each(meta.fieldtypes, function(fieldtype, idx){
             var arrlen = meta.fieldarraylen[idx];
             var fn = meta.fieldnames[idx];
+            if(meta.type.match(/.+Action$/) && fn != 'action_goal'){ // if action block
+              return;
+            }
+
+            if(_.include(['action_feedback'], fn)){
+              return;
+            }
             var $val = null;
             var $child = null;
 
@@ -407,7 +420,22 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
 
         var typesBlocks = {};
         _.each(x.types, function(subTypes, k){
-          var $el = buildBlockTree(subTypes, subTypes[k]);
+
+          if(k.match(/.+Action$/)){
+            var t = subTypes[k];
+            var x = R.fromPairs(R.zip(t.fieldnames, t.fieldtypes));
+            var goal_t = R.fromPairs(R.zip(t.fieldnames, t.fieldtypes))['action_goal'];
+            t = subTypes[goal_t];
+            goal_t = R.fromPairs(R.zip(t.fieldnames, t.fieldtypes))['goal'];
+            t = subTypes[goal_t];
+            var $el = buildBlockTree(subTypes, t);
+
+          }else{
+            var $el = buildBlockTree(subTypes, subTypes[k]);
+          }
+
+
+
           console.log($el.get(0));
           $el.attr('collapsed', true);
           $tb.find('category[name=ROS]').append($el.get(0));
@@ -420,32 +448,36 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
 
 
 
-        _.each(x.interfaces, function(meta){
-          _.each(meta.action_servers, function(sub){
-            var typeBlock = typesBlocks[sub.type];
-            var $valueBlock = $('<value name="GOAL"></value>');
-            $valueBlock.append(typeBlock);
+        _.each(x.rapps, function(rapp){
+          _.each(rapp.rocon_apps, function(rocon_app, key){
+            var meta = rocon_app.interfaces;
+            _.each(meta.action_servers, function(sub){
+              var typeBlock = typesBlocks[sub.type];
+              var $valueBlock = $('<value name="GOAL"></value>');
+              $valueBlock.append(typeBlock);
 
-            Blockly.register_action_block(sub.name, sub.type);
-            var $tb = $('#toolbox');
-            var $block = $('<block type="ros_action_'+sub.name+'"></block>');
-            $block.append($valueBlock);
-            $tb.find('category[name=ROS]').append($block);
-            console.log("register action block", sub);
+              Blockly.register_action_block(sub.name, sub.type);
+              var $tb = $('#toolbox');
+              var $block = $('<block type="ros_action_'+sub.name+'"></block>');
+              $block.append($valueBlock);
+              $tb.find('category[name=ROS]').append($block);
+              console.log("register action block", sub);
 
 
-          });
-          _.each(meta.subscribers, function(sub){
-            Blockly.register_publish_block(sub.name, sub.type);
-            var typeBlock = typesBlocks[sub.type];
-            var $tb = $('#toolbox');
-            var $pubBlock = $('<block type="ros_publish_'+sub.name+'"></block>');
-            var $valueBlock = $('<value name="VALUE"></value>');
-            $valueBlock.append(typeBlock);
-            $pubBlock.append($valueBlock);
-            $tb.find('category[name=ROS]').append($pubBlock);
-            console.log("register publish block", sub);
+            });
+            // _.each(meta.subscribers, function(sub){
+              // Blockly.register_publish_block(sub.name, sub.type);
+              // var typeBlock = typesBlocks[sub.type];
+              // var $tb = $('#toolbox');
+              // var $pubBlock = $('<block type="ros_publish_'+sub.name+'"></block>');
+              // var $valueBlock = $('<value name="VALUE"></value>');
+              // $valueBlock.append(typeBlock);
+              // $pubBlock.append($valueBlock);
+              // $tb.find('category[name=ROS]').append($pubBlock);
+              // console.log("register publish block", sub);
 
+
+            // });
 
           });
 
