@@ -83,15 +83,26 @@ MongoClient.connect(process.env.MONGO_URL, function(e, db){
       if(err){
         console.error('resource allocation failed');
       }
+
+
+
+      console.log("ALLLLLLLLLLLLOOOOOOOOOOOOOOOOCCCCCCCCCCCCCCAAAAAAAAAATTTTTTTTTED");
+
       // here, resource is allocated
 
-      engine.publish('to1');
+      // engine.publish('to1');
+
+
+
+
+
 
 
 
 
       r.send_releasing_request(reqId, function(e){
-        // done.
+        console.log('RRRRRRRRREEEEEEEELLLLLLLEEEEEEEEEAAAAAAASSSSSSSSSEEEEEEDDDDDDD');
+
 
       });
 

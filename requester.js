@@ -3,6 +3,7 @@
 // * cancel
 
 var _ = require('lodash'),
+    Promise = require('bluebird'),
     async = require('async'),
     Util = require('util'),
     R = require('ramda'),
@@ -130,9 +131,9 @@ Resource.from_msg = function(msg){
  *
  */
 
-Request = function(){
+Request = function(id){
 
-  this.id = new UniqueId();
+  this.id = (id) ? id : new UniqueId();
   this.resources = [];
   this.status = STATUS_NEW;
   this.reason = REASON_NONE;
@@ -283,23 +284,23 @@ Requester.prototype.finish = function(){
 
 Requester.prototype.send_allocation_request = function(res, callback){
   var that = this;
-  var reqId = this.new_request([res]);
-  this.pending_requests.push(reqId);
+  var uuid = this.new_request([res]);
+  this.pending_requests.push(uuid.toString());
   this.send_requests();
 
 
   this.heartbeat_timer = setInterval(function(){
-    console.log(".");
     that.send_requests({debug: false});
   }, 500);
 
 
   async.until(
-    function(){ return !_.include(that.pending_requests, reqId); },
+    function(){ console.log('pendings', that.pending_requests);
+     return !_.include(that.pending_requests, uuid.toString()); },
     function(cb){ setTimeout(cb, RESOURCE_STATUS_CHECK_INTERVAL); },
     function(e){ 
-      that.allocated_requests.push(reqId);
-      callback(e, reqId); 
+      that.allocated_requests.push(uuid.toString());
+      callback(e, uuid); 
     }
   );
 
@@ -308,15 +309,16 @@ Requester.prototype.send_allocation_request = function(res, callback){
   // TODO : check GRANTED status on feedback function with timeout
 
 
-  return reqId;
+  return uuid;
 };
 
-Requester.prototype.send_releasing_request = function(reqId, callback){
+Requester.prototype.send_releasing_request = function(uuid, callback){
   var that = this;
-  this.requests[reqId].cancel();
+  var r = _.detect(this.requests.requests, function(r){ return r.id.toString() == uuid.toString(); });
+  r.cancel();
   this.send_requests();
   async.until(
-    function(){ return _.include(that.allocated_requests, reqId); },
+    function(){ return _.include(that.allocated_requests, uuid.toString()); },
     function(cb){ setTimeout(cb, RESOURCE_STATUS_CHECK_INTERVAL); },
     function(e){ 
       callback(e, null); 
@@ -343,7 +345,7 @@ Requester.prototype.new_request = function(resources){
 
   this.requests.add_request(req);
 
-  return UUID.unparse(uuid);
+  return uuid;
 };
 
 
@@ -374,9 +376,11 @@ Requester.prototype._handleFeedback = function(msg){
     console.log("RECV REQS ----------------------------------------");
     console.log(this.requests.debug());
     if(!_.isEqual(prev_rs, this.requests)){ // if diff
+      console.log("DIIIIFFFFFF");
+
       this.handleFeedback(this.requests);
       if(!_.isEqual(prev_rs, this.requests)){ // if diff
-        // this.send_requests();
+        this.send_requests();
       }
     }
   }catch(err){
@@ -391,8 +395,12 @@ Requester.prototype._handleFeedback = function(msg){
 
 Requester.prototype.handleFeedback = function(requests){
   var that = this;
+  console.log('HEREHERE');
 
-  _.each(requests.requests, function(req, uuid){
+
+  _.each(requests.requests, function(req){
+    var uuid = req.id.toString();
+
 
     if(req.status == STATUS_GRANTED){
       // handle granted resource

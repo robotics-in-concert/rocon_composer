@@ -1,4 +1,5 @@
 var _ = require('lodash'),
+  Promise = require('bluebird'),
   EventEmitter = require('events').EventEmitter,
   colors = require('colors'),
   bodyParser = require('body-parser'),
@@ -10,6 +11,8 @@ var _ = require('lodash'),
   Utils = require('./utils'),
   util = require('util'),
   request = require('request'),
+  Requester = require('./requester').Requester,
+  Resource = require('./requester').Resource,
   URL = require('url');
 
 
@@ -196,6 +199,52 @@ Engine.prototype.runCode = function(code){
 
 
 };
+
+
+Engine.prototype.runScheduledAction = function(rapp, uri, name, type, goal, onResult, onFeedback){
+  var engine = this;
+  if(data == 'close'){
+    r.cancel_all();
+  }
+
+
+
+
+  res.rapp = 'concert_common_rapps/waiter';
+  res.uri = 'rocon:/pc';
+  res.addRemapping('delivery_order', '/deli_111');
+  res.addRemapping('map', '/map');
+  res.addRemapping("map_metadata", "/map_metadata");
+  res.addRemapping("table_pose_list", "/annotation/tables");
+  res.addRemapping("marker_pose_list", "/annotation/ar_markers");
+  res.addRemapping("viz_marker_pose_list", "/annotation/viz_markers");
+  
+
+  r.send_allocation_request(res, function(err, reqId){
+    if(err){
+      console.error('resource allocation failed');
+    }
+    // here, resource is allocated
+    //
+    //
+    //
+    engine.runAction(name, type, goal);
+
+
+
+
+
+
+    r.send_releasing_request(reqId, function(e){
+      // done.
+
+    });
+  });
+};
+
+
+
+
 
 Engine.prototype.runAction = function(name, type, goal, onResult, onFeedback){
 
