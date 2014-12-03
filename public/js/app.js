@@ -456,9 +456,9 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
               var $valueBlock = $('<value name="GOAL"></value>');
               $valueBlock.append(typeBlock);
 
-              Blockly.register_action_block(sub.name, sub.type);
+              Blockly.register_scheduled_action_block(sub.name, sub.type);
               var $tb = $('#toolbox');
-              var $block = $('<block type="ros_action_'+sub.name+'"></block>');
+              var $block = $('<block type="ros_scheduled_action_'+sub.name+'"></block>');
               $block.append($valueBlock);
               $tb.find('category[name=ROS]').append($block);
               console.log("register action block", sub);

@@ -1,4 +1,58 @@
 
+Blockly.register_scheduled_action_block = function(name, type){
+  Blockly.JavaScript['ros_scheduled_action_' + name] = function(block){
+    // var name = block.getFieldValue('NAME');
+    // var type = block.getFieldValue('TYPE');
+
+    var codeOnResult = Blockly.JavaScript.statementToCode(block, 'ON_RESULT');
+    var paramNameOnResult = block.getFieldValue('ON_RESULT_PARAM');
+    var codeOnFeedback = Blockly.JavaScript.statementToCode(block, 'ON_FEEDBACK');
+    var paramNameOnFeedback = block.getFieldValue('ON_FEEDBACK_PARAM');
+
+    var goal = Blockly.JavaScript.valueToCode(block, 'GOAL', Blockly.JavaScript.ORDER_NONE) || "''";
+
+    var tpl = '$engine.runAction("<%= name %>", "<%= type %>", <%= goal %>, ';
+    tpl += 'function(<%= param1 %>){ <%=code1%>}, function(<%= param2 %>){ <%=code2%>});';
+
+    var code = _.template(tpl)({name: name, type: type, goal: goal, 
+      param1: paramNameOnResult, param2: paramNameOnFeedback,
+      code1: codeOnResult, code2: codeOnFeedback
+    });
+    return code;
+
+
+  }
+
+  Blockly.Blocks['ros_scheduled_action_'+name] = {
+    /**
+     * Block for creating a list with any number of elements of any type.
+     * @this Blockly.Block
+     */
+    init: function() {
+      this.setColour(260);
+      this.appendValueInput('GOAL').appendField('[Action] ' + name);
+
+      this.setInputsInline(true);
+
+      this.appendStatementInput('ON_RESULT')
+        .appendField("Result")
+        .appendField(new Blockly.FieldVariable('item'), 'ON_RESULT_PARAM');
+
+      this.appendStatementInput('ON_FEEDBACK')
+        .appendField("Feedback")
+        .appendField(new Blockly.FieldVariable('item'), 'ON_FEEDBACK_PARAM');
+      this.setPreviousStatement(true);
+      return this.setNextStatement(true);
+    },
+
+    getVars: function(){
+      return [this.getFieldValue('ON_RESULT_PARAM'), this.getFieldValue('ON_FEEDBACK_PARAM')];
+
+    }
+
+  };
+
+};
 Blockly.register_action_block = function(name, type){
   Blockly.JavaScript['ros_action_' + name] = function(block){
     // var name = block.getFieldValue('NAME');
