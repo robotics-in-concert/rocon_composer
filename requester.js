@@ -1,5 +1,4 @@
 // TODO
-// * heartbeat check
 // * cancel
 
 var _ = require('lodash'),
@@ -282,7 +281,7 @@ Requester.prototype.finish = function(){
 
 };
 
-Requester.prototype.send_allocation_request = function(res, callback){
+Requester.prototype.send_allocation_request = function(res){
   var that = this;
   var uuid = this.new_request([res]);
   this.pending_requests.push(uuid.toString());
@@ -294,36 +293,35 @@ Requester.prototype.send_allocation_request = function(res, callback){
   }, 500);
 
 
-  async.until(
-    function(){ console.log('pendings', that.pending_requests);
-     return !_.include(that.pending_requests, uuid.toString()); },
-    function(cb){ setTimeout(cb, RESOURCE_STATUS_CHECK_INTERVAL); },
-    function(e){ 
-      that.allocated_requests.push(uuid.toString());
-      callback(e, uuid); 
-    }
-  );
+  return new Promise(function(resolve, reject){
+    var timer = setInterval(function(){
+      if(!_.include(that.pending_requests, uuid.toString())){
+        clearInterval(timer);
+        resolve(uuid);
+      }
 
+    }, RESOURCE_STATUS_CHECK_INTERVAL);
 
-
-  // TODO : check GRANTED status on feedback function with timeout
-
-
-  return uuid;
+  });
 };
 
-Requester.prototype.send_releasing_request = function(uuid, callback){
+Requester.prototype.send_releasing_request = function(uuid){
   var that = this;
   var r = _.detect(this.requests.requests, function(r){ return r.id.toString() == uuid.toString(); });
   r.cancel();
   this.send_requests();
-  async.until(
-    function(){ return _.include(that.allocated_requests, uuid.toString()); },
-    function(cb){ setTimeout(cb, RESOURCE_STATUS_CHECK_INTERVAL); },
-    function(e){ 
-      callback(e, null); 
-    }
-  );
+
+
+  return new Promise(function(resolve, reject){
+    var timer = setInterval(function(){
+      if(!_.include(that.allocated_requests, uuid.toString())){
+        clearInterval(timer);
+        resolve(uuid);
+      }
+
+    }, RESOURCE_STATUS_CHECK_INTERVAL);
+
+  });
 };
 
 Requester.prototype.send_requests = function(options){
@@ -405,6 +403,7 @@ Requester.prototype.handleFeedback = function(requests){
     if(req.status == STATUS_GRANTED){
       // handle granted resource
       _.pull(that.pending_requests, uuid);
+      that.allocated_requests.push(uuid);
 
     }else if(req.status == STATUS_CLOSED){
       // handle closed resource
