@@ -221,10 +221,11 @@ Engine.prototype.runScheduledAction = function(rapp, uri, remappings, parameters
     console.log('resource ALLOCATED');
 
 
-    r.send_releasing_request(reqId).then(function(){
-      console.log('resource RELEASED');
+    engine.runAction(name, type, goal, onResult, onFeedback);
+    // r.send_releasing_request(reqId).then(function(){
+      // console.log('resource RELEASED');
 
-    });
+    // });
 
     
   });

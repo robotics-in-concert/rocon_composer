@@ -28,7 +28,7 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
     var tpl = '$engine.runScheduledAction("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>, "<%= name %>", "<%= type %>", <%= goal %>, ';
     tpl += 'function(<%= param1 %>){ <%=code1%>}, function(<%= param2 %>){ <%=code2%>});';
 
-    var code = _.template(tpl)({rapp: rapp, uri: uri, name: name, type: type, goal: goal, 
+    var code = _.template(tpl)({rapp: rapp, uri: uri, name: '/deli_111', type: type, goal: goal, 
       remappings: JSON.stringify(remappings),
         parameters: JSON.stringify(parameters),
       param1: paramNameOnResult, param2: paramNameOnFeedback,
