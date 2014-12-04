@@ -1,5 +1,5 @@
 
-Blockly.register_scheduled_action_block = function(name, type){
+Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
   Blockly.JavaScript['ros_scheduled_action_' + name] = function(block){
     // var name = block.getFieldValue('NAME');
     // var type = block.getFieldValue('TYPE');
@@ -11,10 +11,26 @@ Blockly.register_scheduled_action_block = function(name, type){
 
     var goal = Blockly.JavaScript.valueToCode(block, 'GOAL', Blockly.JavaScript.ORDER_NONE) || "''";
 
-    var tpl = '$engine.runAction("<%= name %>", "<%= type %>", <%= goal %>, ';
+
+
+
+    var remappings = [
+    ];
+    var remap = function(k, v){ remappings.push({remap_from: k, remap_to: v}) };
+    remap('delivery_order', '/deli_111');
+    remap('map', '/map');
+    remap("map_metadata", "/map_metadata");
+    remap("table_pose_list", "/annotation/tables");
+    remap("marker_pose_list", "/annotation/ar_markers");
+    remap("viz_marker_pose_list", "/annotation/viz_markers");
+    var parameters = [];
+
+    var tpl = '$engine.runScheduledAction("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>, "<%= name %>", "<%= type %>", <%= goal %>, ';
     tpl += 'function(<%= param1 %>){ <%=code1%>}, function(<%= param2 %>){ <%=code2%>});';
 
-    var code = _.template(tpl)({name: name, type: type, goal: goal, 
+    var code = _.template(tpl)({rapp: rapp, uri: uri, name: name, type: type, goal: goal, 
+      remappings: JSON.stringify(remappings),
+        parameters: JSON.stringify(parameters),
       param1: paramNameOnResult, param2: paramNameOnFeedback,
       code1: codeOnResult, code2: codeOnFeedback
     });

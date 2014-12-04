@@ -201,44 +201,32 @@ Engine.prototype.runCode = function(code){
 };
 
 
-Engine.prototype.runScheduledAction = function(rapp, uri, name, type, goal, onResult, onFeedback){
+Engine.prototype.runScheduledAction = function(rapp, uri, remappings, parameters, name, type, goal, onResult, onFeedback){
   var engine = this;
-  if(data == 'close'){
-    r.cancel_all();
-  }
+  // if(data == 'close'){
+    // r.cancel_all();
+  // }
 
 
+  var r = new Requester(this);
 
 
+  var res = new Resource();
   res.rapp = 'concert_common_rapps/waiter';
   res.uri = 'rocon:/pc';
-  res.addRemapping('delivery_order', '/deli_111');
-  res.addRemapping('map', '/map');
-  res.addRemapping("map_metadata", "/map_metadata");
-  res.addRemapping("table_pose_list", "/annotation/tables");
-  res.addRemapping("marker_pose_list", "/annotation/ar_markers");
-  res.addRemapping("viz_marker_pose_list", "/annotation/viz_markers");
-  
+  res.remappings = remappings;
+  res.parameters = parameters;
 
-  r.send_allocation_request(res, function(err, reqId){
-    if(err){
-      console.error('resource allocation failed');
-    }
-    // here, resource is allocated
-    //
-    //
-    //
-    engine.runAction(name, type, goal);
+  r.send_allocation_request(res).then(function(reqId){
+    console.log('resource ALLOCATED');
 
 
-
-
-
-
-    r.send_releasing_request(reqId, function(e){
-      // done.
+    r.send_releasing_request(reqId).then(function(){
+      console.log('resource RELEASED');
 
     });
+
+    
   });
 };
 
