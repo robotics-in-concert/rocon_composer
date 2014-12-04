@@ -1,6 +1,8 @@
 
 Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
   Blockly.JavaScript['ros_scheduled_action_' + name] = function(block){
+    var extraConfig = JSON.parse(block.extraConfig);
+
     // var name = block.getFieldValue('NAME');
     // var type = block.getFieldValue('TYPE');
 
@@ -17,6 +19,8 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
     var remappings = [
     ];
     var remap = function(k, v){ remappings.push({remap_from: k, remap_to: v}) };
+
+
     remap('delivery_order', '/deli_111');
     remap('map', '/map');
     remap("map_metadata", "/map_metadata");
@@ -64,6 +68,42 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
     getVars: function(){
       return [this.getFieldValue('ON_RESULT_PARAM'), this.getFieldValue('ON_FEEDBACK_PARAM')];
 
+    },
+    /**
+     * Create XML to represent list inputs.
+     * @return {Element} XML storage element.
+     * @this Blockly.Block
+     */
+    mutationToDom: function() {
+      console.log("DOM", this.extraConfig);
+
+      var container = document.createElement('mutation');
+      container.setAttribute('config', this.extraConfig);
+      return container;
+    },
+    /**
+     * Parse XML to restore the list inputs.
+     * @param {!Element} xmlElement XML storage element.
+     * @this Blockly.Block
+     */
+    domToMutation: function(xmlElement) {
+      var cfg = xmlElement.getAttribute('config');
+      this.extraConfig = cfg;
+
+      // for (var x = 0; x < this.itemCount_; x++) {
+        // this.removeInput('ADD' + x);
+      // }
+      // this.itemCount_ = parseInt(xmlElement.getAttribute('items'), 10);
+      // for (var x = 0; x < this.itemCount_; x++) {
+        // var input = this.appendValueInput('ADD' + x);
+        // if (x == 0) {
+          // input.appendField("create object with");
+        // }
+      // }
+      // if (this.itemCount_ == 0) {
+        // this.appendDummyInput('EMPTY')
+            // .appendField("create emtpy object");
+      // }
     }
 
   };
