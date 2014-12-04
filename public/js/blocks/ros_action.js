@@ -16,17 +16,10 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
 
 
 
-    var remappings = [
-    ];
-    var remap = function(k, v){ remappings.push({remap_from: k, remap_to: v}) };
-
-
-    remap('delivery_order', '/deli_111');
-    remap('map', '/map');
-    remap("map_metadata", "/map_metadata");
-    remap("table_pose_list", "/annotation/tables");
-    remap("marker_pose_list", "/annotation/ar_markers");
-    remap("viz_marker_pose_list", "/annotation/viz_markers");
+    var remappings = R.pipe(
+        R.mapObj.idx(function(v, k){ return {remap_from: k, remap_to: v}; }),
+        R.values
+    )(extraConfig.remappings);
     var parameters = [];
 
     var tpl = '$engine.runScheduledAction("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>, "<%= name %>", "<%= type %>", <%= goal %>, ';
@@ -69,41 +62,14 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
       return [this.getFieldValue('ON_RESULT_PARAM'), this.getFieldValue('ON_FEEDBACK_PARAM')];
 
     },
-    /**
-     * Create XML to represent list inputs.
-     * @return {Element} XML storage element.
-     * @this Blockly.Block
-     */
     mutationToDom: function() {
-      console.log("DOM", this.extraConfig);
-
-      var container = document.createElement('mutation');
-      container.setAttribute('config', this.extraConfig);
+      var container = document.createElement('config');
+      container.setAttribute('value', this.extraConfig);
       return container;
     },
-    /**
-     * Parse XML to restore the list inputs.
-     * @param {!Element} xmlElement XML storage element.
-     * @this Blockly.Block
-     */
     domToMutation: function(xmlElement) {
-      var cfg = xmlElement.getAttribute('config');
+      var cfg = xmlElement.getAttribute('value');
       this.extraConfig = cfg;
-
-      // for (var x = 0; x < this.itemCount_; x++) {
-        // this.removeInput('ADD' + x);
-      // }
-      // this.itemCount_ = parseInt(xmlElement.getAttribute('items'), 10);
-      // for (var x = 0; x < this.itemCount_; x++) {
-        // var input = this.appendValueInput('ADD' + x);
-        // if (x == 0) {
-          // input.appendField("create object with");
-        // }
-      // }
-      // if (this.itemCount_ == 0) {
-        // this.appendDummyInput('EMPTY')
-            // .appendField("create emtpy object");
-      // }
     }
 
   };

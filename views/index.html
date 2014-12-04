@@ -65,8 +65,10 @@
           <input type="file" style="display:none" id="file" name='file' onchange="angular.element(this).scope().fileNameChanged(this)" >
         </ul>
 
-        <h3>block config</h3>
-        <textarea ng-model="currentBlockConfig" ng-change="blockConfigChanged()"></textarea>
+        <div ng-controller="ConfigCtrl">
+          <h3>block config (json)</h3>
+          <textarea ng-model="currentBlockConfig" ng-change="blockConfigChanged()"></textarea>
+        </div>
 
         <h3>triggers</h3>
         <ul class="list-unstyled">

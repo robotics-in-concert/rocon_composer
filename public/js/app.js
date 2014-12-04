@@ -183,33 +183,7 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
     $scope.rapp_url = "http://files.yujinrobot.com/rocon/rapp_repository/office_rapp.tar.gz";
     items = $scope.items = []
     $scope.robot_brain = {};
-    $scope.blockConfigs = {};
 
-
-    Blockly.mainWorkspace.getCanvas().addEventListener('blocklySelectChange', function(){
-      if(Blockly.selected){
-        var cfg = Blockly.selected.extraConfig;
-        $scope.$apply(function(){
-          $scope.currentBlockConfig = cfg;
-        });
-
-
-      };
-
-
-    });
-
-    
-
-    $scope.blockConfigChanged = function(){
-      if(Blockly.selected){
-        Blockly.selected.extraConfig = $scope.currentBlockConfig;
-
-      };
-      console.log($scope.currentBlockConfig);
-
-
-    };
 
 
 

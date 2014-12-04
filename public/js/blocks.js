@@ -12,6 +12,17 @@ DESTINATION_COLOR = 3;
       this.setOutput(true, 'String');
       this.setPreviousStatement(false);
       return this.setNextStatement(false);
+    },
+    mutationToDom: function() {
+      var container = document.createElement('mutation');
+      container.setAttribute('config', this.extraConfig);
+      return container;
+    },
+    domToMutation: function(xmlElement) {
+      console.log("DOM2MUT", xmlElement);
+
+      var cfg = xmlElement.getAttribute('config');
+      this.extraConfig = cfg;
     }
   };
   return Blockly.JavaScript["dest_" + dest] = function(block) {
