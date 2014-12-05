@@ -1,4 +1,5 @@
 var _ = require('lodash'),
+  R = require('ramda'),
   Promise = require('bluebird'),
   EventEmitter = require('events').EventEmitter,
   colors = require('colors'),
@@ -203,6 +204,7 @@ Engine.prototype.runCode = function(code){
 
 Engine.prototype.runScheduledAction = function(rapp, uri, remappings, parameters, name, type, goal, onResult, onFeedback){
   var engine = this;
+  
   // if(data == 'close'){
     // r.cancel_all();
   // }
@@ -210,25 +212,65 @@ Engine.prototype.runScheduledAction = function(rapp, uri, remappings, parameters
 
   var r = new Requester(this);
 
+  this.ros.getTopics(function(topics){
+    console.log("topics : ", topics);
 
-  var res = new Resource();
-  res.rapp = 'concert_common_rapps/waiter';
-  res.uri = 'rocon:/pc';
-  res.remappings = remappings;
-  res.parameters = parameters;
+    var res = new Resource();
+    res.rapp = rapp;
+    res.uri = uri;
+    res.remappings = remappings;
+    // res.remappings = R.reject(function(remap){
+      // return R.some(R.eq(remap.remap_to), topics);
+    // })(remappings);
 
-  r.send_allocation_request(res).then(function(reqId){
-    console.log('resource ALLOCATED');
+
+    console.log("remapping ", res.remappings);
+
+    res.parameters = parameters;
+
+    r.send_allocation_request(res).then(function(reqId){
+      console.log('resource ALLOCATED');
 
 
-    engine.runAction(name, type, goal, onResult, onFeedback);
-    // r.send_releasing_request(reqId).then(function(){
-      // console.log('resource RELEASED');
 
-    // });
 
-    
+      var topics_ready = new Promise(function(resolve, reject){
+
+        var timer = setInterval(function(){
+          engine.ros.getTopics(function(topics){
+
+            
+            var actionTopics = R.filter(R.match("^"+name))(topics);
+            console.log('topic count check : ', actionTopics.length);
+
+            if(actionTopics.length >= 3){
+              clearInterval(timer);
+              resolve();
+            }
+          });
+        }, 1000);
+
+
+      });
+
+
+    topics_ready.then(function(){
+      engine.runAction(name, type, goal, onResult, onFeedback);
+      // r.send_releasing_request(reqId).then(function(){
+        // console.log('resource RELEASED');
+
+      // });
+
+
+    });
+
+
+
+
+      
+    });
   });
+
 };
 
 
@@ -236,6 +278,7 @@ Engine.prototype.runScheduledAction = function(rapp, uri, remappings, parameters
 
 
 Engine.prototype.runAction = function(name, type, goal, onResult, onFeedback){
+  this.log("run action : " +  name + " " + type + " " + JSON.stringify(goal));
 
   var ac = new ROSLIB.ActionClient({
     ros : this.ros,
