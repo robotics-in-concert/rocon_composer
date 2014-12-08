@@ -16,10 +16,12 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
 
 
 
-    var remappings = R.pipe(
-        R.mapObj.idx(function(v, k){ return {remap_from: k, remap_to: v}; }),
-        R.values
-    )(extraConfig.remappings);
+    // var remappings = R.pipe(
+        // R.map(function(v, k){ return {remap_from: k, remap_to: v}; }),
+        // R.values
+    // )(extraConfig.remappings);
+
+    remappings = extraConfig.remappings;
     var parameters = [];
 
     var tpl = '$engine.runScheduledAction("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>, "<%= name %>", "<%= type %>", <%= goal %>, ';
@@ -61,6 +63,11 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
 
       console.log('menu:', opts);
       opts.push({text: 'Config', enabled: true, callback: function(){ 
+        $('#block-config-modal').on('shown.bs.modal', function(e){
+          console.log('--------');
+
+
+        });
         $('#block-config-modal').modal();
         console.log('here');
 
@@ -81,7 +88,10 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
     },
     domToMutation: function(xmlElement) {
       var cfg = xmlElement.getAttribute('config');
-      this.extraConfig = cfg;
+      try{
+      this.extraConfig = JSON.parse(cfg);
+      }catch(e){
+      }
     }
 
   };

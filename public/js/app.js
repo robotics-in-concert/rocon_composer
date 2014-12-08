@@ -26,6 +26,59 @@ $(function(){
 
   });
 
+  JSONEditor.defaults.options.theme = 'bootstrap3';
+  window.config_editor = new JSONEditor($('#config-editor').get(0), {
+    disable_array_reorder: true,
+    disable_collapse: true,
+    disable_edit_json: true,
+    disable_properties: true,
+    schema: {
+      title: 'blockconfig',
+      type: "object",
+      properties: {
+        remappings: { 
+          type: 'array',
+          format: 'table',
+          title: 'Remappings',
+          items: {
+            type: 'object',
+            properties: {
+              remap_from: {type: 'string'},
+              remap_to: {type: 'string'}
+            }
+
+          }
+        }
+      }
+    }
+    
+  });
+  window.config_editor.on('change', function(){
+    console.log(window.config_editor.getValue());
+
+    if(Blockly.selected){
+      
+      Blockly.selected.extraConfig = JSON.stringify(window.config_editor.getValue());
+
+    };
+
+  });
+  Blockly.mainWorkspace.getCanvas().addEventListener('blocklySelectChange', function(){
+
+    if(Blockly.selected){
+      var cfg = Blockly.selected.extraConfig;
+      if(cfg == 'undefined' || cfg == null){
+
+      }else{
+        window.config_editor.setValue(JSON.parse(cfg));
+      }
+
+
+    }
+
+  });
+
+
 });
 
 

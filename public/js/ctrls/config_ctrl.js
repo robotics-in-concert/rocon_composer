@@ -15,7 +15,7 @@ app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
         $scope.$apply(function(){
           
 
-          $scope.currentBlockConfig = ((typeof cfg === 'undefined') ? '' : cfg);
+          // $scope.currentBlockConfig = ((typeof cfg === 'undefined') ? '' : cfg);
         });
 
 
@@ -30,6 +30,13 @@ app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
     });
 
     
+    // window.config_editor.on('change', function(){
+      // if(Blockly.selected){
+        // Blockly.selected.extraConfig = window.config_editor.getValue();
+
+      // };
+
+    // });
 
     $scope.blockConfigChanged = function(){
       if(Blockly.selected){
