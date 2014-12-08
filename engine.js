@@ -255,7 +255,9 @@ Engine.prototype.runScheduledAction = function(rapp, uri, remappings, parameters
 
 
     topics_ready.then(function(){
-      engine.runAction(name, type, goal, onResult, onFeedback);
+      engine.runAction(name, type, goal, 
+        function(items){ onResult(items, r); }, 
+        function(items){ onFeedback(items, r) });
       // r.send_releasing_request(reqId).then(function(){
         // console.log('resource RELEASED');
 
