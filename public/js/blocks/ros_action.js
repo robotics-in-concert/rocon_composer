@@ -57,7 +57,19 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
       this.setPreviousStatement(true);
       return this.setNextStatement(true);
     },
+    customContextMenu: function(opts){
 
+      console.log('menu:', opts);
+      opts.push({text: 'Config', enabled: true, callback: function(){ 
+        $('#block-config-modal').modal();
+        console.log('here');
+
+        // console.log(arguments); alert('test'); 
+      }});
+
+      return opts;
+
+    },
     getVars: function(){
       return [this.getFieldValue('ON_RESULT_PARAM'), this.getFieldValue('ON_FEEDBACK_PARAM')];
 

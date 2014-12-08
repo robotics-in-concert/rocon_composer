@@ -2,6 +2,7 @@
 var app = angular.module('centoAuthoring');
 app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
     $scope.blockConfigs = {};
+    $scope.currentBlockConfig = '';
 
 
     Blockly.mainWorkspace.getCanvas().addEventListener('blocklySelectChange', function(){
@@ -9,8 +10,12 @@ app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
 
       if(Blockly.selected){
         var cfg = Blockly.selected.extraConfig;
+        cfg = (cfg == 'undefined') ? null : cfg;
+
         $scope.$apply(function(){
-          $scope.currentBlockConfig = cfg;
+          
+
+          $scope.currentBlockConfig = ((typeof cfg === 'undefined') ? '' : cfg);
         });
 
 
