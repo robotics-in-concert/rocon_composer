@@ -22,7 +22,7 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
     )(extraConfig.remappings);
     var parameters = [];
 
-    var tpl = '$engine.runScheduledAction("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>, "<%= name %>", "<%= type %>", <%= goal %>, ';
+    var tpl = 'var requester = $engine.runScheduledAction("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>, "<%= name %>", "<%= type %>", <%= goal %>, ';
     tpl += 'function(<%= param1 %>){ <%=code1%>}, function(<%= param2 %>){ <%=code2%>});';
 
     var code = _.template(tpl)({rapp: rapp, uri: uri, name: extraConfig.remappings[name], type: type, goal: goal, 
@@ -63,12 +63,12 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
 
     },
     mutationToDom: function() {
-      var container = document.createElement('config');
-      container.setAttribute('value', this.extraConfig);
+      var container = document.createElement('mutation');
+      container.setAttribute('config', this.extraConfig);
       return container;
     },
     domToMutation: function(xmlElement) {
-      var cfg = xmlElement.getAttribute('value');
+      var cfg = xmlElement.getAttribute('config');
       this.extraConfig = cfg;
     }
 
