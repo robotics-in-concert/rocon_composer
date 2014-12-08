@@ -70,3 +70,13 @@ button {
 
 }
 
+
+
+#block_config {
+
+}
+#block_config textarea {
+  width: 100%;
+  font-size: 12px;
+  height: 10em;
+}
