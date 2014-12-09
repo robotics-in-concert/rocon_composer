@@ -34,7 +34,7 @@ app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
 
     editor.on('change', function(){
       if(Blockly.selected){
-        Blockly.selected.extraConfig = JSON.stringify(editor.getValue());
+        Blockly.selected.extraConfig = editor.getValue();
       };
     });
 
@@ -42,13 +42,14 @@ app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
 
       if(Blockly.selected){
         var cfg = Blockly.selected.extraConfig;
-        console.log(cfg);
+        console.log("CFG", cfg);
 
 
-        if(!cfg || cfg == 'undefined' || cfg == null){
-          editor.setValue({remappings: []});
+        if(cfg){
+          editor.setValue(cfg);
+
         }else{
-          editor.setValue(JSON.parse(cfg));
+          editor.setValue({remappings: []});
         }
       }
 

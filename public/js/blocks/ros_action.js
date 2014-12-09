@@ -1,7 +1,7 @@
 
 Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
   Blockly.JavaScript['ros_scheduled_action_' + name] = function(block){
-    var extraConfig = JSON.parse(block.extraConfig);
+    var extraConfig = block.extraConfig;
 
     // var name = block.getFieldValue('NAME');
     // var type = block.getFieldValue('TYPE');
@@ -84,14 +84,16 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
     mutationToDom: function() {
       if(this.extraConfig){
         var container = document.createElement('mutation');
-        container.setAttribute('config', this.extraConfig);
+        container.setAttribute('config', JSON.stringify(this.extraConfig));
         return container;
       }
     },
     domToMutation: function(xmlElement) {
       var cfg = xmlElement.getAttribute('config');
+      console.log("D2M", cfg);
+
       try{
-      this.extraConfig = JSON.parse(cfg);
+        this.extraConfig = JSON.parse(cfg);
       }catch(e){
       }
     }

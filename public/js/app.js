@@ -402,6 +402,7 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
       });
 
     };
+    $scope.loadRapp();
 
 
     $scope.engineLoad = function(){
