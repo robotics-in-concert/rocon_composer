@@ -82,9 +82,11 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
 
     },
     mutationToDom: function() {
-      var container = document.createElement('mutation');
-      container.setAttribute('config', this.extraConfig);
-      return container;
+      if(this.extraConfig){
+        var container = document.createElement('mutation');
+        container.setAttribute('config', this.extraConfig);
+        return container;
+      }
     },
     domToMutation: function(xmlElement) {
       var cfg = xmlElement.getAttribute('config');
