@@ -1,13 +1,27 @@
-_ = require('lodash');
-Utils = require('./utils');
-util = require('util');
-R = require('ramda');
-async = require('async');
-request = require('request');
-path = require('path');
-URL = require('url');
+var _ = require('lodash');
+var Promise = require('bluebird');
+var Utils = require('./utils');
+var util = require('util');
+var R = require('ramda');
+var async = require('async');
+var request = require('request');
+var requestP = Promise.promisify(request);
+var path = require('path');
+var URL = require('url');
+
+R.mapProp = R.compose(R.map, R.prop);
 
 
+var load_types = function(types_to_load, load_types_callback){
+  async.map(types_to_load, _.bind($engine.getMessageDetails, $engine), function(e, types){
+    var z = _.zipObject(types_to_load, types)
+    var types = _.mapValues(z, function(mv, k){
+      return _.mapValues(_.groupBy(mv, 'type'), function(x){ return x[0]; });
+    });
+    load_types_callback(types);
+  });
+
+};
 
 
 
@@ -20,6 +34,20 @@ module.exports = function(app, db){
     res.send('pong')
   });
 
+
+  app.get('/api/load_interactions', function(req, res){
+
+    var apiPath = URL.resolve(process.env.MSG_DATABASE, "api/interaction_interfaces");
+
+    requestP(apiPath, {json: true}).spread(function(res0, data){
+
+      var types_to_load = R.compose( R.mapProp('type'), R.flatten,  R.mapProp('interface'))(data);
+      load_types(types_to_load, function(types){
+        res.send({rapps: data, types: types});
+      });
+
+    });
+  });
 
   app.post('/api/load_rapp', function(req, res){
 
@@ -52,11 +80,7 @@ module.exports = function(app, db){
       console.log(types_to_load);
 
       types_to_load = _.compact(_.flatten(types_to_load));
-      async.map(types_to_load, _.bind($engine.getMessageDetails, $engine), function(e, types){
-        var z = _.zipObject(types_to_load, types)
-        var types = _.mapValues(z, function(mv, k){
-          return _.mapValues(_.groupBy(mv, 'type'), function(x){ return x[0]; });
-        });
+      load_types(types_to_load, function(types){
         res.send({rapps: data, types: types});
       });
 
