@@ -1,0 +1,139 @@
+var BlockGenerator = function(){
+
+  this.type_blocks = {};
+
+};
+
+BlockGenerator.prototype._singleBlock = function(fieldtype){
+    if(fieldtype.match(/string/)){
+      return $('<block type="text"><field name="TEXT"></field></block>');
+    }else if(fieldtype.match(/float|uint|int|time/)){
+      return $('<block type="math_number"><field name="NUM">0</field></block>');
+    }
+};
+
+BlockGenerator.prototype._buildBlockTree = function(lst, meta, parent){
+  console.log('build block tree', meta);
+  var that = this;
+
+  if(!parent)
+    var p = $('<block />').attr('type', 'ros_msg_'+meta.type.replace('/', '-'));
+  else
+    p = parent;
+
+  
+  
+  _.each(meta.fieldtypes, function(fieldtype, idx){
+    var arrlen = meta.fieldarraylen[idx];
+    var fn = meta.fieldnames[idx];
+    if(meta.type.match(/.+Action$/) && fn != 'action_goal'){ // if action block
+      return;
+    }
+
+    if(_.include(['action_feedback'], fn)){
+      return;
+    }
+    var $val = null;
+    var $child = null;
+
+
+    if(arrlen == -1){
+      $child = $val = $('<value name="'+fn.toUpperCase()+'" />');
+    }else if(arrlen >= 0){
+      $child = $('<value name="'+fn.toUpperCase()+'"></value>');
+      var $list = $('<block type="lists_create_with"><mutation items="1"></mutation><value name="ADD0"></value></block>');
+      $val = $list.find('value[name=ADD0]');
+      $child.append($list);
+
+    }
+
+
+
+    if(fieldtype.match(/.+\/.+/)){
+      var subtype = _.detect(lst, function(e, k){ console.log(k, meta.fieldtypes[idx]); return meta.fieldtypes[idx] == k })
+      var $subDom = that._buildBlockTree(lst, subtype);
+      $val.append($subDom);
+    }else{
+      $val.append(that._singleBlock(fieldtype));
+
+    }
+    p.append($child);
+
+
+  });
+
+
+  console.info("built", meta.type, p.get(0));
+
+  return p;
+};
+// var $el = buildBlockTree(x.types['nav_msgs/MapMetaData'], x.types['nav_msgs/MapMetaData']['nav_msgs/MapMetaData']);
+// console.log($el.get(0));
+// $tb.find('category[name=ROS]').append($el.get(0));
+
+// var $el = buildBlockTree(x.types['std_msgs/String'], x.types['std_msgs/String']['std_msgs/String']);
+// console.log($el.get(0));
+// $tb.find('category[name=ROS]').append($el.get(0));
+
+
+BlockGenerator.prototype.generate_message_blocks = function(types){
+  _.each(types, function(topType){
+    _.each(topType, function(tt){
+      Blockly.register_message_block(tt.type, tt, tt.text);
+      var blockKey = tt.type.replace('/', '-');
+      console.log('register msg block', tt.type);
+
+    });
+  });
+
+};
+BlockGenerator.prototype.generate_subscribe_block = function(){
+
+// _.each(meta.subscribers, function(sub){
+  // Blockly.register_publish_block(sub.name, sub.type);
+  // var typeBlock = typesBlocks[sub.type];
+  // var $tb = $('#toolbox');
+  // var $pubBlock = $('<block type="ros_publish_'+sub.name+'"></block>');
+  // var $valueBlock = $('<value name="VALUE"></value>');
+  // $valueBlock.append(typeBlock);
+  // $pubBlock.append($valueBlock);
+  // $tb.find('category[name=ROS]').append($pubBlock);
+  // console.log("register publish block", sub);
+
+
+// });
+};
+
+BlockGenerator.prototype.message_block_dom = function(k, subTypes){
+
+  if(k.match(/.+Action$/)){
+    var t = subTypes[k];
+    var x = R.fromPairs(R.zip(t.fieldnames, t.fieldtypes));
+    var goal_t = R.fromPairs(R.zip(t.fieldnames, t.fieldtypes))['action_goal'];
+    t = subTypes[goal_t];
+    goal_t = R.fromPairs(R.zip(t.fieldnames, t.fieldtypes))['goal'];
+    t = subTypes[goal_t];
+    var $el = this._buildBlockTree(subTypes, t);
+
+  }else{
+    var $el = this._buildBlockTree(subTypes, subTypes[k]);
+  }
+
+  $el.attr('collapsed', true);
+  this.type_blocks[k] = $el.get(0);
+  return $el;
+
+};
+
+BlockGenerator.prototype.scheduled_action_block_dom = function(rapp_name, uri, name, type){
+  var typeBlock = this.type_blocks[type];
+  var $valueBlock = $('<value name="GOAL"></value>');
+  $valueBlock.append(typeBlock);
+
+  Blockly.register_scheduled_action_block(rapp_name, uri, name, type);
+  var $block = $('<block type="ros_scheduled_action_'+name+'"></block>');
+  $block.append($valueBlock);
+  return $block;
+
+
+};
