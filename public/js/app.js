@@ -1,5 +1,7 @@
 JSONEditor.defaults.options.theme = 'bootstrap3';
 
+R.mapProp = R.compose( R.map, R.prop );
+
 _js = function(prettify){
   var js = Blockly.JavaScript.workspaceToCode();
   if(prettify) js = js_beautify(js);
@@ -166,6 +168,13 @@ app.service('blocksStore', function($http, $q){
       return res.data;
     });
   };
+  this.loadInteractions = function(){
+    var that = this;
+    var data = {};
+    return $http.get('/api/load_interactions', data).then(function(res){
+      return res.data;
+    });
+  };
   this.eval = function(code){
     var that = this;
     var data = {code: code};
@@ -233,22 +242,22 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
 
       });
     };
-    $scope.loadRapp = function(url){
+    var loadBlocks = function(url){
+      var $tb = $('#toolbox');
+      var generator = new BlockGenerator();
+      
       blocksStore.loadRapp(url).then(function(x){
+        console.groupCollapsed("Rapp Blocks");
 
-        var $tb = $('#toolbox');
-
-        var generator = new BlockGenerator();
         generator.generate_message_blocks(x.types);
 
-        _.each(x.types, function(subTypes, k){
+        R.mapObj.idx(function(subTypes, k){
           var $el = generator.message_block_dom(k, subTypes);
-        });
+        })(x.types);
 
         /*
          * Rapp blocks
          */
-
         _.each(x.rapps, function(rapp){
           _.each(rapp.rocon_apps, function(rocon_app, key){
             var meta = rocon_app.interfaces;
@@ -259,8 +268,6 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
                 "rocon:/pc",
                 sub.name,
                 sub.type);
-
-              var $tb = $('#toolbox');
               $tb.find('category[name=ROS]').append($b);
 
             });
@@ -268,17 +275,36 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
           });
 
         });
+        console.groupEnd();
 
 
         console.log($('#toolbox').get(0));
 
+        return blocksStore.loadInteractions();
+
+
+      }).then(function(interactions){
+        
+        console.groupCollapsed('Load interactions');
+        console.log(interactions);
+
+        var sub_topics_el = R.compose(
+          R.map(function($el){ $tb.find('category[name=ROS]').append($el); }),
+          R.map(R.bind(generator.subscribe_block_dom, generator)),
+          R.flatten,
+          R.mapProp('interface')
+        )(interactions.data);
+        
+
+
+        console.groupEnd();
+
+
         Blockly.updateToolbox($('#toolbox').get(0));
-
-
-      });
+      });;
 
     };
-    $scope.loadRapp();
+    _.defer(loadBlocks);
 
 
     $scope.engineLoad = function(){

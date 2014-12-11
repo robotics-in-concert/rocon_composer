@@ -1,6 +1,8 @@
 var BlockGenerator = function(){
 
+  this.message_blocks = [];
   this.type_blocks = {};
+  this.subscribe_blocks = [];
 
 };
 
@@ -77,8 +79,14 @@ BlockGenerator.prototype._buildBlockTree = function(lst, meta, parent){
 
 
 BlockGenerator.prototype.generate_message_blocks = function(types){
+  var that = this;
   _.each(types, function(topType){
     _.each(topType, function(tt){
+      if(R.contains(tt.type, that.message_blocks)){
+        return;
+      }
+      that.message_blocks.push(tt.type);
+
       Blockly.register_message_block(tt.type, tt, tt.text);
       var blockKey = tt.type.replace('/', '-');
       console.log('register msg block', tt.type);
@@ -133,6 +141,19 @@ BlockGenerator.prototype.scheduled_action_block_dom = function(rapp_name, uri, n
   Blockly.register_scheduled_action_block(rapp_name, uri, name, type);
   var $block = $('<block type="ros_scheduled_action_'+name+'"></block>');
   $block.append($valueBlock);
+  return $block;
+
+
+};
+
+BlockGenerator.prototype.subscribe_block_dom = function(opts){
+  var name = opts.name;
+  if(R.contains(name, this.subscribe_blocks)){
+    return false;
+  }
+  this.subscribe_blocks.push(name);
+  Blockly.register_subscribe_block(name, opts.type);
+  var $block = $('<block type="ros_subscribe_'+name+'"></block>');
   return $block;
 
 

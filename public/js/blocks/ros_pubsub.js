@@ -41,6 +41,37 @@ Blockly.Blocks['ros_subscribe'] = {
   }
 };
 
+Blockly.register_subscribe_block = function(name, type){
+
+  Blockly.JavaScript['ros_subscribe_'+name] = function(block) {
+    var param0 = block.getFieldValue('DO_PARAM');
+    var code = Blockly.JavaScript.statementToCode(block, 'DO');
+    var tpl = "$engine.subscribe('<%= name %>', '<%= type %>'); $engine.ee.on('<%= name %>', function(<%= param0 %>){ <%= code %> });";
+
+    return _.template(tpl)({name: name, code: code, param0: param0, type: type});
+  };
+
+
+  Blockly.Blocks['ros_subscribe_'+name] = {
+    init: function() {
+      this.setColour(10);
+      this.appendDummyInput().appendField('[ROS] subscribe ' + name);
+      this.setInputsInline(true);
+
+      this.appendStatementInput('DO')
+        .appendField('do')
+        .appendField(new Blockly.FieldVariable('item'), 'DO_PARAM');
+
+      this.setPreviousStatement(true);
+      return this.setNextStatement(true);
+    },
+
+    getVars: function(){
+      return [this.getFieldValue('DO_PARAM')];
+    }
+  };
+};
+
 Blockly.JavaScript['ros_subscribe'] = function(block) {
   var name = Blockly.JavaScript.valueToCode(block, 'NAME', Blockly.JavaScript.ORDER_NONE) || "''";
   var type = Blockly.JavaScript.valueToCode(block, 'TYPE', Blockly.JavaScript.ORDER_NONE) || "''";
