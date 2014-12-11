@@ -43,7 +43,7 @@ module.exports = function(app, db){
 
       var types_to_load = R.compose( R.mapProp('type'), R.flatten,  R.mapProp('interface'))(data);
       load_types(types_to_load, function(types){
-        res.send({rapps: data, types: types});
+        res.send({data: data, types: types});
       });
 
     });
