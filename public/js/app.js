@@ -289,20 +289,15 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
         console.log(interactions);
 
 
-        var data = R.map(function(i){
-          i.interface = R.map(R.assoc('client_app_id', i._id))(i.interface);
-          return i;
-        })(interactions.data);
-        console.log("DATA", data);
-
 
         var sub_topics_el = R.compose(
           R.map(function($el){ $tb.find('category[name=ROS]').append($el); }),
           R.map(R.bind(generator.subscribe_block_dom, generator)),
           R.reject(R.isEmpty),
           R.flatten,
-          R.mapProp('interface')
-        )(data);
+          R.mapProp('interface'),
+          R.map(function(i){ i.interface = R.map(R.assoc('client_app_id', i._id))(i.interface); return i;})
+        )(interactions.data);
         
 
 
