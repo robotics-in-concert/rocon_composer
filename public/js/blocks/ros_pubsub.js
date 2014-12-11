@@ -41,7 +41,7 @@ Blockly.Blocks['ros_subscribe'] = {
   }
 };
 
-Blockly.register_subscribe_block = function(name, type){
+Blockly.register_subscribe_block = function(name, type, extra){
 
   Blockly.JavaScript['ros_subscribe_'+name] = function(block) {
     var param0 = block.getFieldValue('DO_PARAM');
@@ -54,6 +54,7 @@ Blockly.register_subscribe_block = function(name, type){
 
   Blockly.Blocks['ros_subscribe_'+name] = {
     init: function() {
+      this.extra = extra;
       this.setColour(10);
       this.appendDummyInput().appendField('[ROS] subscribe ' + name);
       this.setInputsInline(true);
@@ -68,7 +69,7 @@ Blockly.register_subscribe_block = function(name, type){
 
     getVars: function(){
       return [this.getFieldValue('DO_PARAM')];
-    }
+    },
   };
 };
 

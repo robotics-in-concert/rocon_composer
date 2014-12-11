@@ -288,16 +288,28 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
         console.groupCollapsed('Load interactions');
         console.log(interactions);
 
+
+        var data = R.map(function(i){
+          i.interface = R.map(R.assoc('client_app_id', i._id))(i.interface);
+          return i;
+        })(interactions.data);
+        console.log("DATA", data);
+
+
         var sub_topics_el = R.compose(
           R.map(function($el){ $tb.find('category[name=ROS]').append($el); }),
           R.map(R.bind(generator.subscribe_block_dom, generator)),
+          R.reject(R.isEmpty),
           R.flatten,
           R.mapProp('interface')
-        )(interactions.data);
+        )(data);
         
 
 
         console.groupEnd();
+
+        // IMPORTANT
+        ros_block_override();
 
 
         Blockly.updateToolbox($('#toolbox').get(0));

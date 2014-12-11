@@ -152,7 +152,7 @@ BlockGenerator.prototype.subscribe_block_dom = function(opts){
     return false;
   }
   this.subscribe_blocks.push(name);
-  Blockly.register_subscribe_block(name, opts.type);
+  Blockly.register_subscribe_block(name, opts.type, {client_app_id: opts.client_app_id});
   var $block = $('<block type="ros_subscribe_'+name+'"></block>');
   return $block;
 

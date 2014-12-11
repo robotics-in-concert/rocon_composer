@@ -1,7 +1,7 @@
 
 Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
   Blockly.JavaScript['ros_scheduled_action_' + name] = function(block){
-    var extraConfig = block.extraConfig;
+    var extraConfig = block.extra_config;
 
     // var name = block.getFieldValue('NAME');
     // var type = block.getFieldValue('TYPE');
@@ -40,10 +40,8 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
   }
 
   Blockly.Blocks['ros_scheduled_action_'+name] = {
-    /**
-     * Block for creating a list with any number of elements of any type.
-     * @this Blockly.Block
-     */
+    configable: true,
+
     init: function() {
       this.setColour(260);
       this.appendValueInput('GOAL').appendField('[Action] ' + name);
@@ -60,44 +58,27 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
       this.setPreviousStatement(true);
       return this.setNextStatement(true);
     },
-    customContextMenu: function(opts){
-
-      console.log('menu:', opts);
-      opts.push({text: 'Config', enabled: true, callback: function(){ 
-        $('#block-config-modal').on('shown.bs.modal', function(e){
-          console.log('--------');
-
-
-        });
-        $('#block-config-modal').modal();
-        console.log('here');
-
-        // console.log(arguments); alert('test'); 
-      }});
-
-      return opts;
-
-    },
     getVars: function(){
       return [this.getFieldValue('ON_RESULT_PARAM'), this.getFieldValue('ON_FEEDBACK_PARAM')];
 
     },
-    mutationToDom: function() {
-      if(this.extraConfig){
-        var container = document.createElement('mutation');
-        container.setAttribute('config', JSON.stringify(this.extraConfig));
-        return container;
-      }
-    },
-    domToMutation: function(xmlElement) {
-      var cfg = xmlElement.getAttribute('config');
-      console.log("D2M", cfg);
 
-      try{
-        this.extraConfig = JSON.parse(cfg);
-      }catch(e){
-      }
-    }
+    // mutationToDom: function() {
+      // if(this.extraConfig){
+        // var container = document.createElement('mutation');
+        // container.setAttribute('config', JSON.stringify(this.extraConfig));
+        // return container;
+      // }
+    // },
+    // domToMutation: function(xmlElement) {
+      // var cfg = xmlElement.getAttribute('config');
+      // console.log("D2M", cfg);
+
+      // try{
+        // this.extraConfig = JSON.parse(cfg);
+      // }catch(e){
+      // }
+    // }
 
   };
 

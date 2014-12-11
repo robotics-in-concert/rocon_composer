@@ -34,14 +34,14 @@ app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
 
     editor.on('change', function(){
       if(Blockly.selected){
-        Blockly.selected.extraConfig = editor.getValue();
+        Blockly.selected.extra_config = editor.getValue();
       };
     });
 
     Blockly.mainWorkspace.getCanvas().addEventListener('blocklySelectChange', function(){
 
       if(Blockly.selected){
-        var cfg = Blockly.selected.extraConfig;
+        var cfg = Blockly.selected.extra_config;
         console.log("CFG", cfg);
 
 
@@ -92,7 +92,7 @@ app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
 
     $scope.blockConfigChanged = function(){
       if(Blockly.selected){
-        Blockly.selected.extraConfig = $scope.currentBlockConfig;
+        Blockly.selected.extra_config = $scope.currentBlockConfig;
 
       };
       console.log($scope.currentBlockConfig);
