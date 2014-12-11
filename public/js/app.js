@@ -120,13 +120,25 @@ Mousetrap.bind('ctrl+alt+l', function() {
 
 
 
-var app = angular.module('centoAuthoring', []);
+var app = angular.module('centoAuthoring', ['ui.router']);
 
 ITEMS_PARAM_KEY = 'cento_authoring_items';
 
-app.config(function ($interpolateProvider) {
+app.config(function($stateProvider, $interpolateProvider) {
   $interpolateProvider.startSymbol('[[');
   $interpolateProvider.endSymbol(']]');
+
+
+  $stateProvider
+    .state('services', {
+      url: '/services',
+      templateUrl: '/js/tpl/services.html'
+    })
+    .state('index', {
+      url: '',
+      templateUrl: '/js/tpl/blockly.html'
+
+    });
 });
 
 app.service('blocksStore', function($http, $q){
