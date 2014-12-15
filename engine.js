@@ -202,14 +202,10 @@ Engine.prototype.runCode = function(code){
 };
 
 
-Engine.prototype.runScheduledAction = function(rapp, uri, remappings, parameters, name, type, goal, onResult, onFeedback){
+
+Engine.prototype._scheduled = function(rapp, uri, remappings, parameters, topics_count, name, callback){
   var engine = this;
   
-  // if(data == 'close'){
-    // r.cancel_all();
-  // }
-
-
   var r = new Requester(this);
 
   this.ros.getTopics(function(topics){
@@ -219,20 +215,12 @@ Engine.prototype.runScheduledAction = function(rapp, uri, remappings, parameters
     res.rapp = rapp;
     res.uri = uri;
     res.remappings = remappings;
-    // res.remappings = R.reject(function(remap){
-      // return R.some(R.eq(remap.remap_to), topics);
-    // })(remappings);
-
 
     console.log("remapping ", res.remappings);
 
     res.parameters = parameters;
 
     r.send_allocation_request(res).then(function(reqId){
-      console.log('resource ALLOCATED');
-
-
-
 
       var topics_ready = new Promise(function(resolve, reject){
 
@@ -240,10 +228,10 @@ Engine.prototype.runScheduledAction = function(rapp, uri, remappings, parameters
           engine.ros.getTopics(function(topics){
 
             
-            var actionTopics = R.filter(R.match("^"+name))(topics);
-            console.log('topic count check : ', actionTopics.length);
+            var remapped_topics = R.filter(R.match("^"+name))(topics);
+            console.log('topic count check : ', remapped_topics.length);
 
-            if(actionTopics.length >= 3){
+            if(remapped_topics.length >= topics_count){
               clearInterval(timer);
               resolve();
             }
@@ -254,25 +242,24 @@ Engine.prototype.runScheduledAction = function(rapp, uri, remappings, parameters
       });
 
 
-    topics_ready.then(function(){
-      engine.runAction(name, type, goal, 
-        function(items){ onResult(items, r); }, 
-        function(items){ onFeedback(items, r) });
-      // r.send_releasing_request(reqId).then(function(){
-        // console.log('resource RELEASED');
-
-      // });
-
-
-    });
-
-
-
-
-      
+      topics_ready.then(function(){
+        callback(r);
+      });
     });
   });
 
+
+};
+
+Engine.prototype.runScheduledAction = function(rapp, uri, remappings, parameters, name, type, goal, onResult, onFeedback){
+  var engine = this;
+  
+  engine._scheduled(rapp, uri, remappings, parameters, 3, name, function(r){
+      engine.runAction(name, type, goal, 
+        function(items){ onResult(items, r); }, 
+        function(items){ onFeedback(items, r) });
+
+  });
 };
 
 
