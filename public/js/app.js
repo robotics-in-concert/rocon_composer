@@ -15,6 +15,19 @@ _xml = function(prettify){
   return xml;
 };
 
+var toggle_header_menu = function(){
+  $('#header').toggle();
+  if($('#header').is(':visible')){
+    $('#header_toggler').hide();
+    $('.container0').addClass('down');
+  }else{
+    $('#header_toggler').show();
+    $('.container0').removeClass('down');
+  }
+  Blockly.fireUiEvent(window, 'resize');
+
+};
+
 $(function(){
   $('#right_switch a').click(function(){
     $('.right').toggle();
@@ -30,6 +43,12 @@ $(function(){
 
   });
 
+  $('.toggle_header').click(toggle_header_menu);
+
+
+});
+Mousetrap.bind('ctrl+alt+t', function(){
+  toggle_header_menu();
 
 });
 

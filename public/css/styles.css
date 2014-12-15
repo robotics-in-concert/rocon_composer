@@ -47,7 +47,7 @@ button {
 #right_switch {
   position: absolute;
   top: 0;
-  right: 0;
+  right: 150px;
   background-color: #333;
   color: #eee;
   z-index: 999;
@@ -65,10 +65,14 @@ button {
 }
 
 .container0 {
-  height: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  /* height: 100%; */
 
 }
-
 
 
 #block_config {
@@ -78,4 +82,32 @@ button {
   width: 100%;
   font-size: 12px;
   height: 10em;
+}
+
+.container0.down {
+  top: 100px;
+
+}
+
+#header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background-color: #ccc;
+  display: none;
+
+}
+
+#header_toggler {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  background-color: black;
+  color: white;
+  z-index: 100;
+
 }
