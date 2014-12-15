@@ -1,7 +1,6 @@
 
 Blockly.register_scheduled_publish_block = function(rapp, uri, name, type){
   Blockly.Blocks['ros_scheduled_publish_'+name] = {
-    configable: true,
 
     init: function() {
       this.setColour(ACTION_COLOR);
@@ -72,7 +71,6 @@ Blockly.register_scheduled_subscribe_block = function(rapp, uri, name, type, ext
 
 
   Blockly.Blocks['ros_scheduled_subscribe_'+name] = {
-    configable: true,
 
     init: function() {
       this.extra = extra;

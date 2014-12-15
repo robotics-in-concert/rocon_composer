@@ -11,7 +11,24 @@ Blockly.Blocks['ros_requester_allocate'] = {
   }
 };
 Blockly.JavaScript['ros_requester_allocate'] = function(block){
-  return "requester.cancel_all();";
+  // return "requester.cancel_all();";
+  var config = block.extra_config;
+
+  var codeOnAllocated = Blockly.JavaScript.statementToCode(block, 'DO');
+
+  var tpl = '$engine.allocateResource("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>, <%= required_topics %>, function(requester){ <%= code %> }); ';
+
+  tpl = "(function(){ var remappings = <%= remappings %>; " + tpl + " })();"
+
+  var code = _.template(tpl)({
+    rapp: config.rapp, 
+    uri: config.uri, 
+    remappings: JSON.stringify(config.remappings),
+    required_topics: JSON.stringify(config.required_topics),
+    parameters: JSON.stringify(config.parameters),
+    code: codeOnAllocated
+  });
+  return code;
 
 };
 

@@ -201,7 +201,51 @@ Engine.prototype.runCode = function(code){
 
 };
 
+Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, required_topics, callback){
+  var engine = this;
+  
+  var r = new Requester(this);
 
+  this.ros.getTopics(function(topics){
+    console.log("topics : ", topics);
+
+    var res = new Resource();
+    res.rapp = rapp;
+    res.uri = uri;
+    res.remappings = remappings;
+
+    console.log("remapping ", res.remappings);
+
+    res.parameters = parameters;
+
+    r.send_allocation_request(res).then(function(reqId){
+
+      var topics_ready = new Promise(function(resolve, reject){
+
+        var timer = setInterval(function(){
+          engine.ros.getTopics(function(topics){
+
+            
+            var remapped_topics = R.filter(function(t){ return R.contains(t, required_topics); })(topics);
+            console.log('topic count check : ', [remapped_topics.length, required_topics.length].join("/"));
+
+            if(remapped_topics.length >= required_topics.length){
+              clearInterval(timer);
+              resolve();
+            }
+          });
+        }, 1000);
+
+
+      });
+
+
+      topics_ready.then(function(){
+        callback(r);
+      });
+    });
+  });
+};
 
 Engine.prototype._scheduled = function(rapp, uri, remappings, parameters, topics_count, name, callback){
   var engine = this;

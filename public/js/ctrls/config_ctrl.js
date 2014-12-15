@@ -13,6 +13,8 @@ app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
         title: 'blockconfig',
         type: "object",
         properties: {
+          rapp: {type: 'string'},
+          uri: {type: 'string'},
           remappings: { 
             type: 'array',
             format: 'table',
@@ -25,7 +27,27 @@ app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
               }
 
             }
-          }
+          },
+          required_topics: { 
+            type: 'array',
+            format: 'table',
+            items: {
+              type: 'string'
+            }
+          },
+          parameters: { 
+            type: 'array',
+            format: 'table',
+            title: 'Parameters',
+            items: {
+              type: 'object',
+              properties: {
+                key: {type: 'string'},
+                value: {type: 'string'}
+              }
+
+            }
+          },
         }
       }
       
@@ -49,7 +71,10 @@ app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
           editor.setValue(cfg);
 
         }else{
-          editor.setValue({remappings: []});
+          var v = editor.getValue();
+          v.remappings = [];
+          editor.setValue(v);
+          // editor.setValue({remappings: []});
         }
       }
 
