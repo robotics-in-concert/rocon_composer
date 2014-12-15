@@ -15,4 +15,11 @@ var _ = require('lodash'),
 
 
 var ss = new ServiceStore({ros_root: '/Users/eskim/workspace/tmp/ros_root'});
-ss.exportToROS();
+ss.exportToROS('turtle_concert_second_version', {
+  name: "Author service "+ new Date().getTime(),
+  parameters: [
+    {key: 'key1', value: 'value1'},
+    {key: 'key2', value: 'value2'},
+
+  ]
+});
