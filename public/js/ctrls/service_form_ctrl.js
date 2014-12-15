@@ -168,6 +168,14 @@ JSONEditor.defaults.editors.upload2 = JSONEditor.AbstractEditor.extend({
             }
 
           },
+          workflows: {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": ["value1","value2"]
+            }
+          },
           interactions: {
             type: 'array',
             title: 'Interactions',
@@ -189,6 +197,24 @@ JSONEditor.defaults.editors.upload2 = JSONEditor.AbstractEditor.extend({
                     hidden: true
                   }
                 },
+                parameters: {
+                  type: 'array',
+                  format: 'table',
+                  title: 'Parameters',
+                  options: {
+                    disable_array_delete: true
+
+                  },
+                  items: {
+                    type: 'object',
+                    properties: {
+                      key: {type: 'string'},
+                      value: {type: 'string'}
+                    }
+
+                  }
+
+                }
               }
 
             },
@@ -224,11 +250,9 @@ JSONEditor.defaults.editors.upload2 = JSONEditor.AbstractEditor.extend({
       
     });
     var v = editor.getValue();
-    v.interactions.push({interaction_name: 'IN', role: 'Role1'});
-    v.interactions.push({interaction_name: 'IN', role: 'Role1'});
-    v.interactions.push({interaction_name: 'IN', role: 'Role1'});
-    v.interactions.push({interaction_name: 'IN', role: 'Role1'});
-    v.interactions.push({interaction_name: 'IN', role: 'Role1'});
+    v.interactions.push({interaction_name: 'IN', role: 'Role1', parameters: []});
+    v.interactions.push({interaction_name: 'IN', role: 'Role1', parameters: []});
+    v.interactions.push({interaction_name: 'IN', role: 'Role1', parameters: []});
 
     v.parameters.push({key: 'key1', value: 'value1'});
     v.parameters.push({key: 'key2', value: 'value2'});
