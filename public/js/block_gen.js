@@ -145,6 +145,15 @@ BlockGenerator.prototype.scheduled_action_block_dom = function(rapp_name, uri, n
 
 
 };
+
+BlockGenerator.prototype.scheduled_subscribe_block_dom = function(rapp_name, uri, name, type){
+  var typeBlock = this.type_blocks[type];
+  Blockly.register_scheduled_subscribe_block(rapp_name, uri, name, type);
+  var $block = $('<block type="ros_scheduled_subscribe_'+name+'"></block>');
+  return $block;
+
+
+};
 BlockGenerator.prototype.scheduled_publish_block_dom = function(rapp_name, uri, name, type){
   var typeBlock = this.type_blocks[type];
   var $valueBlock = $('<value name="VALUE"></value>');

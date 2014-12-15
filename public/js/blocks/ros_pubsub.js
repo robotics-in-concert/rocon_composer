@@ -18,12 +18,13 @@ Blockly.register_scheduled_publish_block = function(rapp, uri, name, type){
     var remappings = [];
     if(block.extra_config){
       remappings = block.extra_config.remappings;
+      remapped_name = R.find(R.propEq('remap_from', name))(remappings).remap_to;
     };
     var parameters = [];
     return _.template(tpl)({rapp: rapp, uri:uri, 
                            remappings: JSON.stringify(remappings), 
                            parameters: JSON.stringify(parameters), 
-                           name: name, type: type, msg: msg});
+                           name: remapped_name, type: type, msg: msg});
   };
 };
 
@@ -48,6 +49,49 @@ Blockly.register_publish_block = function(name, type){
 };
 
 
+Blockly.register_scheduled_subscribe_block = function(rapp, uri, name, type, extra){
+
+  Blockly.JavaScript['ros_scheduled_subscribe_'+name] = function(block) {
+    var param0 = block.getFieldValue('DO_PARAM');
+    var code = Blockly.JavaScript.statementToCode(block, 'DO');
+    var tpl = "$engine.scheduledSubscribe('<%= rapp %>', '<%= uri %>', <%= remappings %>, <%= parameters %>, '<%= name %>', '<%= type %>'); $engine.ee.on('<%= name %>', function(<%= param0 %>, requester){ <%= code %> });";
+    var remappings = [];
+    if(block.extra_config){
+      remappings = block.extra_config.remappings;
+      remapped_name = R.find(R.propEq('remap_from', name))(remappings).remap_to;
+      
+    };
+    var parameters = [];
+    return _.template(tpl)({rapp: rapp, uri:uri, 
+                           remappings: JSON.stringify(remappings), 
+                           parameters: JSON.stringify(parameters), 
+                           name: remapped_name, type: type, code: code, param0: param0});
+
+  };
+
+
+  Blockly.Blocks['ros_scheduled_subscribe_'+name] = {
+    configable: true,
+
+    init: function() {
+      this.extra = extra;
+      this.setColour(10);
+      this.appendDummyInput().appendField('[ROS] subscribe ' + name);
+      this.setInputsInline(true);
+
+      this.appendStatementInput('DO')
+        .appendField('do')
+        .appendField(new Blockly.FieldVariable('item'), 'DO_PARAM');
+
+      this.setPreviousStatement(true);
+      return this.setNextStatement(true);
+    },
+
+    getVars: function(){
+      return [this.getFieldValue('DO_PARAM')];
+    },
+  };
+};
 Blockly.register_subscribe_block = function(name, type, extra){
 
   Blockly.JavaScript['ros_subscribe_'+name] = function(block) {

@@ -283,6 +283,17 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
               $tb.find('category[name=ROS]').append($b);
 
             });
+            _.each(meta.publishers, function(sub){
+
+              var $b = generator.scheduled_subscribe_block_dom(
+                [rapp.name, key].join("/"),
+                "rocon:/pc",
+                sub.name,
+                sub.type);
+              $tb.find('category[name=ROS]').append($b);
+
+            });
+
             _.each(meta.subscribers, function(sub){
 
               var $b = generator.scheduled_publish_block_dom(

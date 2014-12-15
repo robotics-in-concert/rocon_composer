@@ -262,6 +262,27 @@ Engine.prototype.runScheduledAction = function(rapp, uri, remappings, parameters
   });
 };
 
+Engine.prototype.scheduledSubscribe = function(rapp, uri, remappings, parameters, topic, type){
+  var engine = this;
+  
+  engine._scheduled(rapp, uri, remappings, parameters, 0, topic, function(r){
+    engine.subscribe(topic, type);
+
+  });
+
+};
+
+
+Engine.prototype.scheduledPublish = function(rapp, uri, remappings, parameters, topic, type, msg){
+  var engine = this;
+  
+  engine._scheduled(rapp, uri, remappings, parameters, 0, topic, function(r){
+    engine.pub(topic, type, msg);
+
+  });
+
+};
+
 
 
 
