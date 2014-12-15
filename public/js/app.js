@@ -3,7 +3,7 @@ JSONEditor.defaults.options.theme = 'bootstrap3';
 R.mapProp = R.compose( R.map, R.prop );
 
 _js = function(prettify){
-  var js = Blockly.JavaScript.workspaceToCode();
+  varrjs = Blockly.JavaScript.workspaceToCode();
   if(prettify) js = js_beautify(js);
   return js;
 };

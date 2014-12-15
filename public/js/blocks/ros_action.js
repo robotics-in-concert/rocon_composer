@@ -40,7 +40,6 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
   }
 
   Blockly.Blocks['ros_scheduled_action_'+name] = {
-    configable: true,
 
     init: function() {
       this.setColour(260);
