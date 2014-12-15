@@ -1,4 +1,36 @@
 
+var _interaction_to_json_editor_value = function(i){
+  var kv = {
+    interaction_name: i.defaults.display_name, 
+    name: i.defaults.display_name, 
+    description: i.defaults.description,
+    role: 'Role', 
+
+  };
+
+  kv.remappings = R.map(function(if0){
+    return {
+      remap_to: if0.name,
+      remap_from: "/"+if0.name
+    };
+  })(i.interface);
+
+  console.log(kv.remappings);
+
+
+  kv.parameters = R.map(function(p){
+    return {
+      key: p.name, 
+      value: (p.default || '')
+    };
+  })(i.parameters);
+  return kv;
+
+};
+
+
+
+
 var app = angular.module('centoAuthoring');
 app.controller('ServiceFormCtrl', function($scope, blocksStore, $http) {
     // $scope.blockConfigs = {};
@@ -111,157 +143,248 @@ JSONEditor.defaults.editors.upload2 = JSONEditor.AbstractEditor.extend({
     this._super();
   }
 });
+    var schema = {
+      title: "Service",
+      type: "object",
+      properties: {
 
-    var editor = window.editor =$scope.editor = new JSONEditor($('#service-editor').get(0), {
-      disable_array_reorder: true,
-      disable_collapse: true,
-      disable_edit_json: true,
-      disable_properties: true,
-      schema: {
-        title: "Service",
-        type: "object",
-        properties: {
+        name: {
+          type: 'string',
+          title: 'Name'
 
-          name: {
-            type: 'string',
-            title: 'Name'
+        },
+        description: {
+          type: 'string',
+          title: 'Description',
+          format: 'textarea'
+        },
+        priority: {
+          type: 'integer',
+          default: 10000,
+          title: 'Priority'
+        },
+        icon: {
+          type: 'string',
+          format: 'url',
+          title: 'Icon',
+          options: {
+            upload2: true
+          },
+          // links: [
+            // {href: '{{self}}'}
+          // ]
 
-          },
-          description: {
-            type: 'string',
-            title: 'Description',
-            format: 'textarea'
-          },
-          priority: {
-            type: 'integer',
-            default: 10000,
-            title: 'Priority'
-          },
-          icon: {
-            type: 'string',
-            format: 'url',
-            title: 'Icon',
-            options: {
-              upload2: true
+        },
+        launcher: {
+          type: 'object',
+          properties: {
+            launcher_type: {
+              type: 'string',
+              enum: [
+                'ros_launcher'
+              ]
+
             },
-            // links: [
-              // {href: '{{self}}'}
-            // ]
+            launcher_body: {
+              type: 'string',
+              format: 'textarea'
+            },
+
+
+          }
+
+        },
+        workflows: {
+          "type": "array",
+          "uniqueItems": true,
+          format: 'checkbox',
+          "items": {
+            "type": "string",
+            "enum": ["value1","value2"]
+          }
+        },
+        interactions: {
+          type: 'array',
+          title: 'Interactions',
+          options: {
+            disable_array_add: true,
+            collapsed: false
 
           },
-          launcher: {
+          items: {
             type: 'object',
+            title: 'Interaction',
+            headerTemplate: "{{self.interaction_name}}",
             properties: {
-              launcher_type: {
-                type: 'string',
-                enum: [
-                  'ros_launcher'
-                ]
-
-              },
-              launcher_body: {
+              name: {type: 'string'},
+              role: {type: 'string'},
+              description: {
                 type: 'string',
                 format: 'textarea'
               },
-
-
-            }
-
-          },
-          workflows: {
-            "type": "array",
-            "uniqueItems": true,
-            "items": {
-              "type": "string",
-              "enum": ["value1","value2"]
-            }
-          },
-          interactions: {
-            type: 'array',
-            title: 'Interactions',
-            options: {
-              disable_array_add: true,
-              disable_array_delete: true,
-              collapsed: false
-
-            },
-            items: {
-              type: 'object',
-              title: 'Interaction',
-              headerTemplate: "{{self.interaction_name}}",
-              properties: {
-                role: {type: 'string'},
-                interaction_name: {
-                  type: 'string', 
-                  options: {
-                    hidden: true
-                  }
+              interaction_name: {
+                type: 'string', 
+                options: {
+                  hidden: true
+                }
+              },
+              remappings: {
+                type: 'array',
+                format: 'table',
+                title: 'Remappings',
+                options: {
                 },
-                parameters: {
-                  type: 'array',
-                  format: 'table',
-                  title: 'Parameters',
-                  options: {
-                    disable_array_delete: true
-
-                  },
-                  items: {
-                    type: 'object',
-                    properties: {
-                      key: {type: 'string'},
-                      value: {type: 'string'}
-                    }
-
+                items: {
+                  type: 'object',
+                  properties: {
+                    remap_from: {type: 'string'},
+                    remap_to: {type: 'string'}
                   }
 
                 }
+
+              },
+              parameters: {
+                type: 'array',
+                format: 'table',
+                title: 'Parameters',
+                options: {
+                  disable_array_delete: true
+
+                },
+                items: {
+                  type: 'object',
+                  properties: {
+                    key: {type: 'string'},
+                    value: {type: 'string'}
+                  }
+
+                }
+
               }
+            }
 
-            },
+          },
 
+          properties: {
+            role: {
+              title: 'Role',
+              type: 'string'
+
+            }
+
+          }
+        },
+        parameters: {
+          type: 'array',
+          format: 'table',
+          title: 'Parameters',
+          options: {
+            disable_array_delete: true
+
+          },
+          items: {
+            type: 'object',
             properties: {
-              role: {
-                title: 'Role',
-                type: 'string'
-
-              }
-
+              key: {type: 'string'},
+              value: {type: 'string'}
             }
-          },
-          parameters: {
-            type: 'array',
-            format: 'table',
-            title: 'Parameters',
-            options: {
-              disable_array_delete: true
 
-            },
-            items: {
-              type: 'object',
-              properties: {
-                key: {type: 'string'},
-                value: {type: 'string'}
-              }
-
-            }
-          },
-        }
+          }
+        },
       }
-      
-    });
-    var v = editor.getValue();
-    v.interactions.push({interaction_name: 'IN', role: 'Role1', parameters: []});
-    v.interactions.push({interaction_name: 'IN', role: 'Role1', parameters: []});
-    v.interactions.push({interaction_name: 'IN', role: 'Role1', parameters: []});
+    }
+    blocksStore.getParam(ITEMS_PARAM_KEY).then(function(rows){
+      blocksStore.loadInteractions().then(function(interactions){
 
-    v.parameters.push({key: 'key1', value: 'value1'});
-    v.parameters.push({key: 'key2', value: 'value2'});
-    v.parameters.push({key: 'key3', value: 'value3'});
 
-    editor.setValue(v);
-    var e0 = editor.getEditor('root.parameters');
+        var titles = R.pluck('title')(rows);
+        console.log(titles);
+        schema.properties.workflows.items.enum = titles;
 
-    editor.on('change', function(){
+        var editor = window.editor =$scope.editor = new JSONEditor($('#service-editor').get(0), {
+          disable_array_reorder: true,
+          disable_collapse: true,
+          disable_edit_json: true,
+          disable_properties: true,
+          schema: schema      
+        });
+        var v = editor.getValue();
+        v.parameters.push({key: 'key1', value: 'value1'});
+        v.parameters.push({key: 'key2', value: 'value2'});
+        v.parameters.push({key: 'key3', value: 'value3'});
+
+        editor.setValue(v);
+        var e0 = editor.getEditor('root.parameters');
+
+
+        
+        var selected_workflows = 0;
+
+        
+        editor.on('change', function(){
+          var cur = editor.getValue();
+          var curlen = cur.workflows.length;
+          if(selected_workflows !== curlen){
+            console.log('...');
+
+            // do
+            var rows_selected = R.filter(function(row){
+              return R.indexOf(row.title, cur.workflows) >= 0;
+            })(rows);
+            // var rows_selected = R.filter( R.combine(R.flip(R.contains)(cur.workflows), R.prop('title')) )(rows);
+// R.useWith(R.filter, R.flip(R.contains), R.prop('title'))(cur.workflows, rows);
+
+
+
+            console.log("ROWS", rows_selected);
+
+            if(rows_selected.length == 0){
+              var v = editor.getValue();
+              v.interactions = [];
+              editor.setValue(v);
+            }
+
+
+            R.map(function(rs){
+              var xml = rs.xml;
+              var extras = $(xml).find('mutation[extra]').map(function(){
+                return $(this).attr('extra');  
+              }).toArray();
+
+              extras = R.map(function(x){ console.log(x);
+               return JSON.parse(x); }, extras);
+
+
+              client_app_ids = R.uniq(R.pluck('client_app_id', extras));
+              console.log(client_app_ids);
+              console.log(interactions);
+
+
+              var used_interactions = R.filter(function(d){ return R.indexOf(d._id, client_app_ids) >= 0; })(interactions.data);
+              console.log(used_interactions);
+
+              var v = editor.getValue();
+              v.interactions = R.map(_interaction_to_json_editor_value)(used_interactions);
+              editor.setValue(v);
+
+
+
+
+              
+            })(rows_selected);
+
+
+
+
+            selected_workflows = curlen;
+          };
+        });
+
+      });
+
+
+
     });
 
 
