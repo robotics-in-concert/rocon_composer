@@ -16,13 +16,19 @@ Blockly.JavaScript['ros_requester_allocate'] = function(block){
 
   var codeOnAllocated = Blockly.JavaScript.statementToCode(block, 'DO');
 
+  var remapping_kv = R.compose(
+    R.fromPairs,
+    R.map(R.values)
+  )(config.remappings);
+
   var tpl = '$engine.allocateResource("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>, <%= required_topics %>, function(requester){ <%= code %> }); ';
 
-  tpl = "(function(){ var remappings = <%= remappings %>; " + tpl + " })();"
+  tpl = "(function(){ var remappings = <%= remapping_kv %>; " + tpl + " })();"
 
   var code = _.template(tpl)({
     rapp: config.rapp, 
     uri: config.uri, 
+    remapping_kv: JSON.stringify(remapping_kv),
     remappings: JSON.stringify(config.remappings),
     required_topics: JSON.stringify(config.required_topics),
     parameters: JSON.stringify(config.parameters),

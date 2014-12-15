@@ -295,15 +295,13 @@ Engine.prototype._scheduled = function(rapp, uri, remappings, parameters, topics
 
 };
 
-Engine.prototype.runScheduledAction = function(rapp, uri, remappings, parameters, name, type, goal, onResult, onFeedback){
+Engine.prototype.runScheduledAction = function(name, type, goal, onResult, onFeedback){
   var engine = this;
   
-  engine._scheduled(rapp, uri, remappings, parameters, 3, name, function(r){
-      engine.runAction(name, type, goal, 
-        function(items){ onResult(items, r); }, 
-        function(items){ onFeedback(items, r) });
+  engine.runAction(name, type, goal, 
+    function(items){ onResult(items, r); }, 
+    function(items){ onFeedback(items, r) });
 
-  });
 };
 
 Engine.prototype.scheduledSubscribe = function(rapp, uri, remappings, parameters, topic, type){

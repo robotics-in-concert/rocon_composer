@@ -21,17 +21,18 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
         // R.values
     // )(extraConfig.remappings);
 
-    remappings = extraConfig.remappings;
-    var parameters = [];
-    var remapped_name = R.find(R.propEq('remap_from', name))(remappings).remap_to;
 
-    var tpl = '$engine.runScheduledAction("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>, "<%= name %>", "<%= type %>", <%= goal %>, ';
-    tpl += 'function(<%= param1 %>, requester){ <%=code1%>}, function(<%= param2 %>, requester){ <%=code2%>});';
+    var tpl = '$engine.runScheduledAction(remappings["<%= name %>"], "<%= type %>", <%= goal %>, ';
+    tpl += 'function(<%= param1 %>){ <%=code1%>}, function(<%= param2 %>){ <%=code2%>});';
 
-    var code = _.template(tpl)({rapp: rapp, uri: uri, name: remapped_name, type: type, goal: goal, 
-      remappings: JSON.stringify(remappings),
-        parameters: JSON.stringify(parameters),
-      param1: paramNameOnResult, param2: paramNameOnFeedback,
+    var code = _.template(tpl)({
+      rapp: rapp,
+      uri: uri,
+      name: name,
+      type: type,
+      goal: goal, 
+      param1: paramNameOnResult,
+      param2: paramNameOnFeedback,
       code1: codeOnResult, code2: codeOnFeedback
     });
     return code;
