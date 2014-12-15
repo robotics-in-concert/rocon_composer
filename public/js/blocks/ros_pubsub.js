@@ -1,4 +1,31 @@
 
+Blockly.register_scheduled_publish_block = function(rapp, uri, name, type){
+  Blockly.Blocks['ros_scheduled_publish_'+name] = {
+    configable: true,
+
+    init: function() {
+      this.setColour(ACTION_COLOR);
+      this.appendValueInput('VALUE').appendField('[Publish] ' + name);
+      this.setInputsInline(true);
+      this.setPreviousStatement(true);
+      return this.setNextStatement(true);
+    }
+  };
+
+  Blockly.JavaScript['ros_scheduled_publish_'+name] = function(block) {
+    var msg = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_NONE) || "''";
+    var tpl = '$engine.scheduledPublish("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>, "<%= name %>", "<%= type %>", <%= msg %>);';
+    var remappings = [];
+    if(block.extra_config){
+      remappings = block.extra_config.remappings;
+    };
+    var parameters = [];
+    return _.template(tpl)({rapp: rapp, uri:uri, 
+                           remappings: JSON.stringify(remappings), 
+                           parameters: JSON.stringify(parameters), 
+                           name: name, type: type, msg: msg});
+  };
+};
 
 
 Blockly.register_publish_block = function(name, type){
@@ -20,26 +47,6 @@ Blockly.register_publish_block = function(name, type){
 
 };
 
-
-Blockly.Blocks['ros_subscribe'] = {
-  init: function() {
-    this.setColour(10);
-    this.appendValueInput('NAME').appendField('[ROS] subscribe name :');
-    this.appendValueInput('TYPE').appendField('type :');
-    this.setInputsInline(true);
-
-    this.appendStatementInput('DO')
-      .appendField('do')
-      .appendField(new Blockly.FieldVariable('item'), 'DO_PARAM');
-
-    this.setPreviousStatement(false);
-    return this.setNextStatement(false);
-  },
-
-  getVars: function(){
-    return [this.getFieldValue('DO_PARAM')];
-  }
-};
 
 Blockly.register_subscribe_block = function(name, type, extra){
 
@@ -72,6 +79,27 @@ Blockly.register_subscribe_block = function(name, type, extra){
     },
   };
 };
+
+Blockly.Blocks['ros_subscribe'] = {
+  init: function() {
+    this.setColour(10);
+    this.appendValueInput('NAME').appendField('[ROS] subscribe name :');
+    this.appendValueInput('TYPE').appendField('type :');
+    this.setInputsInline(true);
+
+    this.appendStatementInput('DO')
+      .appendField('do')
+      .appendField(new Blockly.FieldVariable('item'), 'DO_PARAM');
+
+    this.setPreviousStatement(false);
+    return this.setNextStatement(false);
+  },
+
+  getVars: function(){
+    return [this.getFieldValue('DO_PARAM')];
+  }
+};
+
 
 Blockly.JavaScript['ros_subscribe'] = function(block) {
   var name = Blockly.JavaScript.valueToCode(block, 'NAME', Blockly.JavaScript.ORDER_NONE) || "''";
