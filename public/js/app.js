@@ -157,8 +157,13 @@ app.config(function($stateProvider, $interpolateProvider) {
       url: '/services',
       templateUrl: '/js/tpl/services.html'
     })
-    .state('index', {
+    .state('workflow_index', {
       url: '',
+      templateUrl: '/js/tpl/workflow_index.html'
+
+    })
+    .state('workflow_blockly', {
+      url: '/blockly',
       templateUrl: '/js/tpl/blockly.html'
 
     });
