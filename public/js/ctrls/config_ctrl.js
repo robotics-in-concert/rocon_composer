@@ -28,13 +28,6 @@ app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
 
             }
           },
-          required_topics: { 
-            type: 'array',
-            format: 'table',
-            items: {
-              type: 'string'
-            }
-          },
           parameters: { 
             type: 'array',
             format: 'table',

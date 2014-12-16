@@ -201,7 +201,30 @@ Engine.prototype.runCode = function(code){
 
 };
 
-Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, required_topics, callback){
+Engine.prototype._waitForTopicsReady = function(required_topics){
+  var engine = this;
+  return new Promise(function(resolve, reject){
+
+    var timer = setInterval(function(){
+      engine.ros.getTopics(function(topics){
+
+        
+        var remapped_topics = R.filter(function(t){ return R.contains(t, required_topics); })(topics);
+        console.log('topic count check : ', [remapped_topics.length, required_topics.length].join("/"));
+
+        if(remapped_topics.length >= required_topics.length){
+          clearInterval(timer);
+          resolve();
+        }
+      });
+    }, 1000);
+
+
+  });
+
+};
+
+Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, callback){
   var engine = this;
   
   var r = new Requester(this);
@@ -219,30 +242,7 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, 
     res.parameters = parameters;
 
     r.send_allocation_request(res).then(function(reqId){
-
-      var topics_ready = new Promise(function(resolve, reject){
-
-        var timer = setInterval(function(){
-          engine.ros.getTopics(function(topics){
-
-            
-            var remapped_topics = R.filter(function(t){ return R.contains(t, required_topics); })(topics);
-            console.log('topic count check : ', [remapped_topics.length, required_topics.length].join("/"));
-
-            if(remapped_topics.length >= required_topics.length){
-              clearInterval(timer);
-              resolve();
-            }
-          });
-        }, 1000);
-
-
-      });
-
-
-      topics_ready.then(function(){
-        callback(r);
-      });
+      callback(r);
     });
   });
 };
@@ -297,10 +297,15 @@ Engine.prototype._scheduled = function(rapp, uri, remappings, parameters, topics
 
 Engine.prototype.runScheduledAction = function(name, type, goal, onResult, onFeedback){
   var engine = this;
+  var required_topics = R.map(R.concat(name+"/"))(["feedback", "result", "status"]);
+
+  engine._waitForTopicsReady(required_topics).then(function(){
+    engine.runAction(name, type, goal, 
+      function(items){ onResult(items); }, 
+      function(items){ onFeedback(items) });
+
+  });
   
-  engine.runAction(name, type, goal, 
-    function(items){ onResult(items); }, 
-    function(items){ onFeedback(items) });
 
 };
 
