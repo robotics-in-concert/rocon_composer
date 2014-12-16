@@ -65,15 +65,26 @@ button {
   /* height: 100%; */
 }
 #workflow-blockly .container0.down {
-  top: 100px;
+  top: 175px;
 }
 #workflow-blockly #header {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 100px;
-  background-color: #ccc;
+  height: 175px;
+  background-color: white;
+}
+#workflow-blockly #header #header-grad {
+  height: 7px;
+  background: linear-gradient(to right, #00adef, #0d4781);
+}
+#workflow-blockly #header #header-main {
+  height: 118px;
+}
+#workflow-blockly #header #header-menu {
+  height: 50px;
+  background-color: #404041;
 }
 #workflow-blockly #header_toggler {
   position: absolute;
@@ -145,6 +156,9 @@ button {
   font-size: 24px;
 }
 /* blockly override */
+.blocklySvg {
+  border: none !important;
+}
 #blocklyDiv div[role=tree] {
   padding: 0 !important;
   width: 160px;

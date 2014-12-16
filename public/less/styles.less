@@ -77,7 +77,7 @@ button {
 
   }
   .container0.down {
-    top: 100px;
+    top: 175px;
 
   }
 
@@ -86,8 +86,25 @@ button {
     top: 0;
     left: 0;
     right: 0;
-    height: 100px;
-    background-color: #ccc;
+    height: 175px;
+    background-color: white;
+
+    #header-grad {
+      height: 7px;
+      background: linear-gradient(to right, #00adef, #0d4781);
+
+    }
+    #header-main {
+      height: 118px;
+
+    }
+    #header-menu {
+      height: 50px;
+      background-color: #404041;
+
+
+    }
+
 
   }
 
@@ -189,6 +206,10 @@ button {
 
 
 /* blockly override */
+.blocklySvg {
+  border: none !important;
+
+}
 #blocklyDiv {
   div[role=tree] {
     padding: 0 !important;
