@@ -164,6 +164,16 @@ app.config(function($stateProvider, $interpolateProvider) {
     });
 });
 
+app.service('serviceAuthoring', function($http, $q){
+
+  this.saveService = function(serviceMeta){
+    return $http.post('/api/services/save', {service: serviceMeta}).then(function(res){
+      return res.data;
+    });
+
+  };
+
+});
 app.service('blocksStore', function($http, $q){
 
 

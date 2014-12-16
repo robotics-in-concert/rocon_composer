@@ -2,7 +2,10 @@ var  R = require('ramda'),
   Promise = require('bluebird'),
   glob = Promise.promisify(require('glob')),
   fs = Promise.promisifyAll(require('fs')),
-  xml2js = Promise.promisifyAll(require('xml2js'));
+  xml2js = Promise.promisifyAll(require('xml2js')),
+  yaml = require('js-yaml');
+  // ServiceStore = require('./service_store');
+  
 
 var ServiceStore = function(options){
   // options
@@ -56,18 +59,31 @@ ServiceStore.prototype.exportToROS = function(package_name, service_meta){
     R.map(R.props(['key', 'value']))
   )(service_meta.parameters);
   var param_file_content = _to_colon_sep(params);
+  console.log('---------------- .interactions --------------------');
+  console.log(yaml.dump(service_meta.interactions));
+
   console.log('---------------- .parameters --------------------');
   console.log(param_file_content);
 
+  console.log('---------------- .launcher --------------------');
+  console.log(service_meta.launcher.launcher_body);
 
   // .service
-  var service_kv = R.pickAll("name description author priority launcher_type launcher icon interactions parameters".split(/\s+/), service_meta);
+  var service_kv = R.pickAll("name description author priority icon interactions parameters".split(/\s+/), service_meta);
+  service_kv.launcher_type = service_meta.launcher.launcher_type
   service_kv.launcher = name_key + ".launcher";
+  service_kv.icon = name_key + ".icon";
   service_kv.interactions = name_key + ".interactions";
   service_kv.parameters = name_key + ".parameters";
   var service_file_content = _to_colon_sep(service_kv);
   console.log('---------------- .service --------------------');
   console.log(service_file_content);
+
+
+  // save icon
+
+
+  return Promise.resolve(true);
 
 
 };

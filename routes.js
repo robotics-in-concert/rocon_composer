@@ -8,6 +8,7 @@ var request = require('request');
 var requestP = Promise.promisify(request);
 var path = require('path');
 var URL = require('url');
+var ServiceStore = require('./service_store');
 
 R.mapProp = R.compose(R.map, R.prop);
 
@@ -138,6 +139,17 @@ module.exports = function(app, db){
     var code = req.body.code;
     $engine.runCode(code);
     res.send({result: true});
+
+
+  });
+
+
+  app.post('/api/services/save', function(req, res){
+    var ss = new ServiceStore({ros_root: process.env.ROS_PACKAGE_ROOT});
+    ss.exportToROS('package_name', req.body.service).then(function(){
+      res.send('ok');
+    });
+
 
 
   });

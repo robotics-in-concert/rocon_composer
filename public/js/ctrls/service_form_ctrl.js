@@ -1,9 +1,11 @@
 
 var _interaction_to_json_editor_value = function(i){
   var kv = {
-    interaction_name: i.defaults.display_name, 
+    display_name: i.defaults.display_name, 
     name: i.defaults.display_name, 
     description: i.defaults.description,
+    compatibility: i.compatibility,
+    max: -1,
     role: 'Role', 
 
   };
@@ -32,7 +34,7 @@ var _interaction_to_json_editor_value = function(i){
 
 
 var app = angular.module('centoAuthoring');
-app.controller('ServiceFormCtrl', function($scope, blocksStore, $http) {
+app.controller('ServiceFormCtrl', function($scope, blocksStore, $http, serviceAuthoring) {
     // $scope.blockConfigs = {};
     // $scope.currentBlockConfig = '';
 
@@ -214,15 +216,25 @@ JSONEditor.defaults.editors.upload2 = JSONEditor.AbstractEditor.extend({
           items: {
             type: 'object',
             title: 'Interaction',
-            headerTemplate: "{{self.interaction_name}}",
+            headerTemplate: "{{self.display_name}}",
             properties: {
               name: {type: 'string'},
               role: {type: 'string'},
+              compatibility: {
+                type: 'string', 
+                options: {
+                  hidden: true
+                }
+              },
               description: {
                 type: 'string',
                 format: 'textarea'
               },
-              interaction_name: {
+              max: {
+                type: 'integer', 
+                default: -1
+              },
+              display_name: {
                 type: 'string', 
                 options: {
                   hidden: true
@@ -294,6 +306,16 @@ JSONEditor.defaults.editors.upload2 = JSONEditor.AbstractEditor.extend({
         },
       }
     }
+
+
+
+    $scope.save = function(){
+      console.log('save');
+      var v = editor.getValue();
+      serviceAuthoring.saveService(v);
+
+
+    };
     blocksStore.getParam(ITEMS_PARAM_KEY).then(function(rows){
       blocksStore.loadInteractions().then(function(interactions){
 
