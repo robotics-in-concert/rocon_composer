@@ -144,3 +144,39 @@ button {
 #workflow_index .left .recents li .title {
   font-size: 24px;
 }
+/* blockly override */
+#blocklyDiv div[role=tree] {
+  padding: 0 !important;
+  width: 160px;
+}
+#blocklyDiv div[role=treeitem] {
+  color: white;
+  height: 44px;
+  padding: 10px 0;
+  font-size: 14px !important;
+}
+#blocklyDiv div[role=treeitem]:nth-child(1) {
+  background-color: #1e6ab3 !important;
+}
+#blocklyDiv div[role=treeitem] > .blocklyTreeSelected {
+  background-color: rgba(0, 0, 0, 0) !important;
+  font-weight: bold;
+}
+#blocklyDiv div[role=treeitem]:hover > .blocklyTreeRow {
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+#blocklyDiv div[role=treeitem]:nth-child(2) {
+  background-color: #25ade3 !important;
+}
+#blocklyDiv div[role=treeitem]:nth-child(3) {
+  background-color: #a7a9ac !important;
+}
+#blocklyDiv div[role=treeitem]:nth-child(4) {
+  background-color: #818285 !important;
+}
+#blocklyDiv div[role=treeitem]:nth-child(5) {
+  background-color: #58585a !important;
+}
+#blocklyDiv div[role=treeitem]:nth-child(6) {
+  background-color: #404041 !important;
+}

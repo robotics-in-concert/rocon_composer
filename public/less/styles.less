@@ -185,3 +185,50 @@ button {
 }
 #workflow_index .right {
 }
+
+
+
+/* blockly override */
+#blocklyDiv {
+  div[role=tree] {
+    padding: 0 !important;
+    width: 160px;
+
+  }
+  div[role=treeitem] {
+    color: white;
+    height: 44px;
+    padding: 10px 0;
+    font-size: 14px !important;
+
+  }
+  div[role=treeitem]:nth-child(1){
+    background-color: rgba(30, 106, 179, 1) !important;
+
+  }
+  div[role=treeitem] > .blocklyTreeSelected {
+    background-color: rgba(0,0,0,0) !important;
+    font-weight: bold;
+
+  }
+  div[role=treeitem]:hover > .blocklyTreeRow {
+    background-color: rgba(0,0,0,0) !important;
+
+  }
+  div[role=treeitem]:nth-child(2) {
+    background-color: rgba(37, 173, 227, 1) !important;
+  }
+  div[role=treeitem]:nth-child(3) {
+    background-color: #a7a9ac !important;
+  }
+  div[role=treeitem]:nth-child(4) {
+    background-color: #818285 !important;
+  }
+  div[role=treeitem]:nth-child(5) {
+    background-color: #58585a !important;
+  }
+  div[role=treeitem]:nth-child(6) {
+    background-color: #404041 !important;
+  }
+
+}
