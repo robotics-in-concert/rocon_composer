@@ -223,28 +223,50 @@ Engine.prototype._waitForTopicsReady = function(required_topics){
   });
 
 };
+Engine.prototype._waitForTopicsReadyF = function(required_topics){
+  var engine = this;
 
-Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, callback){
+
+
+  var future = new Future();
+
+  var timer = setInterval(function(){
+    engine.ros.getTopics(function(topics){
+      
+      var remapped_topics = R.filter(function(t){ return R.contains(t, required_topics); })(topics);
+      console.log('topic count check : ', [remapped_topics.length, required_topics.length].join("/"));
+
+      if(remapped_topics.length >= required_topics.length){
+        clearInterval(timer);
+        future.return();
+      }
+    });
+  }, 1000);
+
+
+
+  return future.wait();
+
+};
+
+Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters){
   var engine = this;
   
   var r = new Requester(this);
 
-  this.ros.getTopics(function(topics){
-    console.log("topics : ", topics);
+  var res = new Resource();
+  res.rapp = rapp;
+  res.uri = uri;
+  res.remappings = remappings;
+  res.parameters = parameters;
 
-    var res = new Resource();
-    res.rapp = rapp;
-    res.uri = uri;
-    res.remappings = remappings;
-
-    console.log("remapping ", res.remappings);
-
-    res.parameters = parameters;
-
-    r.send_allocation_request(res).then(function(reqId){
-      callback(r);
-    });
+  var future = new Future();
+  r.send_allocation_request(res).then(function(reqId){
+    future.return({req_id: reqId, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri});
   });
+
+  
+  return future.wait();
 };
 
 Engine.prototype._scheduled = function(rapp, uri, remappings, parameters, topics_count, name, callback){
@@ -295,38 +317,60 @@ Engine.prototype._scheduled = function(rapp, uri, remappings, parameters, topics
 
 };
 
-Engine.prototype.runScheduledAction = function(name, type, goal, onResult, onFeedback){
+Engine.prototype.runScheduledAction = function(ctx, name, type, goal, onResult, onFeedback){
+
+  var remapping_kv = R.compose(
+    R.fromPairs,
+    R.map(R.values)
+  )(ctx.remappings);
+  var name = remapping_kv[name];
   var engine = this;
+
   var required_topics = R.map(R.concat(name+"/"))(["feedback", "result", "status"]);
+  console.log('action : ', ctx, required_topics, name);
 
-  engine._waitForTopicsReady(required_topics).then(function(){
-    engine.runAction(name, type, goal, 
-      function(items){ onResult(items); }, 
-      function(items){ onFeedback(items) });
 
-  });
+  engine._waitForTopicsReadyF(required_topics);
+  engine.runAction(name, type, goal, 
+    function(items){ onResult(items); }, 
+    function(items){ onFeedback(items) });
+
   
 
 };
 
 Engine.prototype.scheduledSubscribe = function(rapp, uri, remappings, parameters, topic, type){
   var engine = this;
-  
-  engine._scheduled(rapp, uri, remappings, parameters, 0, topic, function(r){
-    engine.subscribe(topic, type);
+  var remapping_kv = R.compose(
+    R.fromPairs,
+    R.map(R.values)
+  )(ctx.remappings);
+  var name = remapping_kv[name];
+  var engine = this;
 
-  });
+
+  engine._waitForTopicsReadyF(required_topics);
+  // engine.subscribe(name, 
+  
+  
+  engine.subscribe(topic, type);
+
 
 };
 
 
-Engine.prototype.scheduledPublish = function(rapp, uri, remappings, parameters, topic, type, msg){
+Engine.prototype.scheduledPublish = function(ctx, topic, type, msg){
   var engine = this;
-  
-  engine._scheduled(rapp, uri, remappings, parameters, 0, topic, function(r){
-    engine.pub(topic, type, msg);
+  var remapping_kv = R.compose(
+    R.fromPairs,
+    R.map(R.values)
+  )(ctx.remappings);
+  var name = remapping_kv[topic];
+  var engine = this;
 
-  });
+
+  engine._waitForTopicsReadyF([name]);
+  engine.pub(name, type, msg);
 
 };
 

@@ -5,35 +5,31 @@ Blockly.Blocks['ros_requester_allocate'] = {
     var block = this;
     this.setColour(77);
     this.appendDummyInput().appendField("Allocate Resource");
-    this.appendStatementInput('DO')
-    this.setPreviousStatement(true);
-    return this.setNextStatement(true);
+    this.setPreviousStatement(false);
+    this.setNextStatement(false);
+    this.setOutput(true);
+    return this;
   }
 };
 Blockly.JavaScript['ros_requester_allocate'] = function(block){
   // return "requester.cancel_all();";
   var config = block.extra_config;
 
-  var codeOnAllocated = Blockly.JavaScript.statementToCode(block, 'DO');
-
   var remapping_kv = R.compose(
     R.fromPairs,
     R.map(R.values)
   )(config.remappings);
 
-  var tpl = '$engine.allocateResource("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>, function(requester){ <%= code %> }); ';
-
-  tpl = "(function(){ var remappings = <%= remapping_kv %>; " + tpl + " })();"
+  var tpl = '($engine.allocateResource("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>)) ';
 
   var code = _.template(tpl)({
     rapp: config.rapp, 
     uri: config.uri, 
     remapping_kv: JSON.stringify(remapping_kv),
     remappings: JSON.stringify(config.remappings),
-    parameters: JSON.stringify(config.parameters),
-    code: codeOnAllocated
+    parameters: JSON.stringify(config.parameters)
   });
-  return code;
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
 
 };
 

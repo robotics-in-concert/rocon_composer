@@ -4,7 +4,9 @@ Blockly.register_scheduled_publish_block = function(rapp, uri, name, type){
 
     init: function() {
       this.setColour(ACTION_COLOR);
-      this.appendValueInput('VALUE').appendField('[Publish] ' + name);
+      this.appendDummyInput().appendField('[Publish] ' + name);
+      this.appendValueInput('CTX').appendField('context : ');
+      this.appendValueInput('VALUE').appendField('value : ');
       this.setInputsInline(true);
       this.setPreviousStatement(true);
       return this.setNextStatement(true);

@@ -12,6 +12,7 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
     var paramNameOnFeedback = block.getFieldValue('ON_FEEDBACK_PARAM');
 
     var goal = Blockly.JavaScript.valueToCode(block, 'GOAL', Blockly.JavaScript.ORDER_NONE) || "''";
+    var ctx = Blockly.JavaScript.valueToCode(block, 'CTX', Blockly.JavaScript.ORDER_NONE) || "''";
 
 
 
@@ -22,7 +23,7 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
     // )(extraConfig.remappings);
 
 
-    var tpl = '$engine.runScheduledAction(remappings["<%= name %>"], "<%= type %>", <%= goal %>, ';
+    var tpl = '$engine.runScheduledAction(<%= ctx %>, "<%= name %>", "<%= type %>", <%= goal %>, ';
     tpl += 'function(<%= param1 %>){ <%=code1%>}, function(<%= param2 %>){ <%=code2%>});';
 
     var code = _.template(tpl)({
@@ -31,6 +32,7 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
       name: name,
       type: type,
       goal: goal, 
+      ctx: ctx, 
       param1: paramNameOnResult,
       param2: paramNameOnFeedback,
       code1: codeOnResult, code2: codeOnFeedback
@@ -44,7 +46,9 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
 
     init: function() {
       this.setColour(260);
-      this.appendValueInput('GOAL').appendField('[Action] ' + name);
+      this.appendDummyInput().appendField('[Action] ' + name);
+      this.appendValueInput('CTX').appendField('context :');
+      this.appendValueInput('GOAL').appendField('goal :');
 
       this.setInputsInline(true);
 
