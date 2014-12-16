@@ -81,6 +81,7 @@ button {
 }
 #workflow-blockly #header #header-main {
   height: 118px;
+  padding: 15px 40px;
 }
 #workflow-blockly #header #header-menu {
   height: 50px;
