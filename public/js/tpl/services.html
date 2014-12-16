@@ -1,12 +1,36 @@
 
 <div class="container">
   <div ng-controller="ServiceFormCtrl">
+    <div class="modal" id="modal-package-select" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title">Select Package</h4>
+          </div>
+          <div class="modal-body">
+            <select multiple class="form-control" ng-model="destPackage" ng-options="pack as pack.name for pack in packageList">
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" ng-click="save()">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <form>
 
       <div id="service-editor"></div>
 
 
       <button type="submit" ng-click="save()" class="btn btn-default">Submit</button>
+      <button type="submit" ng-click="export()" class="btn btn-default">Export</button>
     </form>
 
   </div>

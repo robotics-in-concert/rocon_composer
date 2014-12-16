@@ -144,6 +144,15 @@ module.exports = function(app, db){
   });
 
 
+  app.get('/api/packages', function(req, res){
+    var ss = new ServiceStore({ros_root: process.env.ROS_PACKAGE_ROOT});
+    ss.allPackageInfos().then(function(rows){
+      res.send(rows);
+
+    });
+
+  });
+
   app.post('/api/services/save', function(req, res){
     var ss = new ServiceStore({ros_root: process.env.ROS_PACKAGE_ROOT});
     ss.exportToROS('package_name', req.body.service).then(function(){

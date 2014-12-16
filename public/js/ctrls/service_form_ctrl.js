@@ -309,10 +309,23 @@ JSONEditor.defaults.editors.upload2 = JSONEditor.AbstractEditor.extend({
 
 
 
+    $scope.export = function(){
+      serviceAuthoring.getPackages().then(function(packs){
+        $scope.packageList = packs;
+        // var v = editor.getValue();
+        // serviceAuthoring.saveService(v);
+
+        $('#modal-package-select').modal();
+
+      });
+
+
+    };
     $scope.save = function(){
       console.log('save');
       var v = editor.getValue();
-      serviceAuthoring.saveService(v);
+      serviceAuthoring.saveService(v, $scope.destPackage.name);
+      $('#modal-package-select').modal('hide');
 
 
     };

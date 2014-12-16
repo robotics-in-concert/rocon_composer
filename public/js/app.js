@@ -173,6 +173,13 @@ app.service('serviceAuthoring', function($http, $q){
 
   };
 
+  this.getPackages = function(serviceMeta){
+    return $http.get('/api/packages').then(function(res){
+      return res.data;
+    });
+
+  };
+
 });
 app.service('blocksStore', function($http, $q){
 

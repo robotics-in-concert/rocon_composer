@@ -30,6 +30,7 @@ ServiceStore.prototype.allPackageInfos = function(){
         return xml2js.parseStringAsync(xml, {explicitArray: false});
       })
       .then(function(item){
+        item = item.package;
         item.path = xmlpath;
         return item;
 
