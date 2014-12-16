@@ -64,6 +64,9 @@ button {
   right: 0;
   /* height: 100%; */
 }
+#workflow-blockly .container0.down {
+  top: 100px;
+}
 #workflow-blockly #header {
   position: absolute;
   top: 0;
@@ -71,10 +74,10 @@ button {
   right: 0;
   height: 100px;
   background-color: #ccc;
-  display: none;
 }
 #workflow-blockly #header_toggler {
   position: absolute;
+  display: none;
   top: 10px;
   right: 10px;
   width: 30px;
@@ -87,9 +90,6 @@ button {
   width: 100%;
   font-size: 12px;
   height: 10em;
-}
-.container0.down {
-  top: 100px;
 }
 #workflow_index {
   padding: 0px;
