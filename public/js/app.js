@@ -25,6 +25,7 @@ var toggle_header_menu = function(){
     $('.container0').removeClass('down');
   }
   Blockly.fireUiEvent(window, 'resize');
+  return false;
 
 };
 
@@ -53,6 +54,7 @@ Mousetrap.bind('ctrl+alt+t', function(){
   console.log('here');
 
   toggle_header_menu();
+  return false;
 
 });
 
