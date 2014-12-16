@@ -102,7 +102,6 @@ app.controller('ListCtrl', function($scope, blocksStore, $http) {
     /**
      * items checkbox
      */
-    $scope.itemSelection = [];
     $scope.toggleItemSelection = function(title){
       console.log(title);
 

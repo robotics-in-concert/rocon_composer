@@ -244,6 +244,7 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
     var items;
     $scope.foo = 'bar';
     $scope.current = null;
+    $scope.itemSelection = [];
     $scope.rapp_url = "http://files.yujinrobot.com/rocon/rapp_repository/office_rapp.tar.gz";
     items = $scope.items = []
     $scope.robot_brain = {};
@@ -395,6 +396,8 @@ app.controller('MainCtrl', function($scope, blocksStore, $http) {
     };
     $scope.engineLoadChecked = function(){
       var items = $scope.itemSelection;
+      console.log(items);
+
       if(items.length < 1){
         alert('select items to load.');
       }else{
