@@ -157,8 +157,12 @@ JSONEditor.defaults.editors.upload2 = JSONEditor.AbstractEditor.extend({
         },
         description: {
           type: 'string',
-          title: 'Description',
-          format: 'textarea'
+          title: 'Description'
+        },
+        author: {
+          type: 'string',
+          title: 'Author'
+
         },
         priority: {
           type: 'integer',
@@ -324,7 +328,11 @@ JSONEditor.defaults.editors.upload2 = JSONEditor.AbstractEditor.extend({
     $scope.save = function(){
       console.log('save');
       var v = editor.getValue();
-      serviceAuthoring.saveService(v, $scope.destPackage.name);
+
+      serviceAuthoring.saveService(v, $scope.destPackage[0].name).then(function(){
+        alert('saved');
+        
+      });
       $('#modal-package-select').modal('hide');
 
 

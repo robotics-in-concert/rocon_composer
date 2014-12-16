@@ -3,7 +3,9 @@ var  R = require('ramda'),
   glob = Promise.promisify(require('glob')),
   fs = Promise.promisifyAll(require('fs')),
   xml2js = Promise.promisifyAll(require('xml2js')),
-  yaml = require('js-yaml');
+  Path = require('path'),
+  yaml = require('js-yaml'),
+  mkdirp = require('mkdirp');
   // ServiceStore = require('./service_store');
   
 
@@ -41,50 +43,65 @@ ServiceStore.prototype.allPackageInfos = function(){
 
 };
 
-ServiceStore.prototype.exportToROS = function(package_name, service_meta){
-  this.allPackageInfos().then(function(res){ 
-    // console.log(res); console.log('done'); 
+ServiceStore.prototype.exportToROS = function(package_name, service_meta, package_name){
+  return this.allPackageInfos().then(function(packages){ 
+    console.log(service_meta);
+    console.log(package_name);
+    var pack =  R.find(R.propEq('name', package_name))(packages);
+
+
+    var name_key = service_meta.name.replace(/\s+/g, "_").toLowerCase();
+    var service_base = Path.join( Path.dirname(pack.path), "services", name_key);
+    console.log(service_base);
+
+
+    mkdirp.sync(service_base);
+
+    console.log(name_key);
+
+
+    // .parameters
+    var params = R.compose(
+      R.tap(console.log),
+      R.fromPairs,
+      R.map(R.props(['key', 'value']))
+    )(service_meta.parameters);
+    var param_file_content = _to_colon_sep(params);
+    console.log('---------------- .interactions --------------------');
+    console.log(yaml.dump(service_meta.interactions));
+
+    console.log('---------------- .parameters --------------------');
+    console.log(param_file_content);
+
+    console.log('---------------- .launcher --------------------');
+    console.log(service_meta.launcher.launcher_body);
+
+    // .service
+    var service_kv = R.pickAll("name description author priority icon interactions parameters".split(/\s+/), service_meta);
+    service_kv.launcher_type = service_meta.launcher.launcher_type
+    service_kv.launcher = name_key + ".launcher";
+    // service_kv.icon = name_key + ".icon";
+    service_kv.interactions = name_key + ".interactions";
+    service_kv.parameters = name_key + ".parameters";
+    var service_file_content = _to_colon_sep(service_kv);
+    console.log('---------------- .service --------------------');
+    console.log(service_file_content);
+
+
+    // save icon
+
+    return Promise.all([
+      fs.writeFileAsync(service_base + "/" + name_key + ".parameters", param_file_content),
+      fs.writeFileAsync(service_base + "/" + name_key + ".launcher", service_meta.launcher.launcher_body),
+      fs.writeFileAsync(service_base + "/" + name_key + ".service", service_file_content),
+      fs.writeFileAsync(service_base + "/" + name_key + ".interactions", yaml.dump(service_meta.interactions))
+    ]);
+
+
+    return Promise.resolve(true);
   });
 
 
-  console.log(service_meta);
-
-  var name_key = service_meta.name.replace(/\s+/g, "_").toLowerCase();
-  console.log(name_key);
-
-
-  // .parameters
-  var params = R.compose(
-    R.tap(console.log),
-    R.fromPairs,
-    R.map(R.props(['key', 'value']))
-  )(service_meta.parameters);
-  var param_file_content = _to_colon_sep(params);
-  console.log('---------------- .interactions --------------------');
-  console.log(yaml.dump(service_meta.interactions));
-
-  console.log('---------------- .parameters --------------------');
-  console.log(param_file_content);
-
-  console.log('---------------- .launcher --------------------');
-  console.log(service_meta.launcher.launcher_body);
-
-  // .service
-  var service_kv = R.pickAll("name description author priority icon interactions parameters".split(/\s+/), service_meta);
-  service_kv.launcher_type = service_meta.launcher.launcher_type
-  service_kv.launcher = name_key + ".launcher";
-  service_kv.icon = name_key + ".icon";
-  service_kv.interactions = name_key + ".interactions";
-  service_kv.parameters = name_key + ".parameters";
-  var service_file_content = _to_colon_sep(service_kv);
-  console.log('---------------- .service --------------------');
-  console.log(service_file_content);
-
-
-  // save icon
-
-
-  return Promise.resolve(true);
 
 
 };
