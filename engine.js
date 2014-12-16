@@ -299,8 +299,8 @@ Engine.prototype.runScheduledAction = function(name, type, goal, onResult, onFee
   var engine = this;
   
   engine.runAction(name, type, goal, 
-    function(items){ onResult(items, r); }, 
-    function(items){ onFeedback(items, r) });
+    function(items){ onResult(items); }, 
+    function(items){ onFeedback(items) });
 
 };
 
