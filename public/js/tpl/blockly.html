@@ -56,13 +56,41 @@
     </div>
   </div>
 
+  <div ng-controller="MainCtrl">
   <div id="header">
     <div id="header-grad"></div>
     <div id="header-main">
       <img src="/img/logo1.png" width="85" height="85">
       <!-- <a href="#" class="toggle_header">Toggle</a> -->
     </div>
-    <div id="header-menu"></div>
+    <div id="header-menu">
+      <div class="container-fluid">
+        <ul class="nav navbar-nav">
+          <li class="dropdown active">
+            <a href="" class="dropdown-toggle" data-toggle="dropdown">File <span class="sr-only">(current)</span></a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="#">New</a></li>
+              <li><a href="#">Open</a></li>
+            </ul>
+          </li>
+          <li class="dropdown active">
+            <a href="" class="dropdown-toggle" data-toggle="dropdown">Edit <span class="sr-only">(current)</span></a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="#">Clear board</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Option</span></a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="#">Share on Cento</a></li>
+              <li><a href="#">Advanced Option</a></li>
+              <li><a href="#">Help</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+
   </div>
 
   <div id="header_toggler">
@@ -71,7 +99,7 @@
 
 
 
-  <div class="container0 down" ng-controller="MainCtrl">
+  <div class="container0 down">
     <div id="right_switch">
       <a href="#">Hide/Show</a>
     </div>
@@ -157,6 +185,7 @@
       </div>
       </div>
     </div>
+  </div>
   </div>
 
     <xml id="toolbox" style="display: none">

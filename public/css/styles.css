@@ -86,6 +86,17 @@ button {
 #workflow-blockly #header #header-menu {
   height: 50px;
   background-color: #404041;
+  padding: 0 150px;
+}
+#workflow-blockly #header #header-menu a {
+  color: white;
+  background-color: transparent;
+}
+#workflow-blockly #header #header-menu a:hover {
+  background-color: transparent;
+}
+#workflow-blockly #header #header-menu .dropdown-menu a {
+  color: #262626;
 }
 #workflow-blockly #header_toggler {
   position: absolute;
