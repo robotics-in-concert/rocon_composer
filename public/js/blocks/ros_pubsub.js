@@ -15,8 +15,9 @@ Blockly.register_scheduled_publish_block = function(rapp, uri, name, type){
 
   Blockly.JavaScript['ros_scheduled_publish_'+name] = function(block) {
     var msg = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_NONE) || "''";
-    var tpl = '$engine.scheduledPublish(remappings["<%= name %>"], "<%= type %>", <%= msg %>);';
-    return _.template(tpl)({name: name, type: type, msg: msg});
+    var ctx = Blockly.JavaScript.valueToCode(block, 'CTX', Blockly.JavaScript.ORDER_NONE) || "''";
+    var tpl = '$engine.scheduledPublish(<%= ctx %>, "<%= name %>", "<%= type %>", <%= msg %>);';
+    return _.template(tpl)({name: name, type: type, msg: msg, ctx: ctx});
   };
 };
 
@@ -47,10 +48,9 @@ Blockly.register_scheduled_subscribe_block = function(rapp, uri, name, type, ext
   Blockly.JavaScript['ros_scheduled_subscribe_'+name] = function(block) {
     var param0 = block.getFieldValue('DO_PARAM');
     var code = Blockly.JavaScript.statementToCode(block, 'DO');
-    var tpl = "$engine.scheduledSubscribe(remappings['<%= name %>'], '<%= type %>'); $engine.ee.on(remappings['<%= name %>'], function(<%= param0 %>, requester){ <%= code %> });";
-    var remappings = [];
-    var parameters = [];
-    return _.template(tpl)({name: name, type: type, code: code, param0: param0});
+    var ctx = Blockly.JavaScript.valueToCode(block, 'CTX', Blockly.JavaScript.ORDER_NONE) || "''";
+    var tpl = "$engine.scheduledSubscribe(<%= ctx %>, '<%= name %>', '<%= type %>', function(<%= param0 %>){ <%= code %> });";
+    return _.template(tpl)({ctx: ctx, name: name, type: type, code: code, param0: param0});
 
   };
 
@@ -60,7 +60,8 @@ Blockly.register_scheduled_subscribe_block = function(rapp, uri, name, type, ext
     init: function() {
       this.extra = extra;
       this.setColour(10);
-      this.appendDummyInput().appendField('[ROS] subscribe ' + name);
+      this.appendDummyInput().appendField('[Subscribe] ' + name);
+      this.appendValueInput('CTX').appendField('context : ');
       this.setInputsInline(true);
 
       this.appendStatementInput('DO')

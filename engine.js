@@ -339,23 +339,29 @@ Engine.prototype.runScheduledAction = function(ctx, name, type, goal, onResult, 
 
 };
 
-Engine.prototype.scheduledSubscribe = function(rapp, uri, remappings, parameters, topic, type){
+Engine.prototype.scheduledSubscribe = function(ctx, topic, type, callback){
   var engine = this;
   var remapping_kv = R.compose(
     R.fromPairs,
     R.map(R.values)
   )(ctx.remappings);
   var name = remapping_kv[name];
-  var engine = this;
 
-
-  engine._waitForTopicsReadyF(required_topics);
-  // engine.subscribe(name, 
+  engine._waitForTopicsReadyF([name]);
   
+  var listener = new ROSLIB.Topic({
+    ros : this.ros,
+    name : topic,
+    messageType : type
+  });
+
+  listener.subscribe(function(message) {
+    engine.debug('Received message on ' + listener.name + ': ' + message);
+    callback(message);
+  });
+
+  this.topics.push({name: topic, listener: listener});
   
-  engine.subscribe(topic, type);
-
-
 };
 
 
@@ -369,7 +375,7 @@ Engine.prototype.scheduledPublish = function(ctx, topic, type, msg){
   var engine = this;
 
 
-  engine._waitForTopicsReadyF([name]);
+  // engine._waitForTopicsReadyF([name]);
   engine.pub(name, type, msg);
 
 };
