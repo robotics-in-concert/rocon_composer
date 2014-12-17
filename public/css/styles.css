@@ -71,6 +71,15 @@ button {
   line-height: 50px;
   text-align: center;
 }
+#workflow-blockly .items .item_wrap {
+  position: relative;
+  padding: 5px 10px;
+}
+#workflow-blockly .items .item_wrap .fa-remove {
+  position: absolute;
+  right: 0;
+  color: red;
+}
 #workflow-blockly #right_switch {
   position: absolute;
   top: 0;

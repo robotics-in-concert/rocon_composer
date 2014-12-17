@@ -1,4 +1,6 @@
 JSONEditor.defaults.options.theme = 'bootstrap3';
+$.fn.editable.defaults.mode = 'inline';
+$.fn.editableform.buttons = '<button type="submit" class="btn btn-primary btn-sm editable-submit"><i class="fa fa-check"></i></button><button type="button" class="btn btn-default btn-sm editable-cancel"><i class="fa fa-remove"></i></button>'
 
 R.mapProp = R.compose( R.map, R.prop );
 
@@ -28,7 +30,6 @@ var toggle_header_menu = function(){
   return false;
 
 };
-
 $(function(){
   $('#right_switch a').click(function(){
     $('.right').toggle();
@@ -252,7 +253,13 @@ app.service('blocksStore', function($http, $q){
 
 
 
-app.controller('MainCtrl', function($scope, blocksStore, $http) {
+app.controller('MainCtrl', function($scope, blocksStore, $http, $rootScope) {
+  $rootScope.$on('$viewContentLoaded', function() {
+    $('#username').editable();
+
+ 
+  });
+
     var items;
     $scope.foo = 'bar';
     $scope.current = null;

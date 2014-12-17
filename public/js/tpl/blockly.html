@@ -66,6 +66,7 @@
     <div id="header-grad"></div>
     <div id="header-main">
       <img src="/img/logo1.png" width="85" height="85">
+      <a href="" id="username" data-type="text" data-pk="1" data-title="Enter username">superuser</a>
       <!-- <a href="#" class="toggle_header">Toggle</a> -->
     </div>
     <div id="header-menu">
@@ -116,6 +117,26 @@
 
         <div ng-controller="ListCtrl">
           <h2>Engine</h2>
+          <h3>List</h3>
+          <ul class="list-inline">
+          </ul>
+          <ul id="data"  class="items list-unstyled">
+            <li ng-repeat="i in items track by i.id">
+              <div class="item_wrap">
+                <input type="checkbox" value="[[i.title]]" ng-checked="itemSelection.indexOf(i.title) > 0" ng-click="toggleItemSelection(i.title)">
+                <a href="" ng-click="load(i.id)">[[i.title]]</a>
+                <a href="" class="fa fa-remove" ng-click="deleteItem(i.id)"></a>
+              </div>
+            </li>
+          </ul>
+
+
+          <ul id="tool-buttons" class="list-inline">
+            <li><a href="" title="reset" ng-click="engineReset()"><i class="fa fa-refresh"></i></a></li>
+            <li><a href=""><i class="fa fa-share"></i></a></li>
+            <li><a href=""><i class="fa fa-play" ng-click="engineLoad()"></i></a></li>
+            <li><a href=""><i class="fa fa-play" ng-click="engineLoadChecked()"></i></a></li>
+          </ul>
           <ul class="list-inline">
             <li><button class="btn btn-sm btn-default" ng-click="runCurrent()">run current</button></li>
             <li><button class="btn btn-sm btn-default" ng-click="export()">export</button></li>
@@ -129,32 +150,6 @@
             <input type="file" style="display:none" id="file" name='file' onchange="angular.element(this).scope().fileNameChanged(this)" >
             <input type="file" style="display:none" id="itemsFile" name='file' onchange="angular.element(this).scope().itemsFileNameChanged(this)" >
           </ul>
-          <h3>New</h3>
-          <form class="form-inline">
-            <div class="form-group">
-              <!-- <button class="btn btn-default" ng-click="newData()"></button> -->
-              <input name="title" class="form-control" ng-model="current.title">
-              <button class="btn btn-default" ng-click="save()">save</button>
-            </div>
-          </form>
-          <h3>List</h3>
-          <ul class="list-inline">
-          </ul>
-          <ul id="data">
-            <li ng-repeat="i in items track by i.id">
-              <input type="checkbox" value="[[i.title]]" ng-checked="itemSelection.indexOf(i.title) > 0" ng-click="toggleItemSelection(i.title)">
-              <a href="" ng-click="load(i.id)">[[i.title]]</a>
-              <button class="btn btn-sm btn-default" ng-click="deleteItem(i.id)">delete</button>
-            </li>
-          </ul>
-
-
-            <ul id="tool-buttons" class="list-inline">
-              <li><a href="" title="reset" ng-click="engineReset()"><i class="fa fa-refresh"></i></a></li>
-              <li><a href=""><i class="fa fa-share"></i></a></li>
-              <li><a href=""><i class="fa fa-play" ng-click="engineLoad()"></i></a></li>
-              <li><a href=""><i class="fa fa-play" ng-click="engineLoadChecked()"></i></a></li>
-            </ul>
       </div>
       </div>
     </div>
