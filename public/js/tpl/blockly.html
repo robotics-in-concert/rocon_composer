@@ -130,7 +130,7 @@
           <ul id="data"  class="items list-unstyled">
             <li ng-repeat="i in items track by i.id">
               <div class="item_wrap">
-                <input type="checkbox" value="[[i.title]]" ng-checked="itemSelection.indexOf(i.title) > 0" ng-click="toggleItemSelection(i.title)">
+                <input type="checkbox" value="[[i.title]]" ng-checked="itemSelection.indexOf(i.title) > 0" ng-click="toggleItemSelection(i.id)">
                 <a href="" ng-click="load(i.id)">[[i.title]]</a>
                 <a href="" class="fa fa-remove" ng-click="deleteItem(i.id)"></a>
               </div>

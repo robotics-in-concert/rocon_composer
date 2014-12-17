@@ -558,25 +558,30 @@ app.controller('MainCtrl', function($scope, blocksStore, $http, $rootScope) {
     /**
      * items checkbox
      */
-    $scope.toggleItemSelection = function(title){
-      console.log(title);
+    $scope.toggleItemSelection = function(id){
 
-      _.include($scope.itemSelection, title) ?
-        _.pull($scope.itemSelection, title) :
-        $scope.itemSelection.push(title)
+      _.include($scope.itemSelection, id) ?
+        _.pull($scope.itemSelection, id) :
+        $scope.itemSelection.push(id)
 
     };
 
 
     $scope.exportItems = function(){
       var pom = document.createElement('a');
-      console.log($scope.items);
-      console.log('data:application/json;charset=utf-8,' + JSON.stringify($scope.items));
+      R.map(function(id){
+        var item = R.find(R.propEq('id', id))($scope.items);
 
 
-      pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + JSON.stringify($scope.items))
-      pom.setAttribute('download', "items.json");
-      pom.click();
+        console.log('data:application/json;charset=utf-8,' + JSON.stringify(item));
+        pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + JSON.stringify(item))
+        pom.setAttribute('download', item.title + ".json");
+        pom.click();
+
+      })($scope.itemSelection);
+
+      _.times(2, function(){
+      });
 
     };
     $scope.importItems = function(){
