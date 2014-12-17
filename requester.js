@@ -290,7 +290,7 @@ Requester.prototype.send_allocation_request = function(res){
 
   this.heartbeat_timer = setInterval(function(){
     that.send_requests({debug: false});
-  }, 500);
+  }, 4000);
 
 
   return new Promise(function(resolve, reject){

@@ -88,5 +88,5 @@ Blockly.Blocks['defer'] = {
 
 Blockly.JavaScript['defer'] = function(block) {
   var code = Blockly.JavaScript.statementToCode(block, 'DO');
-  return _.template("setTimeout(function(){ <%= code %> }, 0);")({code: code});
+  return _.template("setTimeout(function(){ Fiber(function(){<%= code %>}).run(); }, 0);")({code: code});
 };
