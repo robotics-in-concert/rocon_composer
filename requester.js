@@ -289,6 +289,8 @@ Requester.prototype.send_allocation_request = function(res){
 
 
   this.heartbeat_timer = setInterval(function(){
+    console.log('hb', that.id.toString());
+
     that.send_requests({debug: false});
   }, 4000);
 
