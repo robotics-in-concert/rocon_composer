@@ -33,7 +33,7 @@ var Engine = function(db){
   var engine = this;
   this.topics = [];
   var that = this;
-  var schedule_requests = {};
+  this.schedule_requests = {};
 
   var retry_op = Utils.retry(function(){
     engine.log('trying to connect to ros ' + process.env.ROCON_AUTHORING_ROSBRIDGE_URL);
