@@ -58,6 +58,19 @@ button {
   z-index: 150;
   box-shadow: -10px 0px 10px -10px #cccccc;
 }
+#workflow-blockly .right #tool-buttons li a {
+  color: black;
+}
+#workflow-blockly .right #tool-buttons li i {
+  font-size: 20px;
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  background-color: #bcbdc0;
+  border-radius: 25px;
+  line-height: 50px;
+  text-align: center;
+}
 #workflow-blockly #right_switch {
   position: absolute;
   top: 0;

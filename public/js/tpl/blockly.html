@@ -111,45 +111,35 @@
     </div>
     <div class="panel right">
       <div class="content">
-        <ul class="list-inline">
-          <li><button class="btn btn-sm btn-default" ng-click="runCurrent()">run current</button></li>
-          <li><button class="btn btn-sm btn-default" ng-click="export()">export</button></li>
-          <li><button class="btn btn-sm btn-default" ng-click="import()">import</button></li>
-          <input type="file" style="display:none" id="file" name='file' onchange="angular.element(this).scope().fileNameChanged(this)" >
-        </ul>
 
 
-        <h3>engine</h3>
-        <ul class="list-inline">
-          <li>
-            <button class="btn btn-sm btn-default" ng-click="engineReset()">Reset</button>
-          </li>
-          <li>
-            <button class="btn btn-sm btn-default" ng-click="engineLoad()">Load Scripts</button>
-          </li>
-          <li>
-            <button class="btn btn-sm btn-default" ng-click="engineLoadChecked()">Load Checked Scripts</button>
-          </li>
-        </ul>
 
         <div ng-controller="ListCtrl">
-          <h3>items</h3>
-          <input type="file" style="display:none" id="itemsFile" name='file' onchange="angular.element(this).scope().itemsFileNameChanged(this)" >
+          <h2>Engine</h2>
           <ul class="list-inline">
+            <li><button class="btn btn-sm btn-default" ng-click="runCurrent()">run current</button></li>
+            <li><button class="btn btn-sm btn-default" ng-click="export()">export</button></li>
+            <li><button class="btn btn-sm btn-default" ng-click="import()">import</button></li>
             <li>
               <button class="btn btn-sm btn-default" ng-click="exportItems()">export items</button>
             </li>
             <li>
               <button class="btn btn-sm btn-default" ng-click="importItems()">import items</button>
             </li>
+            <input type="file" style="display:none" id="file" name='file' onchange="angular.element(this).scope().fileNameChanged(this)" >
+            <input type="file" style="display:none" id="itemsFile" name='file' onchange="angular.element(this).scope().itemsFileNameChanged(this)" >
           </ul>
-          <form class="form-inline well">
+          <h3>New</h3>
+          <form class="form-inline">
             <div class="form-group">
-              <button class="btn btn-default" ng-click="newData()">new</button>
-              title : <input name="title" class="form-control" ng-model="current.title">
+              <!-- <button class="btn btn-default" ng-click="newData()"></button> -->
+              <input name="title" class="form-control" ng-model="current.title">
               <button class="btn btn-default" ng-click="save()">save</button>
             </div>
           </form>
+          <h3>List</h3>
+          <ul class="list-inline">
+          </ul>
           <ul id="data">
             <li ng-repeat="i in items track by i.id">
               <input type="checkbox" value="[[i.title]]" ng-checked="itemSelection.indexOf(i.title) > 0" ng-click="toggleItemSelection(i.title)">
@@ -157,6 +147,14 @@
               <button class="btn btn-sm btn-default" ng-click="deleteItem(i.id)">delete</button>
             </li>
           </ul>
+
+
+            <ul id="tool-buttons" class="list-inline">
+              <li><a href="" title="reset" ng-click="engineReset()"><i class="fa fa-refresh"></i></a></li>
+              <li><a href=""><i class="fa fa-share"></i></a></li>
+              <li><a href=""><i class="fa fa-play" ng-click="engineLoad()"></i></a></li>
+              <li><a href=""><i class="fa fa-play" ng-click="engineLoadChecked()"></i></a></li>
+            </ul>
       </div>
       </div>
     </div>
