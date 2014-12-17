@@ -211,8 +211,7 @@ Engine.prototype._waitForTopicsReady = function(required_topics){
 
         
         var remapped_topics = R.filter(function(t){ return R.contains(t, required_topics); })(topics);
-        console.log('topic count check : ', [remapped_topics.length, required_topics.length].join("/"));
-        console.log('topic count check - ', remapped_topics, required_topics);
+        console.log('topic count check : ', [remapped_topics.length, required_topics.length].join("/"), remapped_topics, required_topics);
 
         if(remapped_topics.length >= required_topics.length){
           clearInterval(timer);
