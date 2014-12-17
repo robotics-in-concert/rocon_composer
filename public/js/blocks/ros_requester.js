@@ -40,13 +40,15 @@ Blockly.Blocks['ros_requester_release'] = {
   init: function() {
     var block = this;
     this.setColour(77);
-    this.appendDummyInput().appendField("release resources");
+    this.appendValueInput('CTX').appendField("Release Resource");
     this.setPreviousStatement(true);
     return this.setNextStatement(true);
   }
 };
 Blockly.JavaScript['ros_requester_release'] = function(block){
-  return "requester.cancel_all();";
+  var ctx = Blockly.JavaScript.valueToCode(block, 'CTX', Blockly.JavaScript.ORDER_NONE) || "''";
+  var tpl = '$engine.releaseResource(<%= ctx %>);';
+  return _.template(tpl)({ctx: ctx});
 
 };
 

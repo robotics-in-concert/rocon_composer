@@ -33,6 +33,7 @@ var Engine = function(db){
   var engine = this;
   this.topics = [];
   var that = this;
+  var schedule_requests = {};
 
   var retry_op = Utils.retry(function(){
     engine.log('trying to connect to ros ' + process.env.ROCON_AUTHORING_ROSBRIDGE_URL);
@@ -262,11 +263,18 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters){
 
   var future = new Future();
   r.send_allocation_request(res).then(function(reqId){
+    engine.schedule_requests[reqId] = r;
     future.return({req_id: reqId, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri});
   });
 
   
   return future.wait();
+};
+
+Engine.prototype.releaseResource = function(ctx){
+  var requester = this.schedule_requests[ctx.req_id];
+  requester.cancel_all();
+
 };
 
 Engine.prototype._scheduled = function(rapp, uri, remappings, parameters, topics_count, name, callback){

@@ -297,7 +297,7 @@ Requester.prototype.send_allocation_request = function(res){
     var timer = setInterval(function(){
       if(!_.include(that.pending_requests, uuid.toString())){
         clearInterval(timer);
-        resolve(uuid);
+        resolve(uuid.toString());
       }
 
     }, RESOURCE_STATUS_CHECK_INTERVAL);
