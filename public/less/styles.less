@@ -141,7 +141,42 @@ button {
     }
     #header-main {
       height: 118px;
-    padding: 15px 40px;
+      padding: 15px 40px;
+      position: relative;
+      .logo {
+        float: left;
+        display: block;
+      }
+
+      .info {
+        margin-left: 140px;
+
+
+        a {
+          color: #a7a9ac;
+          border-bottom: none;
+          &.editable-unsaved { font-weight: normal; }
+        }
+
+        .title, .description {
+          position: relative;
+
+        }
+
+        .title {
+          font-size: 18px;
+          margin-bottom: 5px;
+
+        }
+
+        .input-large {
+          width: 500px;
+
+
+        }
+        
+
+      }
 
     }
     #header-menu {

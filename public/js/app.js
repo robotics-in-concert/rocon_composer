@@ -254,66 +254,139 @@ app.service('blocksStore', function($http, $q){
 
 
 app.controller('MainCtrl', function($scope, blocksStore, $http, $rootScope) {
-  $rootScope.$on('$viewContentLoaded', function() {
-    $('#username').editable();
-
- 
-  });
 
     var items;
     $scope.foo = 'bar';
-    $scope.current = null;
+
     $scope.itemSelection = [];
     $scope.rapp_url = "http://files.yujinrobot.com/rocon/rapp_repository/office_rapp.tar.gz";
     items = $scope.items = []
     $scope.robot_brain = {};
 
+    var resetCurrent = function(){
+      $scope.current = {id: new Date().getTime() + "", title: 'Untitled', description: 'Service Description'};
+    };
+    resetCurrent();
 
+    var setupEditable = function(re){
+      $('#description, #title').editable('destroy');
 
-
-
-    $scope.import = function(){
-      $('#file').click();
+      $('#title').editable({
+        display: function(){
+          $(this).html($scope.current.title);
+        },
+        value: $scope.current.title,
+        success: function(res, newv){
+          $scope.current.title = newv;
+        }
+      });
+      $('#description').editable({
+        display: function(){
+          $(this).html($scope.current.description);
+        },
+        value: $scope.current.description,
+        success: function(res, newv){
+          $scope.current.description = newv;
+        }
+      });
 
     };
-    $scope.export = function(){
-      var dom = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
-      var xml = Blockly.Xml.domToText(dom);
-      var pom = document.createElement('a');
-      pom.setAttribute('href', 'data:text/xml;charset=utf-8,' + encodeURIComponent(xml));
-      pom.setAttribute('download', "export.xml");
-      pom.click();
 
-    };
-    $scope.fileNameChanged = function(e){
-      console.log(e);
-      var files = e.files;
-      var f = files[0];
+    $rootScope.$on('$viewContentLoaded', function() {
+      setupEditable();
+    });
 
-      var r = new FileReader();
-      r.onload = function(e) { 
-        var xml = e.target.result;
-        Blockly.mainWorkspace.clear();
-        var dom = Blockly.Xml.textToDom(xml);
-        console.log(dom);
+    blocksStore.getParam(ITEMS_PARAM_KEY).then(function(rows){
+      console.log('loaded ', rows);
+      if(!rows){
+        $scope.items = [];
+      }else{
+        $scope.items = rows;
+        reload_udf_blocks($scope.items);
 
-        Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, dom);
+      }
+
+      $scope.$watch('items', function(newValue, oldValue) {
+        console.log('items watched');
+        if (!_.isEqual(newValue, oldValue)) {
+          console.log(oldValue, "->", newValue);
+
+          blocksStore.setParam(ITEMS_PARAM_KEY, newValue).then(function(res){
+            reload_udf_blocks($scope.items);
+            console.log('items saved', newValue, res);
+
+          });
+            
+        }
+      }, true);
+
+    });
+    $scope.save = function() {
+
+
+      var id = $scope.current.id;
+      var title = $scope.current.title;
+      var description = $scope.current.description;
+      var js = _js();
+      var xml = _xml();
+
+
+      var idx = _.findIndex($scope.items, {id: id});
+      if(idx >= 0){
+        $scope.items[idx] = {id: id, js: js, xml: xml, title: $scope.current.title, description: description};
+        console.log(1);
 
 
       }
-      r.readAsText(f);
+      else {
+        
+        $scope.items.push({id: id, title: title, js: js, xml: xml, description: description});
+        console.log(2);
 
-
-
-
+      }
     };
 
-    $scope.triggerEvent = function(topic) {
-      blocksStore.publish(topic).then(function(){
-        alert('ok');
 
-      });
-    };
+
+    //
+    // import item to workspace
+    //
+    // $scope.import = function(){
+      // $('#file').click();
+
+    // };
+    // $scope.export = function(){
+      // var dom = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
+      // var xml = Blockly.Xml.domToText(dom);
+      // var pom = document.createElement('a');
+      // pom.setAttribute('href', 'data:text/xml;charset=utf-8,' + encodeURIComponent(xml));
+      // pom.setAttribute('download', "export.xml");
+      // pom.click();
+
+    // };
+    // $scope.fileNameChanged = function(e){
+      // console.log(e);
+      // var files = e.files;
+      // var f = files[0];
+
+      // var r = new FileReader();
+      // r.onload = function(e) { 
+        // var xml = e.target.result;
+        // Blockly.mainWorkspace.clear();
+        // var dom = Blockly.Xml.textToDom(xml);
+        // console.log(dom);
+
+        // Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, dom);
+
+
+      // }
+      // r.readAsText(f);
+
+
+
+
+    // };
+
     var loadBlocks = function(url){
       var $tb = $('#toolbox');
       var generator = new BlockGenerator();
@@ -407,12 +480,12 @@ app.controller('MainCtrl', function($scope, blocksStore, $http, $rootScope) {
     _.defer(loadBlocks);
 
 
-    $scope.engineLoad = function(){
-      $http.post('/api/engine/load').then(function(){
-        alert('ok');
-      });
+    // $scope.engineLoad = function(){
+      // $http.post('/api/engine/load').then(function(){
+        // alert('ok');
+      // });
 
-    };
+    // };
     $scope.engineLoadChecked = function(){
       var items = $scope.itemSelection;
       console.log(items);
@@ -439,24 +512,103 @@ app.controller('MainCtrl', function($scope, blocksStore, $http, $rootScope) {
      */
     $scope.clearWorkspace = function() {
       Blockly.mainWorkspace.clear();
+    };
+
+    // $scope.runCurrent = function() {
+      // var code;
+      // code = Blockly.JavaScript.workspaceToCode();
+      // console.log(code);
+      // blocksStore.eval(code);
+
+    // };
+
+    $scope.deleteItem = function(id) {
+      $scope.items = _.reject($scope.items, {id: id})
       $scope.current = null;
     };
-    $scope.runCurrent = function() {
-      var code;
-      code = Blockly.JavaScript.workspaceToCode();
-      console.log(code);
-      blocksStore.eval(code);
+
+    $scope.newData = function() {
+      Blockly.mainWorkspace.clear();
+      resetCurrent();
+      setupEditable();
+
+    };
+    $scope.load = function(id) {
+      console.log(id);
+
+      var data, dom, js;
+      js = Blockly.JavaScript.workspaceToCode();
+      console.log($scope.items);
+
+      data = _.where($scope.items, {
+        id: id
+      })[0];
+      $scope.current = data;
+      setupEditable(true);
+      console.log(data);
+
+
+      dom = Blockly.Xml.textToDom(data.xml);
+      Blockly.mainWorkspace.clear();
+      Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, dom);
+    };
+
+
+
+    /**
+     * items checkbox
+     */
+    $scope.toggleItemSelection = function(title){
+      console.log(title);
+
+      _.include($scope.itemSelection, title) ?
+        _.pull($scope.itemSelection, title) :
+        $scope.itemSelection.push(title)
 
     };
 
-    $scope.trigger = function(action) {
-      var en;
-      en = action;
-      if (arguments[1] != null) {
-        en = "" + en + ":" + arguments[1];
+
+    $scope.exportItems = function(){
+      var pom = document.createElement('a');
+      console.log($scope.items);
+      console.log('data:application/json;charset=utf-8,' + JSON.stringify($scope.items));
+
+
+      pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + JSON.stringify($scope.items))
+      pom.setAttribute('download', "items.json");
+      pom.click();
+
+    };
+    $scope.importItems = function(){
+      $('#itemsFile').click()
+    };
+    $scope.itemsFileNameChanged = function(e){
+      var files = e.files;
+      var f = files[0];
+
+      var r = new FileReader();
+      r.onload = function(e) { 
+        var json = e.target.result;
+        var items = JSON.parse(json);
+
+        console.log("items to import ", items);
+
+        $scope.$apply(function(){
+          $scope.items = _.uniq(_.flatten([items, $scope.items]), 'title');
+
+        });
+
+        console.log($scope.items);
+
+
+
+
       }
-      console.debug("emit", en);
-      return $scope.$emit(en);
+      r.readAsText(f);
+
+
+
+
     };
 });
 

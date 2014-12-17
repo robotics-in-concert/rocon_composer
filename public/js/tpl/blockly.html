@@ -65,8 +65,15 @@
   <div id="header">
     <div id="header-grad"></div>
     <div id="header-main">
-      <img src="/img/logo1.png" width="85" height="85">
-      <a href="" id="username" data-type="text" data-pk="1" data-title="Enter username">superuser</a>
+      <img src="/img/logo1.png" width="85" height="85" class="logo">
+      <div class="info">
+        <div class="title">
+          <a href="" id="title" data-type="text" data-inputclass="input-large" data-title="Enter username"></a>
+        </div>
+        <div class="description">
+          <a href="" id="description" data-cols="100" data-rows="2" data-type="textarea" data-title="Enter username"></a>
+        </div>
+      </div>
       <!-- <a href="#" class="toggle_header">Toggle</a> -->
     </div>
     <div id="header-menu">
@@ -75,9 +82,9 @@
           <li class="dropdown active">
             <a href="" class="dropdown-toggle" data-toggle="dropdown">File <span class="sr-only">(current)</span></a>
             <ul class="dropdown-menu" role="menu">
-              <li><a href="#">New</a></li>
-              <li><a href="#">Open</a></li>
-              <li><a href="#">Save</a></li>
+              <li><a href="" ng-click="newData()">New</a></li>
+              <li><a href="">Open</a></li>
+              <li><a href="" ng-click="save()">Save</a></li>
             </ul>
           </li>
           <li class="dropdown active">
@@ -115,7 +122,7 @@
 
 
 
-        <div ng-controller="ListCtrl">
+        <div>
           <h2>Engine</h2>
           <h3>List</h3>
           <ul class="list-inline">
@@ -133,23 +140,23 @@
 
           <ul id="tool-buttons" class="list-inline">
             <li><a href="" title="reset" ng-click="engineReset()"><i class="fa fa-refresh"></i></a></li>
-            <li><a href=""><i class="fa fa-share"></i></a></li>
-            <li><a href=""><i class="fa fa-play" ng-click="engineLoad()"></i></a></li>
+            <!-- <li><a href=""><i class="fa fa-share"></i></a></li> -->
             <li><a href=""><i class="fa fa-play" ng-click="engineLoadChecked()"></i></a></li>
-          </ul>
-          <ul class="list-inline">
-            <li><button class="btn btn-sm btn-default" ng-click="runCurrent()">run current</button></li>
-            <li><button class="btn btn-sm btn-default" ng-click="export()">export</button></li>
-            <li><button class="btn btn-sm btn-default" ng-click="import()">import</button></li>
-            <li>
-              <button class="btn btn-sm btn-default" ng-click="exportItems()">export items</button>
-            </li>
-            <li>
-              <button class="btn btn-sm btn-default" ng-click="importItems()">import items</button>
-            </li>
-            <input type="file" style="display:none" id="file" name='file' onchange="angular.element(this).scope().fileNameChanged(this)" >
+            <li><a href=""><i class="fa fa-download" ng-click="exportItems()"></i></a></li>
+            <li><a href=""><i class="fa fa-upload" ng-click="importItems()"></i></a></li>
             <input type="file" style="display:none" id="itemsFile" name='file' onchange="angular.element(this).scope().itemsFileNameChanged(this)" >
           </ul>
+          <!-- <ul class="list-inline"> -->
+            <!-- <li><button class="btn btn-sm btn-default" ng-click="runCurrent()">run current</button></li> -->
+            <!-- <li><button class="btn btn-sm btn-default" ng-click="export()">export</button></li> -->
+            <!-- <li><button class="btn btn-sm btn-default" ng-click="import()">import</button></li> -->
+            <!-- <li> -->
+              <!-- <button class="btn btn-sm btn-default" ng-click="exportItems()">export items</button> -->
+            <!-- </li> -->
+            <!-- <li> -->
+              <!-- <button class="btn btn-sm btn-default" ng-click="importItems()">import items</button> -->
+            <!-- </li> -->
+          <!-- </ul> -->
       </div>
       </div>
     </div>

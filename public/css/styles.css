@@ -112,6 +112,32 @@ button {
 #workflow-blockly #header #header-main {
   height: 118px;
   padding: 15px 40px;
+  position: relative;
+}
+#workflow-blockly #header #header-main .logo {
+  float: left;
+  display: block;
+}
+#workflow-blockly #header #header-main .info {
+  margin-left: 140px;
+}
+#workflow-blockly #header #header-main .info a {
+  color: #a7a9ac;
+  border-bottom: none;
+}
+#workflow-blockly #header #header-main .info a.editable-unsaved {
+  font-weight: normal;
+}
+#workflow-blockly #header #header-main .info .title,
+#workflow-blockly #header #header-main .info .description {
+  position: relative;
+}
+#workflow-blockly #header #header-main .info .title {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+#workflow-blockly #header #header-main .info .input-large {
+  width: 500px;
 }
 #workflow-blockly #header #header-menu {
   height: 50px;
