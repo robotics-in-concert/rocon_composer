@@ -71,12 +71,13 @@
             <ul class="dropdown-menu" role="menu">
               <li><a href="#">New</a></li>
               <li><a href="#">Open</a></li>
+              <li><a href="#">Save</a></li>
             </ul>
           </li>
           <li class="dropdown active">
             <a href="" class="dropdown-toggle" data-toggle="dropdown">Edit <span class="sr-only">(current)</span></a>
             <ul class="dropdown-menu" role="menu">
-              <li><a href="#">Clear board</a></li>
+              <li><a href="" ng-click="clearWorkspace()">Clear board</a></li>
             </ul>
           </li>
           <li class="dropdown">
@@ -98,14 +99,6 @@
   </div>
 
 
-
-  <div class="container0 down">
-    <div id="right_switch">
-      <a href="#">Hide/Show</a>
-    </div>
-    <div class="panel left">
-      <div id="blocklyDiv"></div>
-    </div>
     <div class="panel right">
       <div class="content">
         <ul class="list-inline">
@@ -116,33 +109,6 @@
           <input type="file" style="display:none" id="file" name='file' onchange="angular.element(this).scope().fileNameChanged(this)" >
         </ul>
 
-
-        <h3>triggers</h3>
-        <ul class="list-unstyled">
-          <!-- <li> -->
-            <!-- <button class="btn btn-sm btn-default" ng-click="trigger('delivery_request')">Delivery Request</button> -->
-          <!-- </li> -->
-          <!-- <li> -->
-            <!-- <button class="btn btn-sm btn-default" ng-click="trigger('arrive', arrive_param)">Arrive</button> -->
-            <!-- <input class="" type="text" ng-model="arrive_param"> -->
-          <!-- </li> -->
-          <!-- <li> -->
-            <!-- <button class="btn btn-sm btn-default" ng-click="trigger('confirm', confirm_param)">Confirm</button> -->
-            <!-- <input type="text" ng-model="confirm_param"> -->
-          <!-- </li> -->
-          <!-- <li> -->
-            <!-- custom : <input name="event_name"> <button class="btn btn-sm btn-default" id="trigger">trigger</button> -->
-          <!-- </li> -->
-          <li>
-            ROS : <input name="event_name" ng-model="new_topic_name"> <button class="btn btn-sm btn-default" id="trigger" ng-click="triggerEvent(new_topic_name)">trigger</button>
-          </li>
-        </ul>
-        <h3>load rapp</h3>
-        <ul class="list-unstyled">
-          <li>
-            <button class="btn btn-sm btn-default" id="trigger" ng-click="loadRapp()">load</button>
-          </li>
-        </ul>
 
         <h3>engine</h3>
         <ul class="list-inline">
@@ -186,6 +152,14 @@
       </div>
     </div>
   </div>
+
+  <div class="container0 down">
+    <div id="right_switch">
+      <a href="#">Hide/Show</a>
+    </div>
+    <div class="panel left">
+      <div id="blocklyDiv"></div>
+    </div>
   </div>
 
     <xml id="toolbox" style="display: none">

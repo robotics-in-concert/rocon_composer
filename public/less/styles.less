@@ -22,11 +22,26 @@ button {
 }
 
 #workflow-blockly {
+  .container0 {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    /* height: 100%; */
+
+  }
+  .container0.down {
+    top: 175px;
+
+  }
   .left {
-    height: 100%;
-    position: relative;
-    width: 70%;
-    float: left;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
   }
   /* #blocklyDiv { */
     /* width: 100%; */
@@ -42,9 +57,13 @@ button {
 
   }
   .right {
-    width: 28%;
-    height: 100%;
-    float: left;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 300px;
+    top: 175px;
+    border-left: 1px solid #ccc;
+    z-index: 150;
 
   }
   #right_switch {
@@ -67,19 +86,6 @@ button {
 
   }
 
-  .container0 {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    /* height: 100%; */
-
-  }
-  .container0.down {
-    top: 175px;
-
-  }
 
   #header {
     position: absolute;
