@@ -1,6 +1,8 @@
 
 var app = angular.module('centoAuthoring');
 app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
+  console.log('x');
+
     $scope.blockConfigs = {};
     $scope.currentBlockConfig = '';
 
@@ -45,6 +47,7 @@ app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
       }
       
     });
+    var default_value = editor.getValue();
     window.editor = editor;
 
     editor.on('change', function(){
@@ -54,6 +57,7 @@ app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
     });
 
     Blockly.mainWorkspace.getCanvas().addEventListener('blocklySelectChange', function(){
+      editor.setValue(default_value);
 
       if(Blockly.selected){
         var cfg = Blockly.selected.extra_config;
@@ -73,49 +77,5 @@ app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
 
     });
 
-
-
-    // Blockly.mainWorkspace.getCanvas().addEventListener('blocklySelectChange', function(){
-      // console.log('blockly selection changed');
-
-      // if(Blockly.selected){
-        // var cfg = Blockly.selected.extraConfig;
-        // cfg = (cfg == 'undefined') ? null : cfg;
-
-        // $scope.$apply(function(){
-          
-
-          // // $scope.currentBlockConfig = ((typeof cfg === 'undefined') ? '' : cfg);
-        // });
-
-
-      // }else{
-        // $scope.$apply(function(){
-          // $scope.currentBlockConfig = null;
-        // });
-
-      // }
-
-
-    // });
-
-    
-    // window.config_editor.on('change', function(){
-      // if(Blockly.selected){
-        // Blockly.selected.extraConfig = window.config_editor.getValue();
-
-      // };
-
-    // });
-
-    $scope.blockConfigChanged = function(){
-      if(Blockly.selected){
-        Blockly.selected.extra_config = $scope.currentBlockConfig;
-
-      };
-      console.log($scope.currentBlockConfig);
-
-
-    };
 
 });
