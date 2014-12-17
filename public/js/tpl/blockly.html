@@ -22,6 +22,11 @@
             <dd>Search block</dd>
             <dt>ctrl + alt + r</dt>
             <dd>Search block (repeat)</dd>
+
+            <dt>ctrl + alt + t</dt>
+            <dd>Toggle Header</dd>
+            <dt>ctrl + alt + y</dt>
+            <dd>Toggle Right Panel</dd>
           </dl>
         </div>
       </div>
@@ -84,7 +89,7 @@
             <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Option</span></a>
             <ul class="dropdown-menu" role="menu">
               <li><a href="#">Share on Cento</a></li>
-              <li><a href="#">Advanced Option</a></li>
+              <li><a href="" class="toggle_right">Advanced Option</a></li>
               <li><a href="#">Help</a></li>
             </ul>
           </li>
@@ -99,11 +104,15 @@
   </div>
 
 
+
+  <div class="container0 down">
+    <div class="panel left">
+      <div id="blocklyDiv"></div>
+    </div>
     <div class="panel right">
       <div class="content">
         <ul class="list-inline">
           <li><button class="btn btn-sm btn-default" ng-click="runCurrent()">run current</button></li>
-          <li><button class="btn btn-sm btn-default" ng-click="clearWorkspace()">clear workspace</button></li>
           <li><button class="btn btn-sm btn-default" ng-click="export()">export</button></li>
           <li><button class="btn btn-sm btn-default" ng-click="import()">import</button></li>
           <input type="file" style="display:none" id="file" name='file' onchange="angular.element(this).scope().fileNameChanged(this)" >
@@ -152,14 +161,6 @@
       </div>
     </div>
   </div>
-
-  <div class="container0 down">
-    <div id="right_switch">
-      <a href="#">Hide/Show</a>
-    </div>
-    <div class="panel left">
-      <div id="blocklyDiv"></div>
-    </div>
   </div>
 
     <xml id="toolbox" style="display: none">

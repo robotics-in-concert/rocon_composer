@@ -40,20 +40,23 @@ button {
   right: 0;
 }
 #workflow-blockly #blocklyDiv {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+  width: 100%;
+  height: 99%;
+  /* position: absolute; */
+  /* top: 0; */
+  /* left: 0; */
+  /* bottom: 0; */
+  /* right: 0; */
 }
 #workflow-blockly .right {
   position: absolute;
   right: 0;
   bottom: 0;
   width: 300px;
-  top: 175px;
+  top: 0px;
   border-left: 1px solid #ccc;
   z-index: 150;
+  box-shadow: -10px 0px 10px -10px #cccccc;
 }
 #workflow-blockly #right_switch {
   position: absolute;

@@ -47,13 +47,18 @@ $(function(){
   $('.toggle_header').click(toggle_header_menu);
 
   $(document.body).on('click', '.toggle_header', toggle_header_menu);
+  $(document.body).on('click', '.toggle_right', function(){ $('.container0 .right').toggle(); });
+
 
 
 });
 Mousetrap.bind('ctrl+alt+t', function(){
-  console.log('here');
-
   toggle_header_menu();
+  return false;
+
+});
+Mousetrap.bind('ctrl+alt+y', function(){
+  $('.container0 .right').toggle();
   return false;
 
 });
