@@ -383,7 +383,7 @@ Engine.prototype.scheduledPublish = function(ctx, topic, type, msg){
   var engine = this;
 
 
-  engine._waitForTopicsReadyF([name]);
+  // engine._waitForTopicsReadyF([name]);
   engine.pub(name, type, msg);
 
 };
