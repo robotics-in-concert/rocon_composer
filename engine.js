@@ -212,6 +212,7 @@ Engine.prototype._waitForTopicsReady = function(required_topics){
         
         var remapped_topics = R.filter(function(t){ return R.contains(t, required_topics); })(topics);
         console.log('topic count check : ', [remapped_topics.length, required_topics.length].join("/"));
+        console.log('topic count check - ', remapped_topics, required_topics);
 
         if(remapped_topics.length >= required_topics.length){
           clearInterval(timer);
@@ -355,7 +356,7 @@ Engine.prototype.scheduledSubscribe = function(ctx, topic, type, callback){
   )(ctx.remappings);
   var name = remapping_kv[name];
 
-  engine._waitForTopicsReadyF([name]);
+  // engine._waitForTopicsReadyF([name]);
   
   var listener = new ROSLIB.Topic({
     ros : this.ros,
@@ -383,7 +384,7 @@ Engine.prototype.scheduledPublish = function(ctx, topic, type, msg){
   var engine = this;
 
 
-  // engine._waitForTopicsReadyF([name]);
+  engine._waitForTopicsReadyF([name]);
   engine.pub(name, type, msg);
 
 };
