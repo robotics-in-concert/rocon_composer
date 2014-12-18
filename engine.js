@@ -14,6 +14,7 @@ var _ = require('lodash'),
   request = require('request'),
   Requester = require('./requester').Requester,
   Resource = require('./requester').Resource,
+  UUID = require('node-uuid'),
   URL = require('url');
 
 
@@ -254,6 +255,13 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters){
   var engine = this;
   
   var r = new Requester(this);
+
+  R.forEach(function(remap){
+    if(R.isEmpty(remap.remap_to)){
+      remap.remap_to = "/" + remap.remap_from + "_" + UUID.v4().replace(/-/g, "")
+    }
+
+  })(remappings);
 
   var res = new Resource();
   res.rapp = rapp;

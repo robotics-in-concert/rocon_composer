@@ -16,7 +16,6 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
 
 
 
-
     // var remappings = R.pipe(
         // R.map(function(v, k){ return {remap_from: k, remap_to: v}; }),
         // R.values
