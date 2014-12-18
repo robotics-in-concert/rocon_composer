@@ -32,42 +32,217 @@ var _interaction_to_json_editor_value = function(i){
 
 
 
+var schema = {
+  title: "Service",
+  type: "object",
+  properties: {
+    id: {
+      type: 'string',
+      options: {
+        hidden: true
+      }
 
-var app = angular.module('centoAuthoring');
-app.controller('ServiceFormCtrl', function($scope, blocksStore, $http, serviceAuthoring) {
-    // $scope.blockConfigs = {};
-    // $scope.currentBlockConfig = '';
+    },
+    created_at: {
+      type: 'integer',
+      options: {
+        hidden: true
+      }
 
-    JSONEditor.defaults.options.upload = function(type, file, cbs) {
-      console.log("UPLOAD HANDLER", arguments);
+    },
+
+    name: {
+      type: 'string',
+      title: 'Name'
+
+    },
+    description: {
+      type: 'string',
+      title: 'Description'
+    },
+    author: {
+      type: 'string',
+      title: 'Author'
+
+    },
+    priority: {
+      type: 'integer',
+      default: 10000,
+      title: 'Priority'
+    },
+    icon: {
+      type: 'string',
+      format: 'url',
+      title: 'Icon',
+      options: {
+        upload2: true
+      },
+      // links: [
+        // {href: '{{self}}'}
+      // ]
+
+    },
+    launcher: {
+      type: 'object',
+      properties: {
+        launcher_type: {
+          type: 'string',
+          enum: [
+            'ros_launcher'
+          ]
+
+        },
+        launcher_body: {
+          type: 'string',
+          format: 'textarea'
+        },
 
 
-      var fr = new FileReader();
-      fr.onload = function(e) {
-        var base64 = e.target.result;
-        cbs.success(base64);
-      };       
-      fr.readAsDataURL(file);
+      }
 
-      if (type === 'root.upload_fail') cbs.failure('Upload failed');
-      else {
-        var tick = 0;
-        var tickFunction = function() {
-          tick += 1;
-          console.log('progress: ' + tick);
-          if (tick < 100) {
-            cbs.updateProgress(tick);
-            window.setTimeout(tickFunction, 50)
-          } else if (tick == 100) {
-            cbs.updateProgress();
-            window.setTimeout(tickFunction, 500)
-          } else {
-            // cbs.success('http://www.example.com/images/' + file.name);
+    },
+    workflows: {
+      "type": "array",
+      "uniqueItems": true,
+      format: 'checkbox',
+      "items": {
+        "type": "string",
+        "enum": ["value1","value2"]
+      }
+    },
+    interactions: {
+      type: 'array',
+      title: 'Interactions',
+      options: {
+        disable_array_add: true,
+        collapsed: false
+
+      },
+      items: {
+        type: 'object',
+        title: 'Interaction',
+        headerTemplate: "{{self.display_name}}",
+        properties: {
+          name: {type: 'string'},
+          role: {type: 'string'},
+          compatibility: {
+            type: 'string', 
+            options: {
+              hidden: true
+            }
+          },
+          description: {
+            type: 'string',
+            format: 'textarea'
+          },
+          max: {
+            type: 'integer', 
+            default: -1
+          },
+          display_name: {
+            type: 'string', 
+            options: {
+              hidden: true
+            }
+          },
+          remappings: {
+            type: 'array',
+            format: 'table',
+            title: 'Remappings',
+            options: {
+            },
+            items: {
+              type: 'object',
+              properties: {
+                remap_from: {type: 'string'},
+                remap_to: {type: 'string'}
+              }
+
+            }
+
+          },
+          parameters: {
+            type: 'array',
+            format: 'table',
+            title: 'Parameters',
+            options: {
+              disable_array_delete: true
+
+            },
+            items: {
+              type: 'object',
+              properties: {
+                key: {type: 'string'},
+                value: {type: 'string'}
+              }
+
+            }
+
           }
-        };
-        window.setTimeout(tickFunction)
+        }
+
+      },
+
+      properties: {
+        role: {
+          title: 'Role',
+          type: 'string'
+
+        }
+
+      }
+    },
+    parameters: {
+      type: 'array',
+      format: 'table',
+      title: 'Parameters',
+      options: {
+        disable_array_delete: true
+
+      },
+      items: {
+        type: 'object',
+        properties: {
+          key: {type: 'string'},
+          value: {type: 'string'}
+        }
+
+      }
+    },
+  }
+}
+
+
+JSONEditor.defaults.options.upload = function(type, file, cbs) {
+  console.log("UPLOAD HANDLER", arguments);
+
+
+  var fr = new FileReader();
+  fr.onload = function(e) {
+    var base64 = e.target.result;
+    cbs.success(base64);
+  };       
+  fr.readAsDataURL(file);
+
+  if (type === 'root.upload_fail') cbs.failure('Upload failed');
+  else {
+    var tick = 0;
+    var tickFunction = function() {
+      tick += 1;
+      console.log('progress: ' + tick);
+      if (tick < 100) {
+        cbs.updateProgress(tick);
+        window.setTimeout(tickFunction, 50)
+      } else if (tick == 100) {
+        cbs.updateProgress();
+        window.setTimeout(tickFunction, 500)
+      } else {
+        // cbs.success('http://www.example.com/images/' + file.name);
       }
     };
+    window.setTimeout(tickFunction)
+  }
+};
 
 // Editor for uploading files
 JSONEditor.defaults.resolvers.unshift(function(schema) {
@@ -145,198 +320,12 @@ JSONEditor.defaults.editors.upload2 = JSONEditor.AbstractEditor.extend({
     this._super();
   }
 });
-    var schema = {
-      title: "Service",
-      type: "object",
-      properties: {
-
-        name: {
-          type: 'string',
-          title: 'Name'
-
-        },
-        description: {
-          type: 'string',
-          title: 'Description'
-        },
-        author: {
-          type: 'string',
-          title: 'Author'
-
-        },
-        priority: {
-          type: 'integer',
-          default: 10000,
-          title: 'Priority'
-        },
-        icon: {
-          type: 'string',
-          format: 'url',
-          title: 'Icon',
-          options: {
-            upload2: true
-          },
-          // links: [
-            // {href: '{{self}}'}
-          // ]
-
-        },
-        launcher: {
-          type: 'object',
-          properties: {
-            launcher_type: {
-              type: 'string',
-              enum: [
-                'ros_launcher'
-              ]
-
-            },
-            launcher_body: {
-              type: 'string',
-              format: 'textarea'
-            },
 
 
-          }
-
-        },
-        workflows: {
-          "type": "array",
-          "uniqueItems": true,
-          format: 'checkbox',
-          "items": {
-            "type": "string",
-            "enum": ["value1","value2"]
-          }
-        },
-        interactions: {
-          type: 'array',
-          title: 'Interactions',
-          options: {
-            disable_array_add: true,
-            collapsed: false
-
-          },
-          items: {
-            type: 'object',
-            title: 'Interaction',
-            headerTemplate: "{{self.display_name}}",
-            properties: {
-              name: {type: 'string'},
-              role: {type: 'string'},
-              compatibility: {
-                type: 'string', 
-                options: {
-                  hidden: true
-                }
-              },
-              description: {
-                type: 'string',
-                format: 'textarea'
-              },
-              max: {
-                type: 'integer', 
-                default: -1
-              },
-              display_name: {
-                type: 'string', 
-                options: {
-                  hidden: true
-                }
-              },
-              remappings: {
-                type: 'array',
-                format: 'table',
-                title: 'Remappings',
-                options: {
-                },
-                items: {
-                  type: 'object',
-                  properties: {
-                    remap_from: {type: 'string'},
-                    remap_to: {type: 'string'}
-                  }
-
-                }
-
-              },
-              parameters: {
-                type: 'array',
-                format: 'table',
-                title: 'Parameters',
-                options: {
-                  disable_array_delete: true
-
-                },
-                items: {
-                  type: 'object',
-                  properties: {
-                    key: {type: 'string'},
-                    value: {type: 'string'}
-                  }
-
-                }
-
-              }
-            }
-
-          },
-
-          properties: {
-            role: {
-              title: 'Role',
-              type: 'string'
-
-            }
-
-          }
-        },
-        parameters: {
-          type: 'array',
-          format: 'table',
-          title: 'Parameters',
-          options: {
-            disable_array_delete: true
-
-          },
-          items: {
-            type: 'object',
-            properties: {
-              key: {type: 'string'},
-              value: {type: 'string'}
-            }
-
-          }
-        },
-      }
-    }
-
-
-
-    $scope.export = function(){
-      serviceAuthoring.getPackages().then(function(packs){
-        $scope.packageList = packs;
-        // var v = editor.getValue();
-        // serviceAuthoring.saveService(v);
-
-        $('#modal-package-select').modal();
-
-      });
-
-
-    };
-    $scope.save = function(){
-      console.log('save');
-      var v = editor.getValue();
-
-      serviceAuthoring.saveService(v, $scope.destPackage[0].name).then(function(){
-        alert('saved');
-        
-      });
-      $('#modal-package-select').modal('hide');
-
-
-    };
+var app = angular.module('centoAuthoring');
+app.controller('ServiceFormCtrl', function($scope, blocksStore, $http, serviceAuthoring, $stateParams) {
+    // $scope.blockConfigs = {};
+    // $scope.currentBlockConfig = '';
     blocksStore.getParam(ITEMS_PARAM_KEY).then(function(rows){
       blocksStore.loadInteractions().then(function(interactions){
 
@@ -352,12 +341,21 @@ JSONEditor.defaults.editors.upload2 = JSONEditor.AbstractEditor.extend({
           disable_properties: true,
           schema: schema      
         });
-        var v = editor.getValue();
-        v.parameters.push({key: 'key1', value: 'value1'});
-        v.parameters.push({key: 'key2', value: 'value2'});
-        v.parameters.push({key: 'key3', value: 'value3'});
 
-        editor.setValue(v);
+
+        if($stateParams.service_id){
+          console.log('.........');
+
+          var vv = R.find(R.propEq('id', $stateParams.service_id))($scope.services);
+          console.log(vv);
+
+          editor.setValue(vv);
+
+        }else{
+          var v = editor.getValue();
+          editor.setValue(v);
+
+        }
         var e0 = editor.getEditor('root.parameters');
 
 
@@ -429,6 +427,63 @@ JSONEditor.defaults.editors.upload2 = JSONEditor.AbstractEditor.extend({
 
 
     });
+
+
+    $scope.export = function(){
+      serviceAuthoring.getPackages().then(function(packs){
+        $scope.packageList = packs;
+        // var v = editor.getValue();
+        // serviceAuthoring.saveService(v);
+
+        $('#modal-package-select').modal();
+
+      });
+
+
+    };
+    $scope.save = function(){
+      console.log('save');
+
+      var v = editor.getValue();
+
+      console.log("save data : ", v);
+
+      if(v.id){
+        console.log($scope.services);
+
+        var idx = -1;
+        for(var i = 0; i<$scope.services.length; i++){
+          if($scope.services[i].id == v.id){
+            idx = i;
+            break;
+          }
+
+        }
+        if(idx >= 0){
+          console.log('x');
+
+           $scope.services[idx] = v;
+
+        }
+
+
+
+      }else{
+        v.id = _uuid();
+        v.created_at = new Date().getTime();
+        $scope.services.push(v);
+      }
+      
+
+
+      // serviceAuthoring.saveService(v, $scope.destPackage[0].name).then(function(){
+        // alert('saved');
+        
+      // });
+      $('#modal-package-select').modal('hide');
+
+
+    };
 
 
 });

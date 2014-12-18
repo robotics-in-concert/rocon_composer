@@ -1,3 +1,6 @@
+ITEMS_PARAM_KEY = 'cento_authoring_items';
+SERVICES_PARAM_KEY = 'cento_authoring_services';
+
 JSONEditor.defaults.options.theme = 'bootstrap3';
 $.fn.editable.defaults.mode = 'inline';
 $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary btn-sm editable-submit"><i class="fa fa-check"></i></button><button type="button" class="btn btn-default btn-sm editable-cancel"><i class="fa fa-remove"></i></button>'
@@ -196,7 +199,6 @@ Mousetrap.bind('ctrl+alt+l', function() {
 
 var app = angular.module('centoAuthoring', ['ui.router']);
 
-ITEMS_PARAM_KEY = 'cento_authoring_items';
 
 app.config(function($stateProvider, $interpolateProvider) {
   $interpolateProvider.startSymbol('[[');
@@ -204,8 +206,16 @@ app.config(function($stateProvider, $interpolateProvider) {
 
 
   $stateProvider
+    .state('services_index', {
+      url: '/services_index',
+      templateUrl: '/js/tpl/services_index.html'
+    })
     .state('services', {
       url: '/services',
+      templateUrl: '/js/tpl/services.html'
+    })
+    .state('services_edit', {
+      url: '/services/:service_id',
       templateUrl: '/js/tpl/services.html'
     })
     .state('workflow_index', {
