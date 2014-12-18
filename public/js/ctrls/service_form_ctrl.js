@@ -429,9 +429,19 @@ app.controller('ServiceFormCtrl', function($scope, blocksStore, $http, serviceAu
     });
 
 
+    $scope.exportOk = function(){
+      var v = editor.getValue();
+      serviceAuthoring.saveService(v, $scope.destPackage[0].name).then(function(){
+        alert('saved');
+        $('#modal-package-select').modal('hide');
+        
+      });
+
+    };
     $scope.export = function(){
       serviceAuthoring.getPackages().then(function(packs){
         $scope.packageList = packs;
+
         // var v = editor.getValue();
         // serviceAuthoring.saveService(v);
 

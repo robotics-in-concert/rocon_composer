@@ -3,6 +3,7 @@ var  R = require('ramda'),
   glob = Promise.promisify(require('glob')),
   fs = Promise.promisifyAll(require('fs')),
   xml2js = Promise.promisifyAll(require('xml2js')),
+  exec = Promise.promisify(require('child_process').exec),
   Path = require('path'),
   yaml = require('js-yaml'),
   mkdirp = require('mkdirp');
@@ -26,19 +27,28 @@ var _to_colon_sep = function(obj){
 };
 
 ServiceStore.prototype.allPackageInfos = function(){
-  return glob(this.options.ros_root + "/**/package.xml")
-    .map(function(xmlpath){
-      return fs.readFileAsync(xmlpath).then(function(xml){
-        return xml2js.parseStringAsync(xml, {explicitArray: false});
+  return exec("rospack list").spread(function(stdout, stderr){
+    var lines = R.reject(R.isEmpty, stdout.split(/\n/));
+    var packs = R.map(function(l){ return l.split(/\s/)[1] + "/package.xml"; })(lines);
+    console.log(packs);
+
+
+    return Promise.resolve(packs)
+      .map(function(xmlpath){
+        return fs.readFileAsync(xmlpath).then(function(xml){
+          return xml2js.parseStringAsync(xml, {explicitArray: false});
+        })
+        .then(function(item){
+          item = item.package;
+          item.path = xmlpath;
+          return item;
+
+        });
+
       })
-      .then(function(item){
-        item = item.package;
-        item.path = xmlpath;
-        return item;
 
-      });
 
-    })
+  });
 
 
 };
