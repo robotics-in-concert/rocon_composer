@@ -87,7 +87,7 @@ ServiceStore.prototype.exportToROS = function(package_name, service_meta, packag
     console.log(service_meta.launcher.launcher_body);
 
     // .service
-    var service_kv = R.pickAll("name description author priority icon interactions parameters".split(/\s+/), service_meta);
+    var service_kv = R.pickAll("name description author priority interactions parameters".split(/\s+/), service_meta);
     service_kv.launcher_type = service_meta.launcher.launcher_type
     service_kv.launcher = name_key + ".launcher";
     // service_kv.icon = name_key + ".icon";

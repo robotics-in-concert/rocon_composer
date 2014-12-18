@@ -33,7 +33,7 @@ var _interaction_to_json_editor_value = function(i){
 
 
 var schema = {
-  title: "Service",
+  title: "Create Service",
   type: "object",
   properties: {
     id: {
@@ -70,18 +70,18 @@ var schema = {
       default: 10000,
       title: 'Priority'
     },
-    icon: {
-      type: 'string',
-      format: 'url',
-      title: 'Icon',
-      options: {
-        upload2: true
-      },
-      // links: [
-        // {href: '{{self}}'}
-      // ]
+    // icon: {
+      // type: 'string',
+      // format: 'url',
+      // title: 'Icon',
+      // options: {
+        // upload2: true
+      // },
+      // // links: [
+        // // {href: '{{self}}'}
+      // // ]
 
-    },
+    // },
     launcher: {
       type: 'object',
       properties: {

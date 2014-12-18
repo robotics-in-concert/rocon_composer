@@ -152,7 +152,7 @@ button {
   position: relative;
 }
 #workflow-blockly #header #header-main .info .title {
-  font-size: 18px;
+  font-size: 24px;
   margin-bottom: 5px;
 }
 #workflow-blockly #header #header-main .info .input-large {
@@ -339,4 +339,20 @@ button {
   height: 30px;
   padding: 0 15px;
   color: white;
+}
+#service-editor .well {
+  background-color: transparent;
+  border: none;
+}
+#service-editor div[data-schemapath=root] > h3 {
+  font-size: 32px;
+  background: url('/img/icon_create_service.png') 0 4px no-repeat;
+  background-size: 32px 32px;
+  padding-left: 44px;
+  line-height: 40px;
+}
+#service-editor .container-launcher > h3,
+#service-editor .container-parameters > h3,
+#service-editor .container-interactions > h3 {
+  color: #23527c;
 }
