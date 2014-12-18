@@ -324,8 +324,14 @@ JSONEditor.defaults.editors.upload2 = JSONEditor.AbstractEditor.extend({
 
 var app = angular.module('centoAuthoring');
 app.controller('ServiceFormCtrl', function($scope, blocksStore, $http, serviceAuthoring, $stateParams) {
+   $scope.select2Options = {
+             allowClear:true
+                 };
+
+
     // $scope.blockConfigs = {};
     // $scope.currentBlockConfig = '';
+    $scope.destPackage = null;
     blocksStore.getParam(ITEMS_PARAM_KEY).then(function(rows){
       blocksStore.loadInteractions().then(function(interactions){
 
@@ -428,10 +434,15 @@ app.controller('ServiceFormCtrl', function($scope, blocksStore, $http, serviceAu
 
     });
 
+    serviceAuthoring.getPackages().then(function(packs){
+      $scope.packageList = packs;
+    });
 
     $scope.exportOk = function(){
       var v = editor.getValue();
-      serviceAuthoring.saveService(v, $scope.destPackage[0].name).then(function(){
+      console.log($scope.destPackage);
+
+      serviceAuthoring.saveService(v, $scope.destPackage).then(function(){
         alert('saved');
         $('#modal-package-select').modal('hide');
         
@@ -440,7 +451,7 @@ app.controller('ServiceFormCtrl', function($scope, blocksStore, $http, serviceAu
     };
     $scope.export = function(){
       serviceAuthoring.getPackages().then(function(packs){
-        $scope.packageList = packs;
+        // $scope.packageList = packs;
 
         // var v = editor.getValue();
         // serviceAuthoring.saveService(v);

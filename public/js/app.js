@@ -197,7 +197,7 @@ Mousetrap.bind('ctrl+alt+l', function() {
 
 
 
-var app = angular.module('centoAuthoring', ['ui.router']);
+var app = angular.module('centoAuthoring', ['ui.router', 'ui.select2']);
 
 
 app.config(function($stateProvider, $interpolateProvider) {
@@ -229,6 +229,25 @@ app.config(function($stateProvider, $interpolateProvider) {
 
     });
 });
+app.directive("roconSelect2", ["$interval", function($interval) {
+    return {
+        restrict: "A",
+        link: function(scope, elem, attrs) {
+            //On click
+            $(elem).select2()
+            $(elem).on('change', function(){
+              console.log('hh');
+              var v = $(elem).select2('val');
+              console.log("v", v);
+
+
+              scope.destPackage = $(elem).select2('val');
+
+            });
+
+        }
+    }
+}]);
 
 app.service('serviceAuthoring', function($http, $q){
 

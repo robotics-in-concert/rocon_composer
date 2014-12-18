@@ -9,12 +9,8 @@
             <h4 class="modal-title">Select Package</h4>
           </div>
           <div class="modal-body">
-            <select multiple class="form-control" ng-model="destPackage" ng-options="pack as pack.name for pack in packageList">
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
+            <select id="package_select" style="width:100%;" ng-model="destPackage" ui-select2 >
+              <option ng-repeat="pack in packageList" value="[[pack.name]]" >[[pack.name]]</option>
             </select>
           </div>
           <div class="modal-footer">
