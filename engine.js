@@ -473,6 +473,25 @@ Engine.prototype.itemsToCode = function(items){
 
 };
 
+Engine.prototype.runBlocksById = function(ids){
+  var that = this;
+  this.getItems(function(err, items){
+    var items_to_load = R.filter(function(i){
+      return R.contains(i.id, ids);
+    })(items);
+
+    var scripts = that.itemsToCode(items_to_load);
+
+    that.runCode(scripts);
+
+
+
+
+  });
+
+
+};
+
 Engine.prototype.runBlocks = function(blocks){
   var that = this;
   this.getItems(function(err, items){

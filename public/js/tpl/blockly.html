@@ -1,3 +1,4 @@
+<div id="workflow-blockly">
   <div class="modal shortcut-modal" id="my-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -21,6 +22,11 @@
             <dd>Search block</dd>
             <dt>ctrl + alt + r</dt>
             <dd>Search block (repeat)</dd>
+
+            <dt>ctrl + alt + t</dt>
+            <dd>Toggle Header</dd>
+            <dt>ctrl + alt + y</dt>
+            <dd>Toggle Right Panel</dd>
           </dl>
         </div>
       </div>
@@ -55,9 +61,50 @@
     </div>
   </div>
 
+  <div ng-controller="MainCtrl">
   <div id="header">
-    HEADER!!!!
-    <a href="#" class="toggle_header">Toggle</a>
+    <div id="header-grad"></div>
+    <div id="header-main">
+      <img src="/img/logo1.png" width="85" height="85" class="logo">
+      <div class="info">
+        <div class="title">
+          <a href="" id="title" data-type="text" data-inputclass="input-large" data-title="Enter username"></a>
+        </div>
+        <div class="description">
+          <a href="" id="description" data-cols="100" data-rows="2" data-type="textarea" data-title="Enter username"></a>
+        </div>
+      </div>
+      <!-- <a href="#" class="toggle_header">Toggle</a> -->
+    </div>
+    <div id="header-menu">
+      <div class="container-fluid">
+        <ul class="nav navbar-nav">
+          <li class="dropdown active">
+            <a href="" class="dropdown-toggle" data-toggle="dropdown">File <span class="sr-only">(current)</span></a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="" ng-click="newData()">New</a></li>
+              <li><a href="">Open</a></li>
+              <li><a href="" ng-click="save()">Save</a></li>
+            </ul>
+          </li>
+          <li class="dropdown active">
+            <a href="" class="dropdown-toggle" data-toggle="dropdown">Edit <span class="sr-only">(current)</span></a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="" ng-click="clearWorkspace()">Clear board</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Option</span></a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="#">Share on Cento</a></li>
+              <li><a href="" class="toggle_right">Advanced Option</a></li>
+              <li><a href="#">Help</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+
   </div>
 
   <div id="header_toggler">
@@ -66,253 +113,306 @@
 
 
 
-  <div class="container0" ng-controller="MainCtrl">
-    <div id="right_switch">
-      <a href="#">Hide/Show</a>
-    </div>
+  <div class="container0 down">
     <div class="panel left">
       <div id="blocklyDiv"></div>
     </div>
     <div class="panel right">
       <div class="content">
-        <ul class="list-inline">
-          <li><button class="btn btn-sm btn-default" ng-click="runCurrent()">run current</button></li>
-          <li><button class="btn btn-sm btn-default" ng-click="clearWorkspace()">clear workspace</button></li>
-          <li><button class="btn btn-sm btn-default" ng-click="export()">export</button></li>
-          <li><button class="btn btn-sm btn-default" ng-click="import()">import</button></li>
-          <input type="file" style="display:none" id="file" name='file' onchange="angular.element(this).scope().fileNameChanged(this)" >
-        </ul>
 
 
-        <h3>triggers</h3>
-        <ul class="list-unstyled">
-          <!-- <li> -->
-            <!-- <button class="btn btn-sm btn-default" ng-click="trigger('delivery_request')">Delivery Request</button> -->
-          <!-- </li> -->
-          <!-- <li> -->
-            <!-- <button class="btn btn-sm btn-default" ng-click="trigger('arrive', arrive_param)">Arrive</button> -->
-            <!-- <input class="" type="text" ng-model="arrive_param"> -->
-          <!-- </li> -->
-          <!-- <li> -->
-            <!-- <button class="btn btn-sm btn-default" ng-click="trigger('confirm', confirm_param)">Confirm</button> -->
-            <!-- <input type="text" ng-model="confirm_param"> -->
-          <!-- </li> -->
-          <!-- <li> -->
-            <!-- custom : <input name="event_name"> <button class="btn btn-sm btn-default" id="trigger">trigger</button> -->
-          <!-- </li> -->
-          <li>
-            ROS : <input name="event_name" ng-model="new_topic_name"> <button class="btn btn-sm btn-default" id="trigger" ng-click="triggerEvent(new_topic_name)">trigger</button>
-          </li>
-        </ul>
-        <h3>load rapp</h3>
-        <ul class="list-unstyled">
-          <li>
-            <button class="btn btn-sm btn-default" id="trigger" ng-click="loadRapp()">load</button>
-          </li>
-        </ul>
 
-        <h3>engine</h3>
-        <ul class="list-inline">
-          <li>
-            <button class="btn btn-sm btn-default" ng-click="engineReset()">Reset</button>
-          </li>
-          <li>
-            <button class="btn btn-sm btn-default" ng-click="engineLoad()">Load Scripts</button>
-          </li>
-          <li>
-            <button class="btn btn-sm btn-default" ng-click="engineLoadChecked()">Load Checked Scripts</button>
-          </li>
-        </ul>
-
-        <div ng-controller="ListCtrl">
-          <h3>items</h3>
-          <input type="file" style="display:none" id="itemsFile" name='file' onchange="angular.element(this).scope().itemsFileNameChanged(this)" >
+        <div>
+          <h2>Engine</h2>
+          <h3>List</h3>
           <ul class="list-inline">
-            <li>
-              <button class="btn btn-sm btn-default" ng-click="exportItems()">export items</button>
-            </li>
-            <li>
-              <button class="btn btn-sm btn-default" ng-click="importItems()">import items</button>
-            </li>
           </ul>
-          <form class="form-inline well">
-            <div class="form-group">
-              <button class="btn btn-default" ng-click="newData()">new</button>
-              title : <input name="title" class="form-control" ng-model="current.title">
-              <button class="btn btn-default" ng-click="save()">save</button>
-            </div>
-          </form>
-          <ul id="data">
+          <ul id="data"  class="items list-unstyled">
             <li ng-repeat="i in items track by i.id">
-              <input type="checkbox" value="[[i.title]]" ng-checked="itemSelection.indexOf(i.title) > 0" ng-click="toggleItemSelection(i.title)">
-              <a href="" ng-click="load(i.id)">[[i.title]]</a>
-              <button class="btn btn-sm btn-default" ng-click="deleteItem(i.id)">delete</button>
+              <div class="item_wrap">
+                <input type="checkbox" value="[[i.title]]" ng-checked="itemSelection.indexOf(i.title) > 0" ng-click="toggleItemSelection(i.id)">
+                <a href="" ng-click="load(i.id)">[[i.title]]</a>
+                <a href="" class="fa fa-remove" ng-click="deleteItem(i.id)"></a>
+              </div>
             </li>
           </ul>
+
+
+          <ul id="tool-buttons" class="list-inline">
+            <li><a href="" title="reset" ng-click="engineReset()"><i class="fa fa-refresh"></i></a></li>
+            <!-- <li><a href=""><i class="fa fa-share"></i></a></li> -->
+            <li><a href=""><i class="fa fa-play" ng-click="engineLoadChecked()"></i></a></li>
+            <li><a href=""><i class="fa fa-download" ng-click="exportItems()"></i></a></li>
+            <li><a href=""><i class="fa fa-upload" ng-click="importItems()"></i></a></li>
+            <input type="file" style="display:none" id="itemsFile" name='file' onchange="angular.element(this).scope().itemsFileNameChanged(this)" >
+          </ul>
+          <!-- <ul class="list-inline"> -->
+            <!-- <li><button class="btn btn-sm btn-default" ng-click="runCurrent()">run current</button></li> -->
+            <!-- <li><button class="btn btn-sm btn-default" ng-click="export()">export</button></li> -->
+            <!-- <li><button class="btn btn-sm btn-default" ng-click="import()">import</button></li> -->
+            <!-- <li> -->
+              <!-- <button class="btn btn-sm btn-default" ng-click="exportItems()">export items</button> -->
+            <!-- </li> -->
+            <!-- <li> -->
+              <!-- <button class="btn btn-sm btn-default" ng-click="importItems()">import items</button> -->
+            <!-- </li> -->
+          <!-- </ul> -->
       </div>
       </div>
     </div>
   </div>
+  </div>
 
-    <xml id="toolbox" style="display: none">
-    
-    <category name="entity">
-      <block type="dest_huey"></block>
-      <block type="dest_huey"></block>
-      <block type="dest_huey"></block>
-      <block type="dest_huey"></block>
-      <block type="dest_huey"></block>
-      <block type="dest_huey"></block>
-      <block type="dest_huey"></block>
-      <block type="dest_huey"></block>
-      <block type="dest_huey"></block>
-      <block type="dest_huey"></block>
-      <block type="dest_huey"></block>
-      <block type="dest_huey"></block>
-      <block type="dest_huey"></block>
-      <block type="dest_huey"></block>
-      <block type="dest_dwlee"></block>
-      <block type="dest_docking"></block>
-      <block type="entity_phone_start"></block>
-      <block type="entity_robot_button"></block>
-      <block type="entity_phone_deliver"></block>
-      <block type="memory_message"></block>
-      <block type="memory_msg"></block>
-      <block type="memory_dest"></block>
-    </category>
-    <category name="ROS">
-      <block type="ros_subscribe">
-        <value name="NAME"><block type="text"><field name="TEXT">name</field></block></value>
-        <value name="TYPE"><block type="text"><field name="TEXT">type</field></block></value>
-      </block>
-      <block type="ros_publish">
-        <value name="NAME"><block type="text"><field name="TEXT">name</field></block></value>
-        <value name="TYPE"><block type="text"><field name="TEXT">type</field></block></value>
-      </block>
-      <block type="ros_action">
-        <value name="NAME"><block type="text"><field name="TEXT">name</field></block></value>
-        <value name="TYPE"><block type="text"><field name="TEXT">type</field></block></value>
-      </block>
-      <block type="ros_service">
-        <value name="NAME"><block type="text"><field name="TEXT">name</field></block></value>
-        <value name="TYPE"><block type="text"><field name="TEXT">type</field></block></value>
-      </block>
-      <block type="ros_requester_allocate"></block>
-      <block type="ros_requester_release"></block>
-
-    </category>
-    <category name="Object">
-      <block type="object_create_with"></block>
-      <block type="object_item">
-        <value name="VALUE"><block type="text"></block></value>
-      </block>
-      <block type="object_item">
-        <value name="VALUE"><block type="math_number"></block></value>
-      </block>
-      <block type="object_item_get"></block>
-      <block type="object_item_get2"></block>
-      <block type="object_item_set"></block>
-    </category>
-    <category name="Utils">
-      <block type="action_speak">
-        <value name="VALUE"><block type="text"></block></value>
-      
-      </block>
-      <block type="action_sleep">
-          <value name="VALUE"><block type="math_number"></block></value>
-      </block>
-      <block type="json"></block>
-      <block type="defer"></block>
-    </category>
-    <category name="demo">
-      <block type="test_event_handle"></block>
-      <block type="cond_no_brain"></block>
-      <block type="event_delivery_request"></block>
-      <block type="event_confirm"></block>
-      <block type="event_arrive"></block>
-      <block type="action_go_to"></block>
-      <block type="action_set"></block>
-      <block type="action_navigate"></block>
-      <block type="delay"></block>
-    </category>
-    
-    <category name="Logic"><block type="controls_if"></block><block type="logic_compare"></block><block type="logic_operation"></block><block type="logic_negate"></block><block type="logic_boolean"></block><block type="logic_null"></block><block type="logic_ternary"></block></category>
-    <category name="Loops"><block type="controls_repeat_ext"><value name="TIMES"><block type="math_number"><field name="NUM">10</field></block></value></block><block type="controls_whileUntil"></block><block type="controls_for"><value name="FROM"><block type="math_number"><field name="NUM">1</field></block></value><value name="TO"><block type="math_number"><field name="NUM">10</field></block></value><value name="BY"><block type="math_number"><field name="NUM">1</field></block></value></block><block type="controls_forEach"></block><block type="controls_flow_statements"></block></category>
-    <category name="Math"><block type="math_number"></block><block type="math_arithmetic"></block><block type="math_single"></block><block type="math_trig"></block><block type="math_constant"></block><block type="math_number_property"></block><block type="math_change"><value name="DELTA"><block type="math_number"><field name="NUM">1</field></block></value></block><block type="math_round"></block><block type="math_on_list"></block><block type="math_modulo"></block><block type="math_constrain"><value name="LOW"><block type="math_number"><field name="NUM">1</field></block></value><value name="HIGH"><block type="math_number"><field name="NUM">100</field></block></value></block><block type="math_random_int"><value name="FROM"><block type="math_number"><field name="NUM">1</field></block></value><value name="TO"><block type="math_number"><field name="NUM">100</field></block></value></block><block type="math_random_float"></block></category>
-    
-    <category name="Text">
-      <block type="text">
-      </block>
-      <block type="text_join">
-      </block>
-      <block type="text_append">
+  <xml id="toolbox" style="display: none">
+  <category name="ROS">
+    <block type="ros_subscribe">
+      <value name="NAME">
+        <block type="text">
+          <field name="TEXT">name</field>
+        </block>
+      </value>
+      <value name="TYPE">
+        <block type="text">
+          <field name="TEXT">type</field>
+        </block>
+      </value>
+    </block>
+    <block type="ros_publish">
+      <value name="NAME">
+        <block type="text">
+          <field name="TEXT">name</field>
+        </block>
+      </value>
+      <value name="TYPE">
+        <block type="text">
+          <field name="TEXT">type</field>
+        </block>
+      </value>
+    </block>
+    <block type="ros_action">
+      <value name="NAME">
+        <block type="text">
+          <field name="TEXT">name</field>
+        </block>
+      </value>
+      <value name="TYPE">
+        <block type="text">
+          <field name="TEXT">type</field>
+        </block>
+      </value>
+    </block>
+    <block type="ros_service">
+      <value name="NAME">
+        <block type="text">
+          <field name="TEXT">name</field>
+        </block>
+      </value>
+      <value name="TYPE">
+        <block type="text">
+          <field name="TEXT">type</field>
+        </block>
+      </value>
+    </block>
+    <block type="ros_requester_allocate" />
+    <block type="ros_requester_release" />
+  </category>
+  <category name="Logic">
+    <block type="controls_if" />
+    <block type="logic_compare" />
+    <block type="logic_operation" />
+    <block type="logic_negate" />
+    <block type="logic_boolean" />
+    <block type="logic_null" />
+    <block type="logic_ternary" />
+    <block type="controls_repeat_ext">
+      <value name="TIMES">
+        <block type="math_number">
+          <field name="NUM">10</field>
+        </block>
+      </value>
+    </block>
+    <block type="controls_whileUntil" />
+    <block type="controls_for">
+      <value name="FROM">
+        <block type="math_number">
+          <field name="NUM">1</field>
+        </block>
+      </value>
+      <value name="TO">
+        <block type="math_number">
+          <field name="NUM">10</field>
+        </block>
+      </value>
+      <value name="BY">
+        <block type="math_number">
+          <field name="NUM">1</field>
+        </block>
+      </value>
+    </block>
+    <block type="controls_forEach" />
+    <block type="controls_flow_statements" />
+  </category>
+  <category name="Object">
+    <block type="object_create_with" />
+    <block type="object_item">
+      <value name="VALUE">
+        <block type="text" />
+      </value>
+    </block>
+    <block type="object_item">
+      <value name="VALUE">
+        <block type="math_number" />
+      </value>
+    </block>
+    <block type="object_item_get" />
+    <block type="object_item_get2" />
+    <block type="object_item_set" />
+    <!-- math -->
+    <block type="math_number" />
+    <block type="math_arithmetic" />
+    <block type="math_single" />
+    <block type="math_trig" />
+    <block type="math_constant" />
+    <block type="math_number_property" />
+    <block type="math_change">
+      <value name="DELTA">
+        <block type="math_number">
+          <field name="NUM">1</field>
+        </block>
+      </value>
+    </block>
+    <block type="math_round" />
+    <block type="math_on_list" />
+    <block type="math_modulo" />
+    <block type="math_constrain">
+      <value name="LOW">
+        <block type="math_number">
+          <field name="NUM">1</field>
+        </block>
+      </value>
+      <value name="HIGH">
+        <block type="math_number">
+          <field name="NUM">100</field>
+        </block>
+      </value>
+    </block>
+    <block type="math_random_int">
+      <value name="FROM">
+        <block type="math_number">
+          <field name="NUM">1</field>
+        </block>
+      </value>
+      <value name="TO">
+        <block type="math_number">
+          <field name="NUM">100</field>
+        </block>
+      </value>
+    </block>
+    <block type="math_random_float" />
+    <!-- text -->
+    <block type="text" />
+    <block type="text_join" />
+    <block type="text_append">
       <value name="TEXT">
-      <block type="text">
-      </block>
+        <block type="text" />
       </value>
-      </block>
-      <block type="text_length">
-      </block>
-      <block type="text_isEmpty">
-      </block>
-      <block type="text_indexOf">
+    </block>
+    <block type="text_length" />
+    <block type="text_isEmpty" />
+    <block type="text_indexOf">
       <value name="VALUE">
-      <block type="variables_get">
-      <field name="VAR">text
-      </field>
-      </block>
+        <block type="variables_get">
+          <field name="VAR">text</field>
+        </block>
       </value>
-      </block>
-      <block type="text_charAt">
+    </block>
+    <block type="text_charAt">
       <value name="VALUE">
-      <block type="variables_get">
-      <field name="VAR">text
-      </field>
-      </block>
+        <block type="variables_get">
+          <field name="VAR">text</field>
+        </block>
       </value>
-      </block>
-      <block type="text_getSubstring">
+    </block>
+    <block type="text_getSubstring">
       <value name="STRING">
-      <block type="variables_get">
-      <field name="VAR">text
-      </field>
-      </block>
+        <block type="variables_get">
+          <field name="VAR">text</field>
+        </block>
       </value>
-      </block>
-      <block type="text_changeCase">
-      </block>
-      <block type="text_trim">
-      </block>
-      <block type="text_print">
-      </block>
-      <block type="text_prompt_ext">
+    </block>
+    <block type="text_changeCase" />
+    <block type="text_trim" />
+    <block type="text_print" />
+    <block type="text_prompt_ext">
       <value name="TEXT">
-      <block type="text">
-      </block>
+        <block type="text" />
       </value>
-      </block>
-    </category>
-<category name="Lists">
-<block type="lists_create_empty">
-</block>
-<block type="lists_create_with">
-</block>
-    <block type="lists_repeat"><value name="NUM"><block type="math_number"><field name="NUM">5</field></block></value></block>
-    <block type="lists_length"></block><block type="lists_isEmpty"></block><block type="lists_indexOf"><value name="VALUE"><block type="variables_get"><field name="VAR">list</field></block></value></block><block type="lists_getIndex"><value name="VALUE"><block type="variables_get"><field name="VAR">list</field></block></value></block><block type="lists_setIndex"><value name="LIST"><block type="variables_get"><field name="VAR">list</field></block></value></block><block type="lists_getSublist"><value name="LIST"><block type="variables_get"><field name="VAR">list</field></block></value></block></category>
-    
-    <category name="Colour"><block type="colour_picker"></block><block type="colour_random"></block><block type="colour_rgb"></block><block type="colour_blend"></block></category>
-    
-    <category name="Variables" custom="VARIABLE"></category><category name="Functions" custom="PROCEDURE"></category>
-    
-    
-    
-    
-    <category name="UDF"></category> 
-    </xml>
+    </block>
+  </category>
+  <category name="Utils">
+    <block type="action_speak">
+      <value name="VALUE">
+        <block type="text" />
+      </value>
+    </block>
+    <block type="action_sleep">
+      <value name="VALUE">
+        <block type="math_number" />
+      </value>
+    </block>
+    <block type="json" />
+    <block type="defer" />
+    <block type="lists_create_empty" />
+    <block type="lists_create_with" />
+    <block type="lists_repeat">
+      <value name="NUM">
+        <block type="math_number">
+          <field name="NUM">5</field>
+        </block>
+      </value>
+    </block>
+    <block type="lists_length" />
+    <block type="lists_isEmpty" />
+    <block type="lists_indexOf">
+      <value name="VALUE">
+        <block type="variables_get">
+          <field name="VAR">list</field>
+        </block>
+      </value>
+    </block>
+    <block type="lists_getIndex">
+      <value name="VALUE">
+        <block type="variables_get">
+          <field name="VAR">list</field>
+        </block>
+      </value>
+    </block>
+    <block type="lists_setIndex">
+      <value name="LIST">
+        <block type="variables_get">
+          <field name="VAR">list</field>
+        </block>
+      </value>
+    </block>
+    <block type="lists_getSublist">
+      <value name="LIST">
+        <block type="variables_get">
+          <field name="VAR">list</field>
+        </block>
+      </value>
+    </block>
+  </category>
+  <!-- <category name="Colour"><block type="colour_picker"></block><block type="colour_random"></block><block type="colour_rgb"></block><block type="colour_blend"></block></category> -->
+  <category name="Variables" custom="VARIABLE" />
+  <category name="Functions" custom="PROCEDURE" />
+</xml>
 
+    
+    
 <script type="text/javascript">
   Blockly.inject(document.getElementById('blocklyDiv'),
     {path: './', toolbox: document.getElementById('toolbox')});
 
 
 </script>
+</div>

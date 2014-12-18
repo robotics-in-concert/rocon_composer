@@ -1,0 +1,26 @@
+<div id="workflow_index" ng-controller="WorkflowIndexCtrl">
+  <div class="left">
+    <h2>RECENT</h2>
+
+    <ul class="recents list-unstyled">
+      <li ng-repeat="item in recents">
+        <div class="title">[[item.title]]</div>
+        <div class="date">update [[item.id]]</div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="right">
+    <h2>NEW</h2>
+    <button class="btn btn-primary" ui-sref="workflow_blockly">Blockly</button>
+    <h2>LIBRARY</h2>
+    <div class="items">
+      <ul class="items-list list-unstyled">
+        <li ng-repeat="item in items">
+          <div class="title">[[item.title]]</div>
+          <div class="date">update [[item.id]]</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
