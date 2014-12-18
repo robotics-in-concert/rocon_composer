@@ -4,8 +4,8 @@
     <h2>RECENT</h2>
 
     <ul class="recents list-unstyled">
-      <li ng-repeat="item in recents">
-        <div class="title">[[item.title]]</div>
+      <li ng-repeat="item in services | orderBy:'created_at':true | limitTo:5 ">
+        <div class="title"><a href="" ui-sref="services_edit({service_id: item.id})">[[item.name]]</a></div>
         <div class="date">update [[item.created_at | date:'yyyy-MM-dd']]</div>
       </li>
     </ul>
@@ -13,11 +13,20 @@
 
   <div class="right">
     <h2>NEW</h2>
-    <button class="btn btn-primary" ui-sref="services">new</button>
+    <div class="search">
+      <img src="/img/logo1g.png" width="30px" height="30px">
+      <input type="text" ng-model="newName" class="gray-input">
+      <button ui-sref="services({new_name: newName})" class="gray-btn">New</button>
+    </div>
     <h2>SERVICES</h2>
+    <div class="search">
+      <img src="/img/search.png" width="30px" height="30px">
+      <input type="text" ng-model="searchKeyword" class="gray-input">
+      <button class="gray-btn">Search</button>
+    </div>
     <div class="items">
       <ul class="items-list list-unstyled">
-        <li class="item" ng-repeat="item in services track by item.id">
+        <li class="item" ng-repeat="item in services | filter:searchKeyword:searchCompare track by item.id ">
           <div class="item-head">
             <div class="title"><a href="" ui-sref="services_edit({service_id: item.id})">[[item.name]]</a></div>
             <div class="description">[[item.description]]</div>

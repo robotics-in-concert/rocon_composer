@@ -211,7 +211,7 @@ app.config(function($stateProvider, $interpolateProvider) {
       templateUrl: '/js/tpl/services_index.html'
     })
     .state('services', {
-      url: '/services',
+      url: '/services?new_name',
       templateUrl: '/js/tpl/services.html'
     })
     .state('services_edit', {

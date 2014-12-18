@@ -3,7 +3,7 @@
     <h2 class="blue">RECENT</h2>
 
     <ul class="recents list-unstyled">
-      <li ng-repeat="item in recents">
+      <li ng-repeat="item in items | orderBy:'id':true | limitTo:5 ">
         <div class="title">[[item.title]]</div>
         <div class="date">update [[item.id | date:'yyyy-MM-dd']]</div>
       </li>
@@ -12,16 +12,20 @@
 
   <div class="right">
     <h2>NEW</h2>
-    <button class="btn btn-primary" ui-sref="workflow_blockly">Blockly</button>
+    <div class="search">
+      <img src="/img/logo1g.png" width="30px" height="30px">
+      <input type="text" class="gray-input">
+      <button class="gray-btn" ui-sref="workflow_blockly">New</button>
+    </div>
     <h2>LIBRARY</h2>
     <div class="search">
       <img src="/img/search.png" width="30px" height="30px">
-      <input type="text" class="gray-input">
+      <input type="text" ng-model="searchKeyword" class="gray-input">
       <button class="gray-btn">Search</button>
     </div>
     <div class="items">
       <ul class="items-list list-unstyled">
-        <li class="item" ng-repeat="item in items">
+        <li class="item" ng-repeat="item in items | filter:searchKeyword:searchCompare ">
           <div class="item-head">
             <div class="title">[[item.title]]</div>
             <div class="description">[[item.description]]</div>

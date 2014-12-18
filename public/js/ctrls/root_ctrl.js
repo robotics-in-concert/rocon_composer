@@ -25,5 +25,8 @@ app.controller('RootCtrl', function($scope, blocksStore, $http) {
     }, true);
   });
 
+  $scope.searchCompare = function(v, keyword){ 
+    return v.toString().toLowerCase().indexOf(keyword.toLowerCase()) >= 0;
+  };
 
 });

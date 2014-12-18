@@ -205,7 +205,7 @@ button {
 }
 #workflow_index .right .items {
   position: absolute;
-  top: 300px;
+  top: 250px;
   right: 10px;
   left: 30px;
   bottom: 20px;
@@ -219,7 +219,7 @@ button {
 #workflow_index .right .items .items-list > li.item {
   float: left;
   width: 350px;
-  height: 300px;
+  height: 250px;
   border: solid 1px #e9e9e9;
   border-radius: 10px;
   margin-right: 14px;
@@ -320,9 +320,23 @@ button {
 #blocklyDiv div[role=treeitem]:nth-child(6) {
   background-color: #404041 !important;
 }
+.search {
+  margin-bottom: 30px;
+}
 .search .gray-input {
   background-color: #e7e7e8;
-  border-radius: 10px;
+  border-radius: 15px;
   border: none;
   line-height: 30px;
+  outline: none;
+  padding: 0 15px;
+}
+.search .gray-btn {
+  background-color: #a7a9ac;
+  border: none;
+  border-radius: 15px;
+  line-height: 15px;
+  height: 30px;
+  padding: 0 15px;
+  color: white;
 }
