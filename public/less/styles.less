@@ -12,6 +12,16 @@
 
 };
 
+h1.blue {
+  color: #00aeef;
+}
+h2.blue {
+  color: #00aeef;
+}
+h3.blue {
+  color: #00aeef;
+}
+
 html {
   height: 100%;
 
@@ -309,8 +319,9 @@ button {
         }
         .item-head {
           border-bottom: solid 1px #c8c7c7;
-          background: url('/img/logo1g.png') no-repeat;
-          padding: 10px 0 20px 50px;
+          background: url('/img/logo1g.png') 0px 10px no-repeat;
+          background-size: 55px 55px;
+          padding: 10px 0 20px 75px;
 
           .title {
             font-size: 24px;
@@ -334,8 +345,16 @@ button {
     width: 400px;
     border-right: solid 1px rgb(235,235,235);
 
+    .recents li:nth-child(1) {
+      margin-top: 30px;
+    }
     .recents li {
-      margin-bottom: 24px;
+      margin-bottom: 35px;
+      background: url('/img/logo1.png') no-repeat;
+      background-size: 55px 55px;
+
+      padding-left: 70px;
+
     }
     .recents li .title {
       font-size: 24px;
@@ -394,6 +413,20 @@ button {
   }
   div[role=treeitem]:nth-child(6) {
     background-color: #404041 !important;
+  }
+
+}
+
+
+
+.search {
+
+  .gray-input {
+    background-color: #e7e7e8;
+    border-radius: 10px;
+    border: none;
+    line-height: 30px;
+
   }
 
 }

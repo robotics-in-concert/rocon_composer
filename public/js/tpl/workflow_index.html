@@ -1,6 +1,6 @@
 <div id="workflow_index" ng-controller="WorkflowIndexCtrl">
   <div class="left">
-    <h2>RECENT</h2>
+    <h2 class="blue">RECENT</h2>
 
     <ul class="recents list-unstyled">
       <li ng-repeat="item in recents">
@@ -14,6 +14,11 @@
     <h2>NEW</h2>
     <button class="btn btn-primary" ui-sref="workflow_blockly">Blockly</button>
     <h2>LIBRARY</h2>
+    <div class="search">
+      <img src="/img/search.png" width="30px" height="30px">
+      <input type="text" class="gray-input">
+      <button class="gray-btn">Search</button>
+    </div>
     <div class="items">
       <ul class="items-list list-unstyled">
         <li class="item" ng-repeat="item in items">
