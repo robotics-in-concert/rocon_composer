@@ -451,6 +451,10 @@ Engine.prototype.clear = function(){
   this.memory = {};
   this.unsubscribeAll();
 
+  R.mapObj(function(r){
+    try{ r.cancel_all(); }catch(e){}
+  })(this.schedule_requests);
+
   this.log('engine cleared');
 
 };
