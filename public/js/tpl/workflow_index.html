@@ -4,7 +4,7 @@
 
     <ul class="recents list-unstyled">
       <li ng-repeat="item in items | orderBy:'id':true | limitTo:5 ">
-        <div class="title">[[item.title]]</div>
+        <div class="title"><a href="" ui-sref="workflow_edit({id: item.id})">[[item.title]]</a></div>
         <div class="date">update [[item.id | date:'yyyy-MM-dd']]</div>
       </li>
     </ul>
@@ -14,8 +14,8 @@
     <h2>NEW</h2>
     <div class="search">
       <img src="/img/logo1g.png" width="30px" height="30px">
-      <input type="text" class="gray-input">
-      <button class="gray-btn" ui-sref="workflow_blockly">New</button>
+      <input type="text" ng-model="newName" class="gray-input">
+      <button class="gray-btn" ui-sref="workflow_blockly({new_name: newName})">New</button>
     </div>
     <h2>LIBRARY</h2>
     <div class="search">
@@ -27,7 +27,7 @@
       <ul class="items-list list-unstyled">
         <li class="item" ng-repeat="item in items | filter:searchKeyword:searchCompare ">
           <div class="item-head">
-            <div class="title">[[item.title]]</div>
+            <div class="title"><a href="" ui-sref="workflow_edit({id: item.id})">[[item.title]]</a></div>
             <div class="description">[[item.description]]</div>
           </div>
           <div class="item-body">
