@@ -87,6 +87,7 @@ Mousetrap.bind('ctrl+alt+t', function(){
 });
 Mousetrap.bind('ctrl+alt+y', function(){
   $('.container0 .right').toggle();
+  Blockly.fireUiEvent(window, 'resize');
   return false;
 
 });
