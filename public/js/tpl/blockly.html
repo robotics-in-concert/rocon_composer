@@ -163,127 +163,252 @@
   </div>
   </div>
 
-    <xml id="toolbox" style="display: none">
-    
-    <category name="ROS">
-      <block type="ros_subscribe">
-        <value name="NAME"><block type="text"><field name="TEXT">name</field></block></value>
-        <value name="TYPE"><block type="text"><field name="TEXT">type</field></block></value>
-      </block>
-      <block type="ros_publish">
-        <value name="NAME"><block type="text"><field name="TEXT">name</field></block></value>
-        <value name="TYPE"><block type="text"><field name="TEXT">type</field></block></value>
-      </block>
-      <block type="ros_action">
-        <value name="NAME"><block type="text"><field name="TEXT">name</field></block></value>
-        <value name="TYPE"><block type="text"><field name="TEXT">type</field></block></value>
-      </block>
-      <block type="ros_service">
-        <value name="NAME"><block type="text"><field name="TEXT">name</field></block></value>
-        <value name="TYPE"><block type="text"><field name="TEXT">type</field></block></value>
-      </block>
-      <block type="ros_requester_allocate"></block>
-      <block type="ros_requester_release"></block>
-
-    </category>
-    <category name="Object">
-      <block type="object_create_with"></block>
-      <block type="object_item">
-        <value name="VALUE"><block type="text"></block></value>
-      </block>
-      <block type="object_item">
-        <value name="VALUE"><block type="math_number"></block></value>
-      </block>
-      <block type="object_item_get"></block>
-      <block type="object_item_get2"></block>
-      <block type="object_item_set"></block>
-    </category>
-    <category name="Utils">
-      <block type="action_speak">
-        <value name="VALUE"><block type="text"></block></value>
-      
-      </block>
-      <block type="action_sleep">
-          <value name="VALUE"><block type="math_number"></block></value>
-      </block>
-      <block type="json"></block>
-      <block type="defer"></block>
-    </category>
-    
-    <category name="Logic"><block type="controls_if"></block><block type="logic_compare"></block><block type="logic_operation"></block><block type="logic_negate"></block><block type="logic_boolean"></block><block type="logic_null"></block><block type="logic_ternary"></block></category>
-    <category name="Loops"><block type="controls_repeat_ext"><value name="TIMES"><block type="math_number"><field name="NUM">10</field></block></value></block><block type="controls_whileUntil"></block><block type="controls_for"><value name="FROM"><block type="math_number"><field name="NUM">1</field></block></value><value name="TO"><block type="math_number"><field name="NUM">10</field></block></value><value name="BY"><block type="math_number"><field name="NUM">1</field></block></value></block><block type="controls_forEach"></block><block type="controls_flow_statements"></block></category>
-    <category name="Math"><block type="math_number"></block><block type="math_arithmetic"></block><block type="math_single"></block><block type="math_trig"></block><block type="math_constant"></block><block type="math_number_property"></block><block type="math_change"><value name="DELTA"><block type="math_number"><field name="NUM">1</field></block></value></block><block type="math_round"></block><block type="math_on_list"></block><block type="math_modulo"></block><block type="math_constrain"><value name="LOW"><block type="math_number"><field name="NUM">1</field></block></value><value name="HIGH"><block type="math_number"><field name="NUM">100</field></block></value></block><block type="math_random_int"><value name="FROM"><block type="math_number"><field name="NUM">1</field></block></value><value name="TO"><block type="math_number"><field name="NUM">100</field></block></value></block><block type="math_random_float"></block></category>
-    
-    <category name="Text">
-      <block type="text">
-      </block>
-      <block type="text_join">
-      </block>
-      <block type="text_append">
+  <xml id="toolbox" style="display: none">
+  <category name="ROS">
+    <block type="ros_subscribe">
+      <value name="NAME">
+        <block type="text">
+          <field name="TEXT">name</field>
+        </block>
+      </value>
+      <value name="TYPE">
+        <block type="text">
+          <field name="TEXT">type</field>
+        </block>
+      </value>
+    </block>
+    <block type="ros_publish">
+      <value name="NAME">
+        <block type="text">
+          <field name="TEXT">name</field>
+        </block>
+      </value>
+      <value name="TYPE">
+        <block type="text">
+          <field name="TEXT">type</field>
+        </block>
+      </value>
+    </block>
+    <block type="ros_action">
+      <value name="NAME">
+        <block type="text">
+          <field name="TEXT">name</field>
+        </block>
+      </value>
+      <value name="TYPE">
+        <block type="text">
+          <field name="TEXT">type</field>
+        </block>
+      </value>
+    </block>
+    <block type="ros_service">
+      <value name="NAME">
+        <block type="text">
+          <field name="TEXT">name</field>
+        </block>
+      </value>
+      <value name="TYPE">
+        <block type="text">
+          <field name="TEXT">type</field>
+        </block>
+      </value>
+    </block>
+    <block type="ros_requester_allocate" />
+    <block type="ros_requester_release" />
+  </category>
+  <category name="Logic">
+    <block type="controls_if" />
+    <block type="logic_compare" />
+    <block type="logic_operation" />
+    <block type="logic_negate" />
+    <block type="logic_boolean" />
+    <block type="logic_null" />
+    <block type="logic_ternary" />
+    <block type="controls_repeat_ext">
+      <value name="TIMES">
+        <block type="math_number">
+          <field name="NUM">10</field>
+        </block>
+      </value>
+    </block>
+    <block type="controls_whileUntil" />
+    <block type="controls_for">
+      <value name="FROM">
+        <block type="math_number">
+          <field name="NUM">1</field>
+        </block>
+      </value>
+      <value name="TO">
+        <block type="math_number">
+          <field name="NUM">10</field>
+        </block>
+      </value>
+      <value name="BY">
+        <block type="math_number">
+          <field name="NUM">1</field>
+        </block>
+      </value>
+    </block>
+    <block type="controls_forEach" />
+    <block type="controls_flow_statements" />
+  </category>
+  <category name="Object">
+    <block type="object_create_with" />
+    <block type="object_item">
+      <value name="VALUE">
+        <block type="text" />
+      </value>
+    </block>
+    <block type="object_item">
+      <value name="VALUE">
+        <block type="math_number" />
+      </value>
+    </block>
+    <block type="object_item_get" />
+    <block type="object_item_get2" />
+    <block type="object_item_set" />
+    <!-- math -->
+    <block type="math_number" />
+    <block type="math_arithmetic" />
+    <block type="math_single" />
+    <block type="math_trig" />
+    <block type="math_constant" />
+    <block type="math_number_property" />
+    <block type="math_change">
+      <value name="DELTA">
+        <block type="math_number">
+          <field name="NUM">1</field>
+        </block>
+      </value>
+    </block>
+    <block type="math_round" />
+    <block type="math_on_list" />
+    <block type="math_modulo" />
+    <block type="math_constrain">
+      <value name="LOW">
+        <block type="math_number">
+          <field name="NUM">1</field>
+        </block>
+      </value>
+      <value name="HIGH">
+        <block type="math_number">
+          <field name="NUM">100</field>
+        </block>
+      </value>
+    </block>
+    <block type="math_random_int">
+      <value name="FROM">
+        <block type="math_number">
+          <field name="NUM">1</field>
+        </block>
+      </value>
+      <value name="TO">
+        <block type="math_number">
+          <field name="NUM">100</field>
+        </block>
+      </value>
+    </block>
+    <block type="math_random_float" />
+    <!-- text -->
+    <block type="text" />
+    <block type="text_join" />
+    <block type="text_append">
       <value name="TEXT">
-      <block type="text">
-      </block>
+        <block type="text" />
       </value>
-      </block>
-      <block type="text_length">
-      </block>
-      <block type="text_isEmpty">
-      </block>
-      <block type="text_indexOf">
+    </block>
+    <block type="text_length" />
+    <block type="text_isEmpty" />
+    <block type="text_indexOf">
       <value name="VALUE">
-      <block type="variables_get">
-      <field name="VAR">text
-      </field>
-      </block>
+        <block type="variables_get">
+          <field name="VAR">text</field>
+        </block>
       </value>
-      </block>
-      <block type="text_charAt">
+    </block>
+    <block type="text_charAt">
       <value name="VALUE">
-      <block type="variables_get">
-      <field name="VAR">text
-      </field>
-      </block>
+        <block type="variables_get">
+          <field name="VAR">text</field>
+        </block>
       </value>
-      </block>
-      <block type="text_getSubstring">
+    </block>
+    <block type="text_getSubstring">
       <value name="STRING">
-      <block type="variables_get">
-      <field name="VAR">text
-      </field>
-      </block>
+        <block type="variables_get">
+          <field name="VAR">text</field>
+        </block>
       </value>
-      </block>
-      <block type="text_changeCase">
-      </block>
-      <block type="text_trim">
-      </block>
-      <block type="text_print">
-      </block>
-      <block type="text_prompt_ext">
+    </block>
+    <block type="text_changeCase" />
+    <block type="text_trim" />
+    <block type="text_print" />
+    <block type="text_prompt_ext">
       <value name="TEXT">
-      <block type="text">
-      </block>
+        <block type="text" />
       </value>
-      </block>
-    </category>
-<category name="Lists">
-<block type="lists_create_empty">
-</block>
-<block type="lists_create_with">
-</block>
-    <block type="lists_repeat"><value name="NUM"><block type="math_number"><field name="NUM">5</field></block></value></block>
-    <block type="lists_length"></block><block type="lists_isEmpty"></block><block type="lists_indexOf"><value name="VALUE"><block type="variables_get"><field name="VAR">list</field></block></value></block><block type="lists_getIndex"><value name="VALUE"><block type="variables_get"><field name="VAR">list</field></block></value></block><block type="lists_setIndex"><value name="LIST"><block type="variables_get"><field name="VAR">list</field></block></value></block><block type="lists_getSublist"><value name="LIST"><block type="variables_get"><field name="VAR">list</field></block></value></block></category>
-    
-    <category name="Colour"><block type="colour_picker"></block><block type="colour_random"></block><block type="colour_rgb"></block><block type="colour_blend"></block></category>
-    
-    <category name="Variables" custom="VARIABLE"></category><category name="Functions" custom="PROCEDURE"></category>
-    
-    
-    
-    
-    <category name="UDF"></category> 
-    </xml>
+    </block>
+  </category>
+  <category name="Utils">
+    <block type="action_speak">
+      <value name="VALUE">
+        <block type="text" />
+      </value>
+    </block>
+    <block type="action_sleep">
+      <value name="VALUE">
+        <block type="math_number" />
+      </value>
+    </block>
+    <block type="json" />
+    <block type="defer" />
+    <block type="lists_create_empty" />
+    <block type="lists_create_with" />
+    <block type="lists_repeat">
+      <value name="NUM">
+        <block type="math_number">
+          <field name="NUM">5</field>
+        </block>
+      </value>
+    </block>
+    <block type="lists_length" />
+    <block type="lists_isEmpty" />
+    <block type="lists_indexOf">
+      <value name="VALUE">
+        <block type="variables_get">
+          <field name="VAR">list</field>
+        </block>
+      </value>
+    </block>
+    <block type="lists_getIndex">
+      <value name="VALUE">
+        <block type="variables_get">
+          <field name="VAR">list</field>
+        </block>
+      </value>
+    </block>
+    <block type="lists_setIndex">
+      <value name="LIST">
+        <block type="variables_get">
+          <field name="VAR">list</field>
+        </block>
+      </value>
+    </block>
+    <block type="lists_getSublist">
+      <value name="LIST">
+        <block type="variables_get">
+          <field name="VAR">list</field>
+        </block>
+      </value>
+    </block>
+  </category>
+  <!-- <category name="Colour"><block type="colour_picker"></block><block type="colour_random"></block><block type="colour_rgb"></block><block type="colour_blend"></block></category> -->
+  <category name="Variables" custom="VARIABLE" />
+  <category name="Functions" custom="PROCEDURE" />
+</xml>
 
+    
+    
 <script type="text/javascript">
   Blockly.inject(document.getElementById('blocklyDiv'),
     {path: './', toolbox: document.getElementById('toolbox')});
