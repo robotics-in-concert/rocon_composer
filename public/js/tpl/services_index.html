@@ -4,7 +4,7 @@
     <h2>RECENT</h2>
 
     <ul class="recents list-unstyled">
-      <li ng-repeat="item in services | orderBy:'created_at':true | limitTo:5 ">
+      <li ng-repeat="item in services | orderBy:'created_at':true | limitTo:5 track by item.id">
         <div class="title"><a href="" ui-sref="services_edit({service_id: item.id})">[[item.name]]</a></div>
         <div class="date">update [[item.created_at | date:'yyyy-MM-dd']]</div>
       </li>

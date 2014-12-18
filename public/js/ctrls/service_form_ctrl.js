@@ -88,7 +88,9 @@ var schema = {
         launcher_type: {
           type: 'string',
           enum: [
-            'ros_launcher'
+            'ros_launcher',
+            'bpel',
+            'blockly'
           ]
 
         },
