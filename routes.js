@@ -131,8 +131,7 @@ module.exports = function(app, db){
   app.post('/api/engine/load', function(req, res){
 
     var items = req.body.blocks;
-
-    $engine.runBlocks(items)
+    $engine.runBlocksById(items)
     res.send({result: true});
   });
   app.post('/api/eval', function(req, res){
