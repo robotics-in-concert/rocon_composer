@@ -5,7 +5,7 @@
     <ul class="recents list-unstyled">
       <li ng-repeat="item in recents">
         <div class="title">[[item.title]]</div>
-        <div class="date">update [[item.id]]</div>
+        <div class="date">update [[item.id | date:'yyyy-MM-dd']]</div>
       </li>
     </ul>
   </div>
@@ -31,7 +31,7 @@
 
 
           <div class="bl">
-            <span class="date">update [[item.id]]</span>
+            <span class="date">update [[item.id | date:'yyyy-MM-dd']]</span>
           </div>
           <div class="br">
             <span class="date"></span>
