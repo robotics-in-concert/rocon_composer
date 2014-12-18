@@ -16,9 +16,26 @@
     <h2>LIBRARY</h2>
     <div class="items">
       <ul class="items-list list-unstyled">
-        <li ng-repeat="item in items">
-          <div class="title">[[item.title]]</div>
-          <div class="date">update [[item.id]]</div>
+        <li class="item" ng-repeat="item in items">
+          <div class="item-head">
+            <div class="title">[[item.title]]</div>
+            <div class="description">[[item.description]]</div>
+          </div>
+          <div class="item-body">
+            <ul>
+              <li>Movement</li>
+              <li>TTS</li>
+              <li>Touch</li>
+            </ul>
+          </div>
+
+
+          <div class="bl">
+            <span class="date">update [[item.id]]</span>
+          </div>
+          <div class="br">
+            <span class="date"></span>
+          </div>
         </li>
       </ul>
     </div>

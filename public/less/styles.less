@@ -1,4 +1,16 @@
 
+.bl {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+
+};
+.br {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+
+};
 
 html {
   height: 100%;
@@ -253,7 +265,7 @@ button {
         overflow: hidden;
       }
 
-      .items-list li {
+      .items-list > li.item {
         float: left;
         width: 350px;
         height: 300px;
@@ -261,9 +273,51 @@ button {
         border-radius: 10px;
         margin-right: 14px;
         margin-bottom: 24px;
+        position: relative;
 
-        font-size: 24px;
         box-shadow: 0 10px rgba(167,167,167,1);
+        padding: 1em;
+
+
+        .bl {
+          margin: 20px;
+          font-size: 12px;
+          color: #aaa;
+
+        }
+
+        .item-body {
+          padding: 20px 0;
+          ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+          }
+                   
+          li { 
+              padding-left: 0.5em; 
+              /* text-indent: -0.3em; */
+          }
+
+          li:before {
+              content: "• ";
+              color: #00aeef; /* or whatever color you prefer */
+              margin-right: 5px;
+          } 
+
+
+        }
+        .item-head {
+          border-bottom: solid 1px #c8c7c7;
+          background: url('/img/logo1g.png') no-repeat;
+          padding: 10px 0 20px 50px;
+
+          .title {
+            font-size: 24px;
+
+          }
+
+        }
 
       }
 
