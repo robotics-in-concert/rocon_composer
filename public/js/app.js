@@ -594,12 +594,11 @@ app.controller('MainCtrl', function($scope, blocksStore, $http, $rootScope) {
       var r = new FileReader();
       r.onload = function(e) { 
         var json = e.target.result;
-        var items = JSON.parse(json);
-
-        console.log("items to import ", items);
+        var item = JSON.parse(json);
 
         $scope.$apply(function(){
-          $scope.items = _.uniq(_.flatten([items, $scope.items]), 'title');
+          item.id = new Date().getTime();
+          $scope.items.push(item);
 
         });
 
