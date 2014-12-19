@@ -1788,23 +1788,9 @@ app.directive("roconSelect2", ["$interval", function($interval) {
     }
 }]);
 
-app.service('serviceAuthoring', function($http, $q){
 
-  this.saveService = function(serviceMeta, package){
-    return $http.post('/api/services/save', {service: serviceMeta, package: package}).then(function(res){
-      return res.data;
-    });
+var app = angular.module('centoAuthoring');
 
-  };
-
-  this.getPackages = function(serviceMeta){
-    return $http.get('/api/packages').then(function(res){
-      return res.data;
-    });
-
-  };
-
-});
 app.service('blocksStore', function($http, $q){
 
 
@@ -1859,6 +1845,25 @@ app.service('blocksStore', function($http, $q){
     });
   };
 
+
+});
+
+
+app.service('serviceAuthoring', function($http, $q){
+
+  this.saveService = function(serviceMeta, package){
+    return $http.post('/api/services/save', {service: serviceMeta, package: package}).then(function(res){
+      return res.data;
+    });
+
+  };
+
+  this.getPackages = function(serviceMeta){
+    return $http.get('/api/packages').then(function(res){
+      return res.data;
+    });
+
+  };
 
 });
 
@@ -1943,13 +1948,6 @@ app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
       }
 
     });
-
-
-});
-
-
-var app = angular.module('centoAuthoring');
-app.controller('ListCtrl', function($scope, blocksStore, $http) {
 
 
 });
@@ -2504,6 +2502,7 @@ app.controller('ServicesIndexCtrl', function($scope, blocksStore) {
 });
 
 
+var app = angular.module('centoAuthoring');
 app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $rootScope, $stateParams) {
 
   var items;

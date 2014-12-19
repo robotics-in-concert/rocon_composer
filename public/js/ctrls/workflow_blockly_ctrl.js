@@ -1,4 +1,5 @@
 
+var app = angular.module('centoAuthoring');
 app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $rootScope, $stateParams) {
 
   var items;
