@@ -23,6 +23,7 @@ var paths = {
       './public/js/blocks.js',
       './public/js/blocks/**/*js',
       './public/js/block_gen.js',
+      './public/js/utils.js',
       './public/js/app.js',
       './public/js/services/**/*js',
       './public/js/ctrls/**/*js',

@@ -5,37 +5,6 @@ JSONEditor.defaults.options.theme = 'bootstrap3';
 $.fn.editable.defaults.mode = 'inline';
 $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary btn-sm editable-submit"><i class="fa fa-check"></i></button><button type="button" class="btn btn-default btn-sm editable-cancel"><i class="fa fa-remove"></i></button>'
 
-R.mapProp = R.compose( R.map, R.prop );
-
-var _uuid = (function() {
-  function s4() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-               .toString(16)
-               .substring(1);
-  }
-  return function() {
-      return [s4() + s4(),
-        s4(),
-        s4(),
-        s4(),
-        s4() + s4() + s4()].join("");
-  };
-})();
-
-
-_js = function(prettify){
-  var js = Blockly.JavaScript.workspaceToCode();
-  if(prettify) js = js_beautify(js);
-  return js;
-};
-
-_xml = function(prettify){
-  var dom = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
-  var xml = Blockly.Xml.domToText(dom);
-  if(prettify) xml = vkbeautify.xml(xml);
-  return xml;
-};
-
 var reload_udf_blocks = function(items){
 
   var $cat = $('category[name=Utils]');
@@ -77,27 +46,8 @@ var toggle_header_menu = function(){
 
 };
 $(function(){
-  $('#right_switch a').click(function(){
-    $('.right').toggle();
-
-    if($('.right').is(':visible')){
-      $('.left').css('width', '70%');
-      $('.right').css('width', '30%');
-
-    }else{
-      $('.left').css('width', '100%');
-    }
-    Blockly.fireUiEvent(window, 'resize');
-
-  });
-
-  $('.toggle_header').click(toggle_header_menu);
-
   $(document.body).on('click', '.toggle_header', toggle_header_menu);
   $(document.body).on('click', '.toggle_right', function(){ $('.container0 .right').toggle(); });
-
-
-
 });
 Mousetrap.bind('ctrl+alt+t', function(){
   toggle_header_menu();

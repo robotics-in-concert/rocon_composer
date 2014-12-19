@@ -1532,12 +1532,6 @@ BlockGenerator.prototype.subscribe_block_dom = function(opts){
 
 };
 
-ITEMS_PARAM_KEY = 'cento_authoring_items';
-SERVICES_PARAM_KEY = 'cento_authoring_services';
-
-JSONEditor.defaults.options.theme = 'bootstrap3';
-$.fn.editable.defaults.mode = 'inline';
-$.fn.editableform.buttons = '<button type="submit" class="btn btn-primary btn-sm editable-submit"><i class="fa fa-check"></i></button><button type="button" class="btn btn-default btn-sm editable-cancel"><i class="fa fa-remove"></i></button>'
 
 R.mapProp = R.compose( R.map, R.prop );
 
@@ -1569,6 +1563,14 @@ _xml = function(prettify){
   if(prettify) xml = vkbeautify.xml(xml);
   return xml;
 };
+
+
+ITEMS_PARAM_KEY = 'cento_authoring_items';
+SERVICES_PARAM_KEY = 'cento_authoring_services';
+
+JSONEditor.defaults.options.theme = 'bootstrap3';
+$.fn.editable.defaults.mode = 'inline';
+$.fn.editableform.buttons = '<button type="submit" class="btn btn-primary btn-sm editable-submit"><i class="fa fa-check"></i></button><button type="button" class="btn btn-default btn-sm editable-cancel"><i class="fa fa-remove"></i></button>'
 
 var reload_udf_blocks = function(items){
 
@@ -1611,27 +1613,8 @@ var toggle_header_menu = function(){
 
 };
 $(function(){
-  $('#right_switch a').click(function(){
-    $('.right').toggle();
-
-    if($('.right').is(':visible')){
-      $('.left').css('width', '70%');
-      $('.right').css('width', '30%');
-
-    }else{
-      $('.left').css('width', '100%');
-    }
-    Blockly.fireUiEvent(window, 'resize');
-
-  });
-
-  $('.toggle_header').click(toggle_header_menu);
-
   $(document.body).on('click', '.toggle_header', toggle_header_menu);
   $(document.body).on('click', '.toggle_right', function(){ $('.container0 .right').toggle(); });
-
-
-
 });
 Mousetrap.bind('ctrl+alt+t', function(){
   toggle_header_menu();
