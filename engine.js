@@ -35,6 +35,7 @@ var Engine = function(db){
   this.topics = [];
   var that = this;
   this.schedule_requests = {};
+  this.schedule_requests_ref_counts = {};
 
   var retry_op = Utils.retry(function(){
     engine.log('trying to connect to ros ' + process.env.ROCON_AUTHORING_ROSBRIDGE_URL);
@@ -272,6 +273,7 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters){
   var future = new Future();
   r.send_allocation_request(res).then(function(reqId){
     engine.schedule_requests[reqId] = r;
+    engine.schedule_requests_ref_counts[reqId] = 1;
     future.return({req_id: reqId, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri});
   });
 
@@ -280,8 +282,11 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters){
 };
 
 Engine.prototype.releaseResource = function(ctx){
-  var requester = this.schedule_requests[ctx.req_id];
-  requester.cancel_all();
+  this.schedule_requests_ref_counts[ctx.req_id] = this.schedule_requests_ref_counts[ctx.req_id] - 1;
+  if(this.schedule_requests_ref_counts[ctx.req_id] <= 0){
+    var requester = this.schedule_requests[ctx.req_id];
+    requester.cancel_all();
+  }
 
 };
 
@@ -375,6 +380,7 @@ Engine.prototype.scheduledSubscribe = function(ctx, topic, type, callback){
     engine.debug('Received message on ' + listener.name + ': ' + message);
     callback(message);
   });
+  this.schedule_requests_ref_counts[ctx.req_id] = this.schedule_requests_ref_counts[ctx.req_id] + 1;
 
   this.topics.push({name: topic, listener: listener});
   
@@ -393,6 +399,7 @@ Engine.prototype.scheduledPublish = function(ctx, topic, type, msg){
 
   // engine._waitForTopicsReadyF([name]);
   engine.pub(name, type, msg);
+  this.schedule_requests_ref_counts[ctx.req_id] = this.schedule_requests_ref_counts[ctx.req_id] + 1;
 
 };
 
@@ -418,6 +425,7 @@ Engine.prototype.runAction = function(name, type, goal, onResult, onFeedback){
   goal.on('result', onResult);
 
   goal.send();
+  this.schedule_requests_ref_counts[ctx.req_id] = this.schedule_requests_ref_counts[ctx.req_id] + 1;
 
 };
 
