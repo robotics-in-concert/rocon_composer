@@ -47,9 +47,18 @@ or
 >> export MONGO_URL=mongodb://localhost:27017/cento_authoring
 >> export PORT=9999
 >> export ROS_WS_URL=ws://:9090
->> node rocon_authoring.js
+>> node rocon_authoring.js --web --engine --workflow wf1 --workflow wf2
 
 ```
 
 * Reason of using ROS_WS_URL port, 9090
     * rosbridge default port is 9090. If you change the port, you should change the rosbrdige server port when it is launched.
+
+
+#### Command line arguemtns
+
+* `--web` : enable blockly web interface
+* `--engine` : enable workflow engine
+* `--workflow=workflow1 --workflow==workflow2 ...` : workflow names to load (force engine to start)
+
+
