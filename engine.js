@@ -203,30 +203,9 @@ Engine.prototype.runCode = function(code){
 
 };
 
-Engine.prototype._waitForTopicsReady = function(required_topics){
-  var engine = this;
-  return new Promise(function(resolve, reject){
-
-    var timer = setInterval(function(){
-      engine.ros.getTopics(function(topics){
-
-        
-        var remapped_topics = R.filter(function(t){ return R.contains(t, required_topics); })(topics);
-        console.log('topic count check : ', [remapped_topics.length, required_topics.length].join("/"), remapped_topics, required_topics);
-
-        if(remapped_topics.length >= required_topics.length){
-          clearInterval(timer);
-          resolve();
-        }
-      });
-    }, 1000);
-
-
-  });
-
-};
 Engine.prototype._waitForTopicsReadyF = function(required_topics){
   var engine = this;
+  var delay = process.env.ROCON_AUTHORING_DELAY_AFTER_TOPICS || 2000;
 
 
 
@@ -240,7 +219,7 @@ Engine.prototype._waitForTopicsReadyF = function(required_topics){
 
       if(remapped_topics.length >= required_topics.length){
         clearInterval(timer);
-        future.return();
+        setTimeout(function(){ future.return(); }, delay);
       }
     });
   }, 1000);
