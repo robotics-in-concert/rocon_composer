@@ -25,9 +25,9 @@ rocon_authoring
 
 ## Required Environment Variables
 
-  - `PORT` : The port to run engine's web interface.
-  - `ROS_WS_URL` : Rosbridge websocket URL (eg. ws://127.0.0.1:9090)
-  - `MONGO_URL` : mongodb connection URL (eg. mongodb://localhost:27017/cento_authoring)
+  - `ROCON_AUTHORING_PORT` : The port to run engine's web interface.
+  - `ROCON_AUTHORING_ROSBRIDGE_URL` : Rosbridge websocket URL (eg. ws://127.0.0.1:9090)
+  - `ROCON_AUTHORING_MONGO_URL` : mongodb connection URL (eg. mongodb://localhost:27017/cento_authoring)
   - `MSG_DATABASE` : message database server address (eg. http://localhost:10000)
   - `ROCON_AUTHORING_DELAY_AFTER_TOPICS` : delay in milliseconds after required topics are ready (default: 2000)
 
