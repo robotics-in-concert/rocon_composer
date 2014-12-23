@@ -107,90 +107,96 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
       var $tb = $('#toolbox');
       var generator = new BlockGenerator();
       
-      blocksStore.loadRapp(url).then(function(x){
-        console.groupCollapsed("Rapp Blocks");
+      blocksStore.loadRapp(url)
+        .catch(function(e){
+          console.log('cannot load blocks - msg database error');
 
-        generator.generate_message_blocks(x.types);
+        })
+        .then(function(x){
+          console.groupCollapsed("Rapp Blocks");
 
-        R.mapObj.idx(function(subTypes, k){
-          var $el = generator.message_block_dom(k, subTypes);
-        })(x.types);
+          generator.generate_message_blocks(x.types);
 
-        /*
-         * Rapp blocks
-         */
-        _.each(x.rapps, function(rapp){
-          _.each(rapp.rocon_apps, function(rocon_app, key){
-            var meta = rocon_app.interfaces;
-            _.each(meta.action_servers, function(sub){
+          R.mapObj.idx(function(subTypes, k){
+            var $el = generator.message_block_dom(k, subTypes);
+          })(x.types);
 
-              var $b = generator.scheduled_action_block_dom(
-                [rapp.name, key].join("/"),
-                "rocon:/pc",
-                sub.name,
-                sub.type);
-              $tb.find('category[name=ROS]').append($b);
+          /*
+           * Rapp blocks
+           */
+          _.each(x.rapps, function(rapp){
+            _.each(rapp.rocon_apps, function(rocon_app, key){
+              var meta = rocon_app.interfaces;
+              _.each(meta.action_servers, function(sub){
 
-            });
-            _.each(meta.publishers, function(sub){
+                var $b = generator.scheduled_action_block_dom(
+                  [rapp.name, key].join("/"),
+                  "rocon:/pc",
+                  sub.name,
+                  sub.type);
+                $tb.find('category[name=ROS]').append($b);
 
-              var $b = generator.scheduled_subscribe_block_dom(
-                [rapp.name, key].join("/"),
-                "rocon:/pc",
-                sub.name,
-                sub.type);
-              $tb.find('category[name=ROS]').append($b);
+              });
+              _.each(meta.publishers, function(sub){
 
-            });
+                var $b = generator.scheduled_subscribe_block_dom(
+                  [rapp.name, key].join("/"),
+                  "rocon:/pc",
+                  sub.name,
+                  sub.type);
+                $tb.find('category[name=ROS]').append($b);
 
-            _.each(meta.subscribers, function(sub){
+              });
 
-              var $b = generator.scheduled_publish_block_dom(
-                [rapp.name, key].join("/"),
-                "rocon:/pc",
-                sub.name,
-                sub.type);
-              $tb.find('category[name=ROS]').append($b);
+              _.each(meta.subscribers, function(sub){
+
+                var $b = generator.scheduled_publish_block_dom(
+                  [rapp.name, key].join("/"),
+                  "rocon:/pc",
+                  sub.name,
+                  sub.type);
+                $tb.find('category[name=ROS]').append($b);
+
+              });
 
             });
 
           });
-
-        });
-        console.groupEnd();
+          console.groupEnd();
 
 
-        console.log($('#toolbox').get(0));
+          console.log($('#toolbox').get(0));
 
-        return blocksStore.loadInteractions();
+          return blocksStore.loadInteractions();
 
 
-      }).then(function(interactions){
+        })
+        .then(function(interactions){
         
-        console.groupCollapsed('Load interactions');
-        console.log(interactions);
+          console.groupCollapsed('Load interactions');
+          console.log(interactions);
 
 
 
-        var sub_topics_el = R.compose(
-          R.map(function($el){ $tb.find('category[name=ROS]').append($el); }),
-          R.map(R.bind(generator.subscribe_block_dom, generator)),
-          R.reject(R.isEmpty),
-          R.flatten,
-          R.mapProp('interface'),
-          R.map(function(i){ i.interface = R.map(R.assoc('client_app_id', i._id))(i.interface); return i;})
-        )(interactions.data);
-        
+          var sub_topics_el = R.compose(
+            R.map(function($el){ $tb.find('category[name=ROS]').append($el); }),
+            R.map(R.bind(generator.subscribe_block_dom, generator)),
+            R.reject(R.isEmpty),
+            R.flatten,
+            R.mapProp('interface'),
+            R.map(function(i){ i.interface = R.map(R.assoc('client_app_id', i._id))(i.interface); return i;})
+          )(interactions.data);
+          
 
 
-        console.groupEnd();
+          console.groupEnd();
 
-        // IMPORTANT
-        ros_block_override();
+          // IMPORTANT
+          ros_block_override();
 
 
-        Blockly.updateToolbox($('#toolbox').get(0));
-      });;
+          Blockly.updateToolbox($('#toolbox').get(0));
+        });;
 
     };
   _.defer(loadBlocks);
@@ -245,18 +251,7 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
   };
   $scope.load = function(id) {
 
-    console.log('------------------------------------');
-    console.log(id);
-
-    console.log($scope.items);
-
     var data = R.find(R.propEq('id', id))($scope.items);
-
-    // data = _.where($scope.items, {
-      // id: id
-    // })[0];
-    console.log(data);
-
     $scope.current = data;
     setupEditable(true);
     console.log(data);
@@ -264,7 +259,13 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
 
     dom = Blockly.Xml.textToDom(data.xml);
     Blockly.mainWorkspace.clear();
-    Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, dom);
+
+    try{
+      Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, dom);
+    }catch(e){
+      alert('failed to load blocks - '+e.toString());
+
+    }
   };
 
 

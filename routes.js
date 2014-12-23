@@ -57,6 +57,11 @@ module.exports = function(app, db){
     console.log(apiPath);
 
     request.get(apiPath, function(e, res0, body){
+      if(e){
+        res.status(500).send('cannot load msg_database');
+        return;
+
+      }
       var data = JSON.parse(body)
 
       var ifs = R.pipe(
