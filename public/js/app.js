@@ -5,37 +5,6 @@ JSONEditor.defaults.options.theme = 'bootstrap3';
 $.fn.editable.defaults.mode = 'inline';
 $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary btn-sm editable-submit"><i class="fa fa-check"></i></button><button type="button" class="btn btn-default btn-sm editable-cancel"><i class="fa fa-remove"></i></button>'
 
-R.mapProp = R.compose( R.map, R.prop );
-
-var _uuid = (function() {
-  function s4() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-               .toString(16)
-               .substring(1);
-  }
-  return function() {
-      return [s4() + s4(),
-        s4(),
-        s4(),
-        s4(),
-        s4() + s4() + s4()].join("");
-  };
-})();
-
-
-_js = function(prettify){
-  var js = Blockly.JavaScript.workspaceToCode();
-  if(prettify) js = js_beautify(js);
-  return js;
-};
-
-_xml = function(prettify){
-  var dom = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
-  var xml = Blockly.Xml.domToText(dom);
-  if(prettify) xml = vkbeautify.xml(xml);
-  return xml;
-};
-
 var reload_udf_blocks = function(items){
 
   var $cat = $('category[name=Utils]');
@@ -77,27 +46,8 @@ var toggle_header_menu = function(){
 
 };
 $(function(){
-  $('#right_switch a').click(function(){
-    $('.right').toggle();
-
-    if($('.right').is(':visible')){
-      $('.left').css('width', '70%');
-      $('.right').css('width', '30%');
-
-    }else{
-      $('.left').css('width', '100%');
-    }
-    Blockly.fireUiEvent(window, 'resize');
-
-  });
-
-  $('.toggle_header').click(toggle_header_menu);
-
   $(document.body).on('click', '.toggle_header', toggle_header_menu);
   $(document.body).on('click', '.toggle_right', function(){ $('.container0 .right').toggle(); });
-
-
-
 });
 Mousetrap.bind('ctrl+alt+t', function(){
   toggle_header_menu();
@@ -253,80 +203,4 @@ app.directive("roconSelect2", ["$interval", function($interval) {
         }
     }
 }]);
-
-app.service('serviceAuthoring', function($http, $q){
-
-  this.saveService = function(serviceMeta, package){
-    return $http.post('/api/services/save', {service: serviceMeta, package: package}).then(function(res){
-      return res.data;
-    });
-
-  };
-
-  this.getPackages = function(serviceMeta){
-    return $http.get('/api/packages').then(function(res){
-      return res.data;
-    });
-
-  };
-
-});
-app.service('blocksStore', function($http, $q){
-
-
-  this.setParam = function(k, v){
-    // var dfd = $q.defer();
-    // localStorage.setItem(k, JSON.stringify(v));
-    // dfd.resolve(true);
-    // return dfd.promise;
-    return $http.post('/api/param/'+k, {data: v}).then(function(res){
-      return res.data;
-    });
-  }
-  this.getParam = function(k){
-    // var dfd = $q.defer();
-    // var v = localStorage.getItem(k);
-    // dfd.resolve(JSON.parse(v));
-    // return dfd.promise;
-    
-
-    return $http.get('/api/param/'+k).then(function(res){
-      if(res.data.data){
-        return res.data.data;
-      }
-      return null;
-    });
-  }
-  this.publish = function(topic){
-    return $http.post('/api/publish', {topic: topic}).then(function(res){
-      return res.data;
-    });
-  }
-
-  this.loadRapp = function(){
-    var that = this;
-    var data = {};
-    return $http.post('/api/load_rapp', data).then(function(res){
-      return res.data;
-    });
-  };
-  this.loadInteractions = function(){
-    var that = this;
-    var data = {};
-    return $http.get('/api/load_interactions', data).then(function(res){
-      return res.data;
-    });
-  };
-  this.eval = function(code){
-    var that = this;
-    var data = {code: code};
-    $http.post('/api/eval', data).then(function(res){
-      return res.data;
-    });
-  };
-
-
-});
-
-
 
