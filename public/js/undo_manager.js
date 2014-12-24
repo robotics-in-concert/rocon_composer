@@ -7,13 +7,13 @@ var UndoManager = function(){
 };
 
 UndoManager.prototype.start = function(){
-  this.timer = setInterval(this.pushSnapshot.bind(this), UNDO_CHECK_INTERVAL);
+  // this.timer = setInterval(this.pushSnapshot.bind(this), UNDO_CHECK_INTERVAL);
+  Blockly.mainWorkspace.getCanvas().addEventListener('blocklyWorkspaceChange', this.pushSnapshot.bind(this));
 
 };
 
 UndoManager.prototype.stop = function(){
-  clearInterval(this.timer);
-
+  Blockly.mainWorkspace.getCanvas().removeEventListener('blocklyWorkspaceChange', this.pushSnapshot.bind(this));
 }
 
 UndoManager.prototype.pushSnapshot = function(){
