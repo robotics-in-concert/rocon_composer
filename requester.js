@@ -281,7 +281,7 @@ Requester.prototype.finish = function(){
 
 };
 
-Requester.prototype.send_allocation_request = function(res){
+Requester.prototype.send_allocation_request = function(res, timeout){
   var that = this;
   var uuid = this.new_request([res]);
   this.pending_requests.push(uuid.toString());
@@ -303,6 +303,13 @@ Requester.prototype.send_allocation_request = function(res){
       }
 
     }, RESOURCE_STATUS_CHECK_INTERVAL);
+
+    setTimeout(function(){ 
+      console.log('resource allocation timeout.');
+      clearInterval(that.heartbeat_timer);
+      clearInterval(timer);
+      reject('timedout'); 
+    }, timeout);
 
   });
 };

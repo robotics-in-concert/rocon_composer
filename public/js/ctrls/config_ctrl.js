@@ -17,6 +17,10 @@ app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
         properties: {
           rapp: {type: 'string'},
           uri: {type: 'string'},
+          timeout: {
+            type: 'integer',
+            default: 15000
+          },
           remappings: { 
             type: 'array',
             format: 'table',
@@ -58,19 +62,20 @@ app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
 
     Blockly.mainWorkspace.getCanvas().addEventListener('blocklySelectChange', function(){
       editor.setValue(default_value);
+      console.log("DEF", default_value);
+
 
       if(Blockly.selected){
         var cfg = Blockly.selected.extra_config;
-        console.log("CFG", cfg);
 
 
         if(cfg){
-          editor.setValue(cfg);
+          editor.setValue(R.mixin(default_value, cfg));
 
         }else{
-          var v = editor.getValue();
-          v.remappings = [];
-          editor.setValue(v);
+          // var v = editor.getValue()
+          // v.remappings = [];
+          editor.setValue(default_value);
           // editor.setValue({remappings: []});
         }
       }

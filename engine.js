@@ -230,7 +230,8 @@ Engine.prototype._waitForTopicsReadyF = function(required_topics){
 
 };
 
-Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters){
+Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, options){
+
   var engine = this;
   
   var r = new Requester(this);
@@ -249,9 +250,11 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters){
   res.parameters = parameters;
 
   var future = new Future();
-  r.send_allocation_request(res).then(function(reqId){
+  r.send_allocation_request(res, options.timeout).then(function(reqId){
     engine.schedule_requests[reqId] = r;
     future.return({req_id: reqId, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri});
+  }).catch(function(e){
+    future.return(null);
   });
 
   

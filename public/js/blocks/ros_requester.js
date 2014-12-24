@@ -16,13 +16,14 @@ Blockly.JavaScript['ros_requester_allocate'] = function(block){
   var config = block.extra_config;
 
 
-  var tpl = '($engine.allocateResource("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>)) ';
+  var tpl = '($engine.allocateResource("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>, <%= options %>)) ';
 
   var code = _.template(tpl)({
     rapp: config.rapp, 
     uri: config.uri, 
     remappings: JSON.stringify(config.remappings),
-    parameters: JSON.stringify(config.parameters)
+    parameters: JSON.stringify(config.parameters),
+    options: JSON.stringify({timeout: config.timeout})
   });
   return [code, Blockly.JavaScript.ORDER_ATOMIC];
 
