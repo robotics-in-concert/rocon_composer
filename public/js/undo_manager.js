@@ -17,17 +17,15 @@ UndoManager.prototype.stop = function(){
 }
 
 UndoManager.prototype.pushSnapshot = function(){
+  if(this.stack.length >= UNDO_MAX_SIZE)
+    return;
+
   var curXml = _xml();
 
   if(this.stack.length == 0 || curXml != this.stack[this.stack.length-1]){
     console.log('snapshot pushed');
     console.log('cur: '+curXml+' , was:'+this.stack[this.stack.length-1]);
     this.stack.push(curXml);
-
-
-
-
-
   }else{
     console.log('no snapshot pushed - equal');
   }
