@@ -125,6 +125,9 @@ Mousetrap.bind('?', function(){
 
 });
 
+Mousetrap.bind('ctrl+alt+z', function() { 
+  window.undo_manager.undo();
+});
 Mousetrap.bind('ctrl+alt+j', function() { 
   $('.code-modal .modal-title').text('Javascript');
   var $code = $('.code-modal code');
