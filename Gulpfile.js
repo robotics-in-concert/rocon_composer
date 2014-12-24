@@ -25,6 +25,7 @@ var paths = {
       './public/js/block_gen.js',
       './public/js/utils.js',
       './public/js/app.js',
+      './public/js/undo_manager.js',
       './public/js/services/**/*js',
       './public/js/ctrls/**/*js',
       './public/js/blocks_defaults.js',
