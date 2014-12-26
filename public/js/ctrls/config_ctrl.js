@@ -71,6 +71,8 @@ app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
 
         if(cfg){
           editor.setValue(R.mixin(default_value, cfg));
+          console.log(editor.getValue(), "---------");
+
 
         }else{
           // var v = editor.getValue()
