@@ -1634,6 +1634,7 @@ var toggle_header_menu = function(){
 $(function(){
   $(document.body).on('click', '.toggle_header', toggle_header_menu);
   $(document.body).on('click', '.toggle_right', function(){ $('.container0 .right').toggle(); });
+  $(document.body).on('click', '.undo', function(){ window.undo_manager.undo(); });
 });
 Mousetrap.bind('ctrl+alt+t', function(){
   toggle_header_menu();
@@ -1810,6 +1811,7 @@ UndoManager.prototype.start = function(){
 
 UndoManager.prototype.stop = function(){
   Blockly.mainWorkspace.getCanvas().removeEventListener('blocklyWorkspaceChange', this.pushSnapshot.bind(this));
+  // clearInterval(this.timer);
 }
 
 UndoManager.prototype.pushSnapshot = function(){
@@ -1820,10 +1822,11 @@ UndoManager.prototype.pushSnapshot = function(){
 
   if(this.stack.length == 0 || curXml != this.stack[this.stack.length-1]){
     console.log('snapshot pushed');
-    console.log('cur: '+curXml+' , was:'+this.stack[this.stack.length-1]);
+    // console.log('cur: '+curXml+' , was:'+this.stack[this.stack.length-1]);
     this.stack.push(curXml);
+    this.stack.slice(0, UNDO_MAX_SIZE);
   }else{
-    console.log('no snapshot pushed - equal');
+    // console.log('no snapshot pushed - equal');
   }
 
 

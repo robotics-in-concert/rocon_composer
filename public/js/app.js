@@ -48,6 +48,7 @@ var toggle_header_menu = function(){
 $(function(){
   $(document.body).on('click', '.toggle_header', toggle_header_menu);
   $(document.body).on('click', '.toggle_right', function(){ $('.container0 .right').toggle(); });
+  $(document.body).on('click', '.undo', function(){ window.undo_manager.undo(); });
 });
 Mousetrap.bind('ctrl+alt+t', function(){
   toggle_header_menu();
