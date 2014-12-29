@@ -2196,6 +2196,9 @@ var schema = {
         title: 'Interaction',
         headerTemplate: "{{self.display_name}}",
         properties: {
+          display_name: {
+            type: 'string', 
+          },
           name: {type: 'string'},
           role: {type: 'string'},
           compatibility: {
@@ -2211,12 +2214,6 @@ var schema = {
           max: {
             type: 'integer', 
             default: -1
-          },
-          display_name: {
-            type: 'string', 
-            options: {
-              hidden: true
-            }
           },
           remappings: {
             type: 'array',
