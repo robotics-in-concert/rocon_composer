@@ -78,6 +78,11 @@ ServiceStore.prototype.exportToROS = function(package_name, service_meta, packag
     )(service_meta.parameters);
     var param_file_content = _to_colon_sep(params);
     console.log('---------------- .interactions --------------------');
+    R.forEach(function(i){
+      i.parameters = R.fromPairs(R.map(R.values)(i.parameters));
+    })(service_meta.interactions);
+
+
     console.log(yaml.dump(service_meta.interactions));
 
     console.log('---------------- .parameters --------------------');
