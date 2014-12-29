@@ -5,27 +5,37 @@ Blockly.Blocks['ros_requester_allocate'] = {
     var block = this;
     this.setColour(77);
     this.appendDummyInput().appendField("Allocate Resource");
-    this.setPreviousStatement(false);
-    this.setNextStatement(false);
-    this.setOutput(true);
+    this.appendDummyInput().appendField(new Blockly.FieldTextInput('resource', null), 'VAR')
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    // this.setOutput(true);
     return this;
+  },
+
+  getVars: function(){
+    return [this.getFieldValue('VAR')];
+
   }
+  
 };
 Blockly.JavaScript['ros_requester_allocate'] = function(block){
   // return "requester.cancel_all();";
   var config = block.extra_config;
 
 
-  var tpl = '($engine.allocateResource("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>, <%= options %>)) ';
+  var tpl = 'var <%= var_name %> = ($engine.allocateResource("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>, <%= options %>)); ';
 
   var code = _.template(tpl)({
+    var_name: this.getFieldValue('VAR'),
     rapp: config.rapp, 
     uri: config.uri, 
     remappings: JSON.stringify(config.remappings),
     parameters: JSON.stringify(config.parameters),
     options: JSON.stringify({timeout: config.timeout})
   });
-  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+  console.log(code);
+
+  return code;
 
 };
 

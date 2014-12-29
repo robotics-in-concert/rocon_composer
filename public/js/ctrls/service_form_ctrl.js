@@ -338,6 +338,9 @@ app.controller('ServiceFormCtrl', function($scope, blocksStore, $http, serviceAu
   blocksStore.getParam(ITEMS_PARAM_KEY).then(function(rows){
     blocksStore.loadInteractions().then(function(interactions){
 
+      console.log('here');
+
+
 
       var titles = R.pluck('title')(rows);
       console.log(titles);
