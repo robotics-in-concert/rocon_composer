@@ -252,7 +252,7 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, 
   var future = new Future();
   r.send_allocation_request(res, options.timeout).then(function(reqId){
     engine.schedule_requests[reqId] = r;
-    future.return({req_id: reqId, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri});
+    future.return({req_id: reqId, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type});
   }).catch(function(e){
     future.return(null);
   });
@@ -263,7 +263,9 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, 
 
 Engine.prototype.releaseResource = function(ctx){
   var requester = this.schedule_requests[ctx.req_id];
-  requester.cancel_all();
+  if(ctx.allocation_type && ctx.allocation_type == 'dynamic'){
+    requester.cancel_all();
+  }
 
 };
 

@@ -1189,7 +1189,9 @@ Blockly.Blocks['ros_requester_allocate'] = {
     var block = this;
     this.setColour(77);
     this.appendDummyInput().appendField("Allocate Resource");
-    this.appendDummyInput().appendField(new Blockly.FieldTextInput('resource', null), 'VAR')
+    this.appendDummyInput().appendField('type').appendField(new Blockly.FieldDropdown([['dynamic', 'dynamic'], ['static', 'static']]), 'TYPE');
+    this.appendDummyInput().appendField('var').appendField(new Blockly.FieldTextInput('resource', null), 'VAR')
+    this.setInputsInline(true);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     // this.setOutput(true);
@@ -1205,6 +1207,7 @@ Blockly.Blocks['ros_requester_allocate'] = {
 Blockly.JavaScript['ros_requester_allocate'] = function(block){
   // return "requester.cancel_all();";
   var config = block.extra_config;
+  var type = block.getFieldValue('TYPE');
 
 
   var tpl = 'var <%= var_name %> = ($engine.allocateResource("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>, <%= options %>)); ';
@@ -1215,7 +1218,7 @@ Blockly.JavaScript['ros_requester_allocate'] = function(block){
     uri: config.uri, 
     remappings: JSON.stringify(config.remappings),
     parameters: JSON.stringify(config.parameters),
-    options: JSON.stringify({timeout: config.timeout})
+    options: JSON.stringify({timeout: config.timeout, type: type})
   });
   console.log(code);
 
