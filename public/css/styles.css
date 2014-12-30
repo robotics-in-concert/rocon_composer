@@ -40,6 +40,13 @@ button {
   /* height: 100%; */
   /* } */
 }
+#workflow-blockly #alert {
+  display: none;
+  z-index: 300;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
 #workflow-blockly .container0 {
   position: absolute;
   top: 0;

@@ -64,7 +64,9 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
 
         blocksStore.setParam(ITEMS_PARAM_KEY, newValue).then(function(res){
           reload_udf_blocks($scope.items);
-          console.log('items saved', newValue, res);
+
+          $('#alert .alert').html('Saved');
+          $('#alert').show().delay(1000).fadeOut('slow');
 
         });
           
@@ -99,6 +101,7 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
       console.log(2);
 
     }
+    
   };
 
 
