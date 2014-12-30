@@ -66,7 +66,7 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
           reload_udf_blocks($scope.items);
 
           $('#alert .alert').html('Saved');
-          $('#alert').show().delay(1000).fadeOut('slow');
+          $('#alert').show().delay(500).fadeOut('fast');
 
         });
           
@@ -103,6 +103,13 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
     }
     
   };
+  Mousetrap.bind('ctrl+s', function(){
+    console.log('save triggered');
+    $scope.$apply(function(){
+      $scope.save();
+    });
+
+  });
 
 
 
