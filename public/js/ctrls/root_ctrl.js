@@ -1,7 +1,17 @@
 
 var app = angular.module('centoAuthoring');
-app.controller('RootCtrl', function($scope, blocksStore, $http) {
+app.controller('RootCtrl', function($scope, blocksStore, $http, $state) {
+
+  angular.element(document).on('unload', function(e){
+    console.log('unload');
+    e.preventDefault();
+
+
+  });
+
+
   $scope.services = [];
+  $scope.state = $state;
 
   blocksStore.getParam(SERVICES_PARAM_KEY).then(function(rows){
     console.log('loaded ', rows);

@@ -1,6 +1,48 @@
 
 var app = angular.module('centoAuthoring');
 app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $rootScope, $stateParams) {
+  $rootScope.$on('$stateChangeStart', function(e, to) {
+    var dirty = checkDirty()
+    if(dirty){
+      if(dirty == 'not exists'){
+        var msg =  'unsaved - want leave?';
+      }else if(dirty == 'changed'){
+        var msg =  'changed - want leave?';
+      }
+      if(!confirm(msg)){
+        e.preventDefault();
+      }
+      window.onbeforeunload = null;
+
+    }
+
+  });
+
+  window.onbeforeunload = function(e){
+    var dirty = checkDirty()
+    if(dirty){
+      if(dirty == 'not exists'){
+        return 'unsaved';
+      }else if(dirty == 'changed'){
+        return 'changed';
+      }
+    }
+    window.onbeforeunload = null;
+    return null;
+  };
+
+  var checkDirty = function(){
+    var exists = R.find(R.propEq('id', $scope.current.id))($scope.items);
+    if(!exists){
+      return 'not exists';
+    }
+
+    if(exists.xml != _xml()){
+      return 'changed';
+    }
+
+    return false;
+  };
 
   var items;
   $scope.foo = 'bar';
