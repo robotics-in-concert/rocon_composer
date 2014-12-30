@@ -1,0 +1,166 @@
+{
+  "title": "Create Service",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "options": {
+        "hidden": true
+      }
+
+    },
+    "created_at": {
+      "type": "integer",
+      "options": {
+        "hidden": true
+      }
+
+    },
+
+    "name": {
+      "type": "string",
+      "title": "Name"
+
+    },
+    "description": {
+      "type": "string",
+      "title": "Description"
+    },
+    "author": {
+      "type": "string",
+      "title": "Author"
+
+    },
+    "priority": {
+      "type": "integer",
+      "default": 10000,
+      "title": "Priority"
+    },
+    "launcher": {
+      "type": "object",
+      "properties": {
+        "launcher_type": {
+          "type": "string",
+          "enum": [
+            "ros_launcher",
+            "bpel",
+            "blockly"
+          ]
+
+        },
+        "launcher_body": {
+          "type": "string",
+          "format": "textarea"
+        }
+
+
+      }
+
+    },
+    "workflows": {
+      "type": "array",
+      "uniqueItems": true,
+      "format": "checkbox",
+      "items": {
+        "type": "string",
+        "enum": ["value1","value2"]
+      }
+    },
+    "interactions": {
+      "type": "array",
+      "title": "Interactions",
+      "options": {
+        "disable_array_add": true,
+        "collapsed": false
+
+      },
+      "items": {
+        "type": "object",
+        "title": "Interaction",
+        "headerTemplate": "{{self.display_name}}",
+        "properties": {
+          "display_name": {
+            "type": "string"
+          },
+          "name": {"type": "string"},
+          "role": {"type": "string"},
+          "compatibility": {
+            "type": "string", 
+            "options": {
+              "hidden": true
+            }
+          },
+          "description": {
+            "type": "string",
+            "format": "textarea"
+          },
+          "max": {
+            "type": "integer", 
+            "default": -1
+          },
+          "remappings": {
+            "type": "array",
+            "format": "table",
+            "title": "Remappings",
+            "options": {
+            },
+            "items": {
+              "type": "object",
+              "properties": {
+                "remap_from": {"type": "string"},
+                "remap_to": {"type": "string"}
+              }
+
+            }
+
+          },
+          "parameters": {
+            "type": "array",
+            "format": "table",
+            "title": "Parameters",
+            "options": {
+              "disable_array_delete": true
+
+            },
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {"type": "string"},
+                "value": {"type": "string"}
+              }
+
+            }
+
+          }
+        }
+
+      },
+
+      "properties": {
+        "role": {
+          "title": "Role",
+          "type": "string"
+
+        }
+
+      }
+    },
+    "parameters": {
+      "type": "array",
+      "format": "table",
+      "title": "Parameters",
+      "options": {
+        "disable_array_delete": true
+
+      },
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {"type": "string"},
+          "value": {"type": "string"}
+        }
+
+      }
+    }
+  }
+}
