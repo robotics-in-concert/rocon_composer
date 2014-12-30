@@ -296,20 +296,25 @@ Requester.prototype.send_allocation_request = function(res, timeout){
 
 
   return new Promise(function(resolve, reject){
+    var timeout_timer = null;
     var timer = setInterval(function(){
       if(!_.include(that.pending_requests, uuid.toString())){
         clearInterval(timer);
+        clearTimeout(timeout_timer);
         resolve(uuid.toString());
       }
 
     }, RESOURCE_STATUS_CHECK_INTERVAL);
 
-    setTimeout(function(){ 
+    timeout_timer = setTimeout(function(){ 
       console.log('resource allocation timeout.');
       clearInterval(that.heartbeat_timer);
       clearInterval(timer);
       reject('timedout'); 
     }, timeout);
+
+
+
 
   });
 };
