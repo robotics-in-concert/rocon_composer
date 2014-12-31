@@ -1,5 +1,35 @@
-
 Blockly.Blocks['ros_requester_allocate'] = {
+  configable: true,
+  init: function() {
+    var block = this;
+    this.setColour(77);
+    this.appendDummyInput().appendField("Allocate Resource");
+    this.setPreviousStatement(false);
+    this.setNextStatement(false);
+    this.setOutput(true);
+    return this;
+  }
+};
+Blockly.JavaScript['ros_requester_allocate'] = function(block){
+  // return "requester.cancel_all();";
+  var config = block.extra_config;
+
+
+  var tpl = '($engine.allocateResource("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>, <%= options %>)) ';
+
+  var code = _.template(tpl)({
+    rapp: config.rapp, 
+    uri: config.uri, 
+    remappings: JSON.stringify(config.remappings),
+    parameters: JSON.stringify(config.parameters),
+    options: JSON.stringify({timeout: config.timeout})
+  });
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+
+};
+
+
+Blockly.Blocks['ros_requester_allocate2'] = {
   configable: true,
   init: function() {
     var block = this;
@@ -20,7 +50,7 @@ Blockly.Blocks['ros_requester_allocate'] = {
   }
   
 };
-Blockly.JavaScript['ros_requester_allocate'] = function(block){
+Blockly.JavaScript['ros_requester_allocate2'] = function(block){
   // return "requester.cancel_all();";
   var config = block.extra_config;
   var type = block.getFieldValue('TYPE');
