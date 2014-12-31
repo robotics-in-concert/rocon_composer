@@ -2475,8 +2475,15 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
     var id = $scope.current.id;
     var title = $scope.current.title;
     var description = $scope.current.description;
-    var js = _js();
-    var xml = _xml();
+    try {
+      var js = _js();
+      var xml = _xml();
+    }catch(e){
+      alert('failed to save : ' + e.message);
+
+      return null;
+
+    }
 
 
     var idx = _.findIndex($scope.items, {id: id});
