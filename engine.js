@@ -433,9 +433,11 @@ Engine.prototype.publish = function(topic, type, msg){
 Engine.prototype.clear = function(){
   var that = this;
 
-  var q_cancels = R.mapObj(function(r){
-    try{ r.cancel_all(); }catch(e){}
-  })(this.schedule_requests);
+  var q_cancels = R.map(function(r){
+    try{ 
+      return r.cancel_all(); 
+    }catch(e){ return null; }
+  })(R.values(this.schedule_requests));
 
   Promise.all(q_cancels).then(function(){
     that.ee.removeAllListeners();
