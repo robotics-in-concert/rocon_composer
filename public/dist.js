@@ -2112,6 +2112,7 @@ app.controller('RootCtrl', function($scope, blocksStore, $http, $state) {
 
 var _interaction_to_json_editor_value = function(i){
   var kv = {
+    _id: i._id, 
     display_name: i.defaults.display_name, 
     name: i.defaults.display_name, 
     description: i.defaults.description,
@@ -2157,6 +2158,7 @@ app.controller('ServiceFormCtrl', function($scope, blocksStore, $http, serviceAu
      $scope.destPackage = null;
      blocksStore.getParam(ITEMS_PARAM_KEY).then(function(rows){
        blocksStore.loadInteractions().then(function(interactions){
+         interactions = interactions.data;
 
 
          var titles = R.pluck('title')(rows);
@@ -2185,6 +2187,9 @@ app.controller('ServiceFormCtrl', function($scope, blocksStore, $http, serviceAu
            var vv = R.find(R.propEq('id', $stateParams.service_id))($scope.services);
            form_v = vv;
 
+           console.log("FORM V", form_v);
+
+
          }
          if($stateParams.new_name){
            form_v.name = $stateParams.new_name;
@@ -2198,7 +2203,10 @@ app.controller('ServiceFormCtrl', function($scope, blocksStore, $http, serviceAu
 
 
          editor.on('change', function(){
+           console.log('editor changed');
+
            var cur = editor.getValue();
+           console.log('current value', cur);
            var curlen = cur.workflows.length;
            if(selected_workflows !== curlen){
              console.log('...');
@@ -2211,9 +2219,6 @@ app.controller('ServiceFormCtrl', function($scope, blocksStore, $http, serviceAu
              // R.useWith(R.filter, R.flip(R.contains), R.prop('title'))(cur.workflows, rows);
 
 
-
-             console.log("ROWS", rows_selected);
-
              if(rows_selected.length == 0){
                var v = editor.getValue();
                v.interactions = [];
@@ -2224,24 +2229,27 @@ app.controller('ServiceFormCtrl', function($scope, blocksStore, $http, serviceAu
              R.map(function(rs){
                var xml = rs.xml;
                var extras = $(xml).find('mutation[extra]').map(function(){
-                 return $(this).attr('extra');  
+                 var extra = $(this).attr('extra');  
+                 return JSON.parse(extra);
                }).toArray();
 
-               extras = R.map(function(x){ console.log(x);
-                              return JSON.parse(x); }, extras);
+               client_app_ids = R.uniq(R.pluck('client_app_id', extras));
+
+               var used_interactions = R.filter(function(d){ return R.indexOf(d._id, client_app_ids) >= 0; })(interactions);
+               console.log("used interactions :", used_interactions);
 
 
-                              client_app_ids = R.uniq(R.pluck('client_app_id', extras));
-                              console.log(client_app_ids);
-                              console.log(interactions);
+               var v = editor.getValue();
+               console.log(v.interactions);
+
+               used_interactions = R.reject(function(i){ return R.contains(i._id, R.pluck('_id', v.interactions)); })(used_interactions);
+               console.log("used interactions :", used_interactions);
 
 
-                              var used_interactions = R.filter(function(d){ return R.indexOf(d._id, client_app_ids) >= 0; })(interactions.data);
-                              console.log(used_interactions);
 
-                              var v = editor.getValue();
-                              v.interactions = R.map(_interaction_to_json_editor_value)(used_interactions);
-                              editor.setValue(v);
+
+               v.interactions = v.interactions.concat( R.map(_interaction_to_json_editor_value)(used_interactions) );
+               editor.setValue(v);
 
 
 

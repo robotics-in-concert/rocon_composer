@@ -79,6 +79,12 @@
         "title": "Interaction",
         "headerTemplate": "{{self.display_name}}",
         "properties": {
+          "_id": {
+            "type": "string",
+            "options": {
+              "hidden": true
+            }
+          },
           "display_name": {
             "type": "string"
           },
