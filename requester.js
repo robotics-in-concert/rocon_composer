@@ -255,7 +255,7 @@ Requester = function(engine, options){
   this.requests = new SchedulerRequests(this.id);
 
   this.heartbeat_timer = null;
-  thie.ee = new EventEmitter();
+  this.ee = new EventEmitter();
 
 
   var default_options = {
@@ -323,7 +323,7 @@ Requester.prototype.send_releasing_request = function(uuid){
 
 
   return new Promise(function(resolve, reject){
-    that.ee.on('closed', function(){
+    that.ee.once('closed', function(){
       resolve();
     });
   });
@@ -423,8 +423,15 @@ Requester.prototype.feedback_topic = function(){
 };
 
 Requester.prototype.cancel_all = function(){
-  this.requests.cancel_all();
-  this.send_requests();
+  var that = this;
+
+  return new Promise(function(resolve, reject){
+    that.ee.once('closed', function(){
+      resolve();
+    });
+    that.requests.cancel_all();
+    that.send_requests();
+  });
 
 };
 

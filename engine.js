@@ -431,15 +431,22 @@ Engine.prototype.publish = function(topic, type, msg){
 
 // };
 Engine.prototype.clear = function(){
-  this.ee.removeAllListeners();
-  this.memory = {};
-  this.unsubscribeAll();
+  var that = this;
 
-  R.mapObj(function(r){
+  var q_cancels = R.mapObj(function(r){
     try{ r.cancel_all(); }catch(e){}
   })(this.schedule_requests);
 
-  this.log('engine cleared');
+  Promise.all(q_cancels).then(function(){
+    that.ee.removeAllListeners();
+    that.memory = {};
+    that.unsubscribeAll();
+    that.log('engine cleared');
+  }).catch(function(e){
+    that.log('fail - engine clear ' + e.toString());
+    
+  });;
+
 
 };
 Engine.prototype.print = function(msg){
