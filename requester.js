@@ -6,7 +6,9 @@ var _ = require('lodash'),
     async = require('async'),
     Util = require('util'),
     R = require('ramda'),
+    EventEmitter = require('events').EventEmitter,
     UUID = require('node-uuid');
+
 R.invoker0 = R.curry(R.invokerN)(0);
     
 
@@ -16,7 +18,6 @@ MSG_SCHEDULER_REQUEST = "scheduler_msgs/SchedulerRequests";
 // SCHEDULER_TOPIC = 'rocon_scheduler';
 SCHEDULER_TOPIC = '/concert/scheduler/requests'
 HEARTBEAT_HZ =  1.0 / 4.0;
-RESOURCE_STATUS_CHECK_INTERVAL = 500;
 
 
 
@@ -253,9 +254,8 @@ Requester = function(engine, options){
   this.id = new UniqueId();
   this.requests = new SchedulerRequests(this.id);
 
-  this.pending_requests = []; // uuid list
-  this.allocated_requests = []; // uuid list
   this.heartbeat_timer = null;
+  thie.ee = new EventEmitter();
 
 
   var default_options = {
@@ -284,7 +284,6 @@ Requester.prototype.finish = function(){
 Requester.prototype.send_allocation_request = function(res, timeout){
   var that = this;
   var uuid = this.new_request([res]);
-  this.pending_requests.push(uuid.toString());
   this.send_requests();
 
 
@@ -297,23 +296,16 @@ Requester.prototype.send_allocation_request = function(res, timeout){
 
   return new Promise(function(resolve, reject){
     var timeout_timer = null;
-    var timer = setInterval(function(){
-      if(!_.include(that.pending_requests, uuid.toString())){
-        clearInterval(timer);
-        clearTimeout(timeout_timer);
-        resolve(uuid.toString());
-      }
-
-    }, RESOURCE_STATUS_CHECK_INTERVAL);
+    that.ee.once('granted', function(){
+      resolve(uuid.toString());
+      clearTimeout(timeout_timer);
+    });
 
     timeout_timer = setTimeout(function(){ 
       console.log('resource allocation timeout.');
       clearInterval(that.heartbeat_timer);
-      clearInterval(timer);
       reject('timedout'); 
     }, timeout);
-
-
 
 
   });
@@ -327,14 +319,9 @@ Requester.prototype.send_releasing_request = function(uuid){
 
 
   return new Promise(function(resolve, reject){
-    var timer = setInterval(function(){
-      if(!_.include(that.allocated_requests, uuid.toString())){
-        clearInterval(timer);
-        resolve(uuid);
-      }
-
-    }, RESOURCE_STATUS_CHECK_INTERVAL);
-
+    that.ee.on('closed', function(){
+      resolve();
+    });
   });
 };
 
@@ -416,14 +403,10 @@ Requester.prototype.handleFeedback = function(requests){
 
     if(req.status == STATUS_GRANTED){
       // handle granted resource
-      _.pull(that.pending_requests, uuid);
-      that.allocated_requests.push(uuid);
+      that.ee.emit('granted', uuid);
 
     }else if(req.status == STATUS_CLOSED){
-      // handle closed resource
-      _.pull(that.pending_requests, uuid);
-      _.pull(that.allocated_requests, uuid);
-
+      that.ee.emit('closed', uuid);
     };
 
   });
