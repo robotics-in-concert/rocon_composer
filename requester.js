@@ -293,6 +293,10 @@ Requester.prototype.send_allocation_request = function(res, timeout){
     that.send_requests({debug: false});
   }, 4000);
 
+  that.ee.once('closed', function(){
+    clearInterval(that.heartbeat_timer);
+  });
+
 
   return new Promise(function(resolve, reject){
     var timeout_timer = null;
