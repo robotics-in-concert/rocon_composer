@@ -263,7 +263,7 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, 
 
 Engine.prototype.releaseResource = function(ctx){
   var requester = this.schedule_requests[ctx.req_id];
-  if(ctx.allocation_type && ctx.allocation_type == 'dynamic'){
+  if(!ctx.allocation_type || ctx.allocation_type == 'dynamic'){
     requester.cancel_all();
   }
 
