@@ -33,7 +33,7 @@ var _interaction_to_json_editor_value = function(i){
 
 
 var app = angular.module('centoAuthoring');
-app.controller('ServiceFormCtrl', function($scope, blocksStore, $http, serviceAuthoring, $stateParams) {
+app.controller('ServiceFormCtrl', function($scope, blocksStore, $http, serviceAuthoring, $stateParams, $state) {
    $scope.select2Options = {
      allowClear:true
    };
@@ -215,6 +215,9 @@ app.controller('ServiceFormCtrl', function($scope, blocksStore, $http, serviceAu
       v.id = _uuid();
       v.created_at = new Date().getTime();
       $scope.services.push(v);
+      $state.go('services_edit', {service_id: v.id});
+
+      
     }
     
 
