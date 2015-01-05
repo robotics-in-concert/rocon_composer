@@ -44,13 +44,27 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
     return false;
   };
 
-  var items;
   $scope.foo = 'bar';
 
   $scope.itemSelection = [];
   $scope.rapp_url = "http://files.yujinrobot.com/rocon/rapp_repository/office_rapp.tar.gz";
-  items = $scope.items = []
   $scope.robot_brain = {};
+
+
+
+  $rootScope.$on('items:loaded', function(){
+    reload_udf_blocks($scope.items);
+    if($stateParams.id){ // load
+      $scope.load($stateParams.id);
+    }
+  });
+  $rootScope.$on('items:saved', function(){
+    reload_udf_blocks($scope.items);
+
+    $('#alert .alert').html('Saved');
+    $('#alert').show().delay(500).fadeOut('fast');
+
+  });
 
   var resetCurrent = function(){
     $scope.current = {id: new Date().getTime() + "", title: 'Untitled', description: 'Service Description'};
@@ -89,37 +103,6 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
     setupEditable();
   });
 
-  blocksStore.getParam(ITEMS_PARAM_KEY).then(function(rows){
-    console.log('loaded ', rows);
-    if(!rows){
-      $scope.items = [];
-    }else{
-      $scope.items = rows;
-      reload_udf_blocks($scope.items);
-
-    }
-
-    $scope.$watch('items', function(newValue, oldValue) {
-      console.log('items watched');
-      if (!_.isEqual(newValue, oldValue)) {
-        console.log(oldValue, "->", newValue);
-
-        blocksStore.setParam(ITEMS_PARAM_KEY, newValue).then(function(res){
-          reload_udf_blocks($scope.items);
-
-          $('#alert .alert').html('Saved');
-          $('#alert').show().delay(500).fadeOut('fast');
-
-        });
-          
-      }
-    }, true);
-    if($stateParams.id){ // load
-      $scope.load($stateParams.id);
-
-    }
-
-  });
   $scope.save = function() {
 
 
