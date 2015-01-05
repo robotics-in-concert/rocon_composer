@@ -1031,10 +1031,11 @@ Blockly.register_scheduled_publish_block = function(rapp, uri, name, type){
 };
 
 
-Blockly.register_publish_block = function(name, type){
+Blockly.register_publish_block = function(name, type, extra){
   
   Blockly.Blocks['ros_publish_'+name] = {
     init: function() {
+      this.extra = extra;
       this.setColour(ACTION_COLOR);
       this.appendValueInput('VALUE').appendField('[Publish] ' + name);
       this.setInputsInline(true);
@@ -1418,6 +1419,7 @@ var BlockGenerator = function(){
   this.message_blocks = [];
   this.type_blocks = {};
   this.subscribe_blocks = [];
+  this.publish_blocks = [];
 
 };
 
@@ -1581,8 +1583,49 @@ BlockGenerator.prototype.scheduled_publish_block_dom = function(rapp_name, uri, 
 
 
 };
+BlockGenerator.prototype.generate_client_app_blocks = function(data){
+  var interface = data.interface;
+  var client_app_id = data.client_app_id;
+  console.log("=========", interface, client_app_id);
+  var that = this;
 
+  var pubs = R.map(
+    R.compose(
+      R.bind(that.publish_block_dom, that),
+      R.assoc({client_app_id: client_app_id})
+    )
+  )(interface.subscribers);
+  var subs = R.map(
+    R.compose(
+      R.bind(that.subscribe_block_dom, that),
+      R.assoc('client_app_id', client_app_id)
+    )
+  )(interface.publishers);
+  // var subs = R.map(R.bind(that.subscribe_block_dom, that))(interface.publishers);
+  // console.log(pubs.concat(subs));
+
+  return pubs.concat(subs);
+  // console.log(els);
+
+  // return R.flatten(els);
+
+};
+
+BlockGenerator.prototype.publish_block_dom = function(opts){
+  var name = opts.name;
+  if(R.contains(name, this.publish_blocks)){
+    return false;
+  }
+  this.publish_blocks.push(name);
+  Blockly.register_publish_block(name, opts.type, {client_app_id: opts.client_app_id});
+  var $block = $('<block type="ros_publish_'+name+'"></block>');
+  return $block;
+
+
+};
 BlockGenerator.prototype.subscribe_block_dom = function(opts){
+  console.log("X", opts);
+
   var name = opts.name;
   if(R.contains(name, this.subscribe_blocks)){
     return false;
@@ -2602,11 +2645,12 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
 
           var sub_topics_el = R.compose(
             R.map(function($el){ $tb.find('category[name=ROS]').append($el); }),
-            R.map(R.bind(generator.subscribe_block_dom, generator)),
+            R.map(R.bind(generator.generate_client_app_blocks, generator)),
             R.reject(R.isEmpty),
             R.flatten,
-            R.mapProp('interface'),
-            R.map(function(i){ i.interface = R.map(R.assoc('client_app_id', i._id))(i.interface); return i;})
+            R.map(function(i){ return {interface: i.interface, client_app_id: i._id}; })
+            // R.mapProp('interface'),
+            // R.map(function(i){ i.interface = R.map(R.assoc('client_app_id', i._id))(i.interface); return i;})
           )(interactions.data);
           
 

@@ -22,10 +22,11 @@ Blockly.register_scheduled_publish_block = function(rapp, uri, name, type){
 };
 
 
-Blockly.register_publish_block = function(name, type){
+Blockly.register_publish_block = function(name, type, extra){
   
   Blockly.Blocks['ros_publish_'+name] = {
     init: function() {
+      this.extra = extra;
       this.setColour(ACTION_COLOR);
       this.appendValueInput('VALUE').appendField('[Publish] ' + name);
       this.setInputsInline(true);

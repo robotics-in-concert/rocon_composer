@@ -223,11 +223,12 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
 
           var sub_topics_el = R.compose(
             R.map(function($el){ $tb.find('category[name=ROS]').append($el); }),
-            R.map(R.bind(generator.subscribe_block_dom, generator)),
+            R.map(R.bind(generator.generate_client_app_blocks, generator)),
             R.reject(R.isEmpty),
             R.flatten,
-            R.mapProp('interface'),
-            R.map(function(i){ i.interface = R.map(R.assoc('client_app_id', i._id))(i.interface); return i;})
+            R.map(function(i){ return {interface: i.interface, client_app_id: i._id}; })
+            // R.mapProp('interface'),
+            // R.map(function(i){ i.interface = R.map(R.assoc('client_app_id', i._id))(i.interface); return i;})
           )(interactions.data);
           
 
