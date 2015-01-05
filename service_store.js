@@ -3,6 +3,7 @@ var  R = require('ramda'),
   glob = Promise.promisify(require('glob')),
   fs = Promise.promisifyAll(require('fs')),
   xml2js = Promise.promisifyAll(require('xml2js')),
+  libxml = require('libxmljs'),
   exec = Promise.promisify(require('child_process').exec),
   Path = require('path'),
   yaml = require('js-yaml'),
@@ -62,6 +63,21 @@ ServiceStore.prototype.exportToROS = function(package_name, service_meta, packag
 
     var name_key = service_meta.name.replace(/\s+/g, "_").toLowerCase();
     var service_base = Path.join( Path.dirname(pack.path), "services", name_key);
+
+
+    var xml = fs.readFileSync(pack.path)
+    var xmlDoc = libxml.parseXmlString(xml);
+
+    var node = xmlDoc.get('//export');
+    node.node('concert_service', Path.join('services', name_key, name_key+'.service'));
+
+    var resultXml = xmlDoc.toString(true);
+
+    fs.writeFileSync(pack.path, resultXml);
+
+
+
+
     console.log(service_base);
 
 
