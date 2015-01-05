@@ -1592,7 +1592,7 @@ BlockGenerator.prototype.generate_client_app_blocks = function(data){
   var pubs = R.map(
     R.compose(
       R.bind(that.publish_block_dom, that),
-      R.assoc({client_app_id: client_app_id})
+      R.assoc('client_app_id', client_app_id)
     )
   )(interface.subscribers);
   var subs = R.map(
@@ -1612,13 +1612,22 @@ BlockGenerator.prototype.generate_client_app_blocks = function(data){
 };
 
 BlockGenerator.prototype.publish_block_dom = function(opts){
+  console.log('PUB OPT', opts);
+
   var name = opts.name;
   if(R.contains(name, this.publish_blocks)){
     return false;
   }
+  var type = opts.type;
+
+  var typeBlock = this.type_blocks[type];
+  var $valueBlock = $('<value name="VALUE"></value>');
+  $valueBlock.append($(typeBlock).clone());
+
   this.publish_blocks.push(name);
   Blockly.register_publish_block(name, opts.type, {client_app_id: opts.client_app_id});
   var $block = $('<block type="ros_publish_'+name+'"></block>');
+  $block.append($valueBlock);
   return $block;
 
 
