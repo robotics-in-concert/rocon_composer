@@ -2229,20 +2229,16 @@ app.controller('ServiceFormCtrl', function($scope, blocksStore, $http, serviceAu
 
 
          editor.on('change', function(){
+           var propIn = R.useWith(R.compose, R.flip(R.contains), R.prop);
            console.log('editor changed');
 
            var cur = editor.getValue();
            console.log('current value', cur);
            var curlen = cur.workflows.length;
            if(selected_workflows !== curlen){
-             console.log('...');
 
-             // do
-             var rows_selected = R.filter(function(row){
-               return R.indexOf(row.title, cur.workflows) >= 0;
-             })(rows);
-             // var rows_selected = R.filter( R.combine(R.flip(R.contains)(cur.workflows), R.prop('title')) )(rows);
-             // R.useWith(R.filter, R.flip(R.contains), R.prop('title'))(cur.workflows, rows);
+             var rows_selected = R.filter(propIn(cur.workflows, 'title'))(rows);
+
 
 
              if(rows_selected.length == 0){
@@ -2261,17 +2257,14 @@ app.controller('ServiceFormCtrl', function($scope, blocksStore, $http, serviceAu
 
                client_app_ids = R.uniq(R.pluck('client_app_id', extras));
 
-               var used_interactions = R.filter(function(d){ return R.indexOf(d._id, client_app_ids) >= 0; })(interactions);
-               console.log("used interactions :", used_interactions);
-
-
                var v = editor.getValue();
                console.log(v.interactions);
 
-               used_interactions = R.reject(function(i){ return R.contains(i._id, R.pluck('_id', v.interactions)); })(used_interactions);
+               var used_interactions = R.compose(
+                 R.reject(propIn(R.pluck('_id')(v.interactions), '_id')),
+                 R.filter(propIn(client_app_ids, '_id'))
+               )(interactions);
                console.log("used interactions :", used_interactions);
-
-
 
 
                v.interactions = v.interactions.concat( R.map(_interaction_to_json_editor_value)(used_interactions) );
