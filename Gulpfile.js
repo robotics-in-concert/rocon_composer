@@ -26,6 +26,7 @@ var paths = {
       './public/js/app.js',
       './public/js/undo_manager.js',
       './public/js/services/**/*js',
+      './public/js/directives/**/*js',
       './public/js/ctrls/**/*js',
       './public/js/blocks_defaults.js',
     ]

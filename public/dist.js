@@ -327,7 +327,8 @@ var ros_block_override = function(){
     if(b.configable){
       b.customContextMenu = function(opts){
         opts.push({text: 'Config', enabled: true, callback: function(){ 
-          $('#block-config-modal').modal();
+          var $scope = angular.element('#blockly-page').scope();
+          $scope.modalBlockConfig();
         }});
         return opts;
 
@@ -1902,7 +1903,7 @@ Mousetrap.bind('ctrl+alt+l', function() {
 
 
 
-var app = angular.module('centoAuthoring', ['ui.router', 'ui.select2']);
+var app = angular.module('centoAuthoring', ['ui.router', 'ui.bootstrap', 'ui.select2']);
 
 
 app.config(function($stateProvider, $interpolateProvider) {
@@ -2099,93 +2100,117 @@ app.service('serviceAuthoring', function($http, $q){
 
 
 
-var app = angular.module('centoAuthoring');
-app.controller('ConfigCtrl', function($scope, blocksStore, $http) {
+angular.module('centoAuthoring').controller('ConfigCtrl', ConfigCtrl);
+                                            
+                                            
+                                            
+ConfigCtrl.$inject = ['$scope', 'blocksStore', '$http'];                                            
+
+function ConfigCtrl($scope, blocksStore, $http) {
   console.log('x');
 
-    $scope.blockConfigs = {};
-    $scope.currentBlockConfig = '';
+  this.blockConfigs = {};
+  this.currentBlockConfig = '';
 
-    var editor = $scope.editor = new JSONEditor($('#config-editor').get(0), {
-      disable_array_reorder: true,
-      disable_collapse: true,
-      disable_edit_json: true,
-      disable_properties: true,
-      schema: {
-        title: 'blockconfig',
-        type: "object",
-        properties: {
-          rapp: {type: 'string'},
-          uri: {type: 'string'},
-          timeout: {
-            type: 'integer',
-            default: 15000
-          },
-          remappings: { 
-            type: 'array',
-            format: 'table',
-            title: 'Remappings',
-            items: {
-              type: 'object',
-              properties: {
-                remap_from: {type: 'string'},
-                remap_to: {type: 'string'}
-              }
 
-            }
-          },
-          parameters: { 
-            type: 'array',
-            format: 'table',
-            title: 'Parameters',
-            items: {
-              type: 'object',
-              properties: {
-                key: {type: 'string'},
-                value: {type: 'string'}
-              }
 
-            }
-          },
+  this.schema = {
+    title: 'blockconfig',
+    type: "object",
+    properties: {
+      rapp: {type: 'string'},
+      uri: {type: 'string'},
+      timeout: {
+        type: 'integer',
+        default: 15000
+      },
+      remappings: { 
+        type: 'array',
+        format: 'table',
+        title: 'Remappings',
+        items: {
+          type: 'object',
+          properties: {
+            remap_from: {type: 'string'},
+            remap_to: {type: 'string'}
+          }
+
         }
-      }
-      
-    });
-    var default_value = editor.getValue();
-    window.editor = editor;
+      },
+      parameters: { 
+        type: 'array',
+        format: 'table',
+        title: 'Parameters',
+        items: {
+          type: 'object',
+          properties: {
+            key: {type: 'string'},
+            value: {type: 'string'}
+          }
 
-    editor.on('change', function(){
-      if(Blockly.selected){
-        Blockly.selected.extra_config = editor.getValue();
-      };
-    });
-
-    Blockly.mainWorkspace.getCanvas().addEventListener('blocklySelectChange', function(){
-      editor.setValue(default_value);
-      console.log("DEF", default_value);
-
-
-      if(Blockly.selected){
-        var cfg = Blockly.selected.extra_config;
-
-
-        if(cfg){
-          editor.setValue(R.mixin(default_value, cfg));
-          console.log(editor.getValue(), "---------");
-
-
-        }else{
-          // var v = editor.getValue()
-          // v.remappings = [];
-          editor.setValue(default_value);
-          // editor.setValue({remappings: []});
         }
+      },
+    }
+  };
+  this.startval = {};
+
+
+
+  this.editor_options = {
+    disable_array_reorder: true,
+    disable_collapse: true,
+    disable_edit_json: true,
+    disable_properties: true
+  };
+
+
+
+  // var editor = this.editor = new JSONEditor($('#config-editor').get(0), {
+    // disable_array_reorder: true,
+    // disable_collapse: true,
+    // disable_edit_json: true,
+    // disable_properties: true,
+    // schema: 
+    
+  // });
+  // var default_value = editor.getValue();
+  // window.editor = editor;
+
+
+  this.onChange = function(){
+    console.log('onChange');
+
+    // if(Blockly.selected){
+      // Blockly.selected.extra_config = editor.getValue();
+    // };
+
+  };
+
+  Blockly.mainWorkspace.getCanvas().addEventListener('blocklySelectChange2', function(){
+    editor.setValue(default_value);
+    console.log("DEF", default_value);
+
+    if(Blockly.selected){
+      var cfg = Blockly.selected.extra_config;
+
+
+      if(cfg){
+        editor.setValue(R.mixin(default_value, cfg));
+        console.log(editor.getValue(), "---------");
+
+
+      }else{
+        // var v = editor.getValue()
+        // v.remappings = [];
+        editor.setValue(default_value);
+        // editor.setValue({remappings: []});
       }
+    }
 
-    });
+  });
 
 
-});
+};
 
 
 var app = angular.module('centoAuthoring');
@@ -2499,8 +2524,12 @@ app.controller('ServicesIndexCtrl', function($scope, blocksStore) {
 });
 
 
-var app = angular.module('centoAuthoring');
-app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $rootScope, $stateParams, $q) {
+angular.module('centoAuthoring')
+  .controller('WorkflowBlocklyCtrl', WorkflowBlocklyCtrl);
+              
+              
+function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParams, $modal) {
+
   $rootScope.$on('$stateChangeStart', function(e, to) {
     var dirty = checkDirty()
     if(dirty){
@@ -2517,6 +2546,17 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
     }
 
   });
+
+
+  $scope.modalBlockConfig = function(){
+    var modalInstance = $modal.open({
+      templateUrl: '/js/tpl/block_config.html',
+      controller: 'ConfigCtrl',
+      controllerAs: 'ctrl'
+    });
+    
+
+  };
 
   window.onbeforeunload = function(e){
     var dirty = checkDirty()
@@ -2877,7 +2917,7 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
 
 
   };
-});
+};
 
 
 

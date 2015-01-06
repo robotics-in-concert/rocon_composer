@@ -153,7 +153,7 @@ Mousetrap.bind('ctrl+alt+l', function() {
 
 
 
-var app = angular.module('centoAuthoring', ['ui.router', 'ui.select2']);
+var app = angular.module('centoAuthoring', ['ui.router', 'ui.bootstrap', 'ui.select2']);
 
 
 app.config(function($stateProvider, $interpolateProvider) {
