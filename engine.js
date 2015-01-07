@@ -29,6 +29,7 @@ DEBUG = process.env.DEBUG || false
 var Engine = function(db){
   this.db = db;
   this.ee = new EventEmitter();
+  thie.executions = [];
   this.memory = {};
   var ros = this.ros = new ROSLIB.Ros({encoding: 'utf8'});
   var engine = this;
@@ -188,13 +189,14 @@ Engine.prototype.runService = function(name, type, request){
 };
 
 Engine.prototype.runCode = function(code){
-  code = ["Fiber(function(){", code , "}).run();"].join("\n");
+  code = ["Fiber(function(){ try{ ", code , " }catch(error_in_fiber){ console.log('error in fiber', error_in_fiber); }}).run();"].join("\n");
   code = Utils.js_beautify(code);
   this.debug("---------------- scripts -----------------");
   this.debug(_.map(code.split(/\n/), function(line){ return line; }).join("\n"));
   this.debug("------------------------------------------");
   try{
-    eval(code);
+    var f = eval(code);
+    this.executions.push(f);
     this.log("scripts evaluated.");
   }catch(e){
     this.log('invalid block scripts. failed. - ' + e.toString());
@@ -209,7 +211,7 @@ Engine.prototype._waitForTopicsReadyF = function(required_topics){
 
 
 
-  var future = new Future();
+  var fiber = Fiber.current;
 
   var timer = setInterval(function(){
     engine.ros.getTopics(function(topics){
@@ -219,14 +221,20 @@ Engine.prototype._waitForTopicsReadyF = function(required_topics){
 
       if(remapped_topics.length >= required_topics.length){
         clearInterval(timer);
-        setTimeout(function(){ future.return(); }, delay);
+        setTimeout(function(){ 
+          if(fiber.stopped){
+            fiber.run(); 
+          }else{
+            fiber.throwInto('stopped');
+          }
+        }, delay);
       }
     });
   }, 1000);
 
 
 
-  return future.wait();
+  Fiber.yield();
 
 };
 
@@ -432,6 +440,12 @@ Engine.prototype.publish = function(topic, type, msg){
 // };
 Engine.prototype.clear = function(){
   var that = this;
+
+  // stop fibers
+  this.executions.forEach(function(f){
+    f.stopped = true;
+  });
+  this.executions = [];
 
   var q_cancels = R.map(function(r){
     try{ 
