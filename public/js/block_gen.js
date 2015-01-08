@@ -142,6 +142,8 @@ BlockGenerator.prototype.message_block_dom = function(k, subTypes){
 
 };
 
+
+
 BlockGenerator.prototype.scheduled_action_block_dom = function(rapp_name, uri, name, type){
   var typeBlock = this.type_blocks[type];
   var $valueBlock = $('<value name="GOAL"></value>');

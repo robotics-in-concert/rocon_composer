@@ -1558,6 +1558,8 @@ BlockGenerator.prototype.message_block_dom = function(k, subTypes){
 
 };
 
+
+
 BlockGenerator.prototype.scheduled_action_block_dom = function(rapp_name, uri, name, type){
   var typeBlock = this.type_blocks[type];
   var $valueBlock = $('<value name="GOAL"></value>');
@@ -2614,37 +2616,25 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
           _.each(x.rapps, function(rapp){
             _.each(rapp.rocon_apps, function(rocon_app, key){
               var meta = rocon_app.interfaces;
-              _.each(meta.action_servers, function(sub){
+              var rapp_name = [rapp.name, key].join("/");
+              var compat = 'rocon:/pc';
+              var $ros = $tb.find('category[name=ROS]');
 
-                var $b = generator.scheduled_action_block_dom(
-                  [rapp.name, key].join("/"),
-                  "rocon:/pc",
-                  sub.name,
-                  sub.type);
-                $tb.find('category[name=ROS]').append($b);
+              R.forEach(function(pair){
+                R.forEach(function(sub){
+                  var $b = pair[1](
+                    rapp_name, compat,
+                    sub.name,
+                    sub.type);
+                  $ros.append($b);
 
-              });
-              _.each(meta.publishers, function(sub){
+                })(pair[0]);
 
-                var $b = generator.scheduled_subscribe_block_dom(
-                  [rapp.name, key].join("/"),
-                  "rocon:/pc",
-                  sub.name,
-                  sub.type);
-                $tb.find('category[name=ROS]').append($b);
-
-              });
-
-              _.each(meta.subscribers, function(sub){
-
-                var $b = generator.scheduled_publish_block_dom(
-                  [rapp.name, key].join("/"),
-                  "rocon:/pc",
-                  sub.name,
-                  sub.type);
-                $tb.find('category[name=ROS]').append($b);
-
-              });
+              })([
+                [meta.action_servers, generator.scheduled_action_block_dom.bind(generator)],
+                [meta.publishers, generator.scheduled_subscribe_block_dom.bind(generator)],
+                [meta.subscribers, generator.scheduled_publish_block_dom.bind(generator)]
+              ]);
 
             });
 
