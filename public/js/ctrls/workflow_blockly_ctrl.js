@@ -288,7 +288,13 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
   // };
 
   $scope.deleteItem = function(id) {
-    $scope.items = _.reject($scope.items, {id: id})
+    console.log($scope.items);
+
+    var idx = R.findIndex(R.propEq('id', id))($scope.items);
+    if(idx >= 0){
+      $scope.items.splice(idx, 1);
+      console.log('deleted');
+    }
     $scope.current = null;
   };
 
