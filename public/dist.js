@@ -2152,17 +2152,13 @@ function ConfigCtrl($scope, blocksStore, $http) {
       },
     }
   };
-  this.startval = {};
-
+  this.startval = null;
 
   if(Blockly.selected){
     var cfg = Blockly.selected.extra_config;
-
-
     if(cfg){
       this.startval = cfg;
     }else{
-
     }
   }
 
@@ -2193,6 +2189,7 @@ function ConfigCtrl($scope, blocksStore, $http) {
   };
 
   this.ok = function(){
+    alert('ok');
     if(Blockly.selected){
       Blockly.selected.extra_config = editor.getValue();
     };
