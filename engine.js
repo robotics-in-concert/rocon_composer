@@ -223,7 +223,7 @@ Engine.prototype._waitForTopicsReadyF = function(required_topics){
       if(remapped_topics.length >= required_topics.length){
         clearInterval(timer);
         setTimeout(function(){ 
-          if(fiber.stopped){
+          if(!fiber.stopped){
             fiber.run(); 
           }else{
             fiber.throwInto('stopped');
