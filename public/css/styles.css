@@ -34,12 +34,6 @@ button {
   padding: 0;
   border: none;
 }
-#workflow-blockly {
-  /* #blocklyDiv { */
-  /* width: 100%; */
-  /* height: 100%; */
-  /* } */
-}
 #workflow-blockly #alert {
   display: none;
   z-index: 300;
@@ -47,34 +41,23 @@ button {
   top: 20px;
   right: 20px;
 }
-#workflow-blockly .container0 {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  /* height: 100%; */
+#workflow-blockly .blockly_container {
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  height: 100vh;
+  min-height: 100vh;
 }
-#workflow-blockly .container0.down {
-  top: 175px;
+#workflow-blockly .blockly_container .body {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  position: relative;
 }
-#workflow-blockly .left {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+#workflow-blockly .blockly_container .body .left {
+  flex: 1;
 }
-#workflow-blockly #blocklyDiv {
-  width: 100%;
-  height: 99%;
-  /* position: absolute; */
-  /* top: 0; */
-  /* left: 0; */
-  /* bottom: 0; */
-  /* right: 0; */
-}
-#workflow-blockly .right {
+#workflow-blockly .blockly_container .body .right {
   position: absolute;
   right: 0;
   bottom: 0;
@@ -84,10 +67,10 @@ button {
   z-index: 150;
   box-shadow: -10px 0px 10px -10px #cccccc;
 }
-#workflow-blockly .right #tool-buttons li a {
+#workflow-blockly .blockly_container .body .right #tool-buttons li a {
   color: black;
 }
-#workflow-blockly .right #tool-buttons li i {
+#workflow-blockly .blockly_container .body .right #tool-buttons li i {
   font-size: 20px;
   display: inline-block;
   width: 50px;
@@ -97,11 +80,11 @@ button {
   line-height: 50px;
   text-align: center;
 }
-#workflow-blockly .items .item_wrap {
+#workflow-blockly .blockly_container .body .right .items .item_wrap {
   position: relative;
   padding: 5px 10px;
 }
-#workflow-blockly .items .item_wrap .fa-remove {
+#workflow-blockly .blockly_container .body .right .items .item_wrap .fa-remove {
   position: absolute;
   right: 0;
   color: red;
@@ -124,10 +107,6 @@ button {
   padding: 20px;
 }
 #workflow-blockly #header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
   height: 175px;
   background-color: white;
 }

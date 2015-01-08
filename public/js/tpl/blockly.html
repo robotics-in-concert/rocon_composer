@@ -65,115 +65,114 @@
     </div>
   </div>
 
-  <div ng-controller="WorkflowBlocklyCtrl">
+  <div class="blockly_container" ng-controller="WorkflowBlocklyCtrl">
 
-  <div id="alert">
-    <div class="alert alert-success"></div>
-  </div>
-  <div id="header">
-    <div id="header-grad"></div>
-    <div id="header-main">
-      <img src="/img/logo1.png" width="85" height="85" class="logo">
-      <div class="info">
-        <div class="title">
-          <a href="" id="title"  data-type="text" data-inputclass="input-large" data-title=""></a>
+    <div id="alert">
+      <div class="alert alert-success"></div>
+    </div>
+    <div id="header">
+      <div id="header-grad"></div>
+      <div id="header-main">
+        <img src="/img/logo1.png" width="85" height="85" class="logo">
+        <div class="info">
+          <div class="title">
+            <a href="" id="title"  data-type="text" data-inputclass="input-large" data-title=""></a>
+          </div>
+          <div class="description">
+            <a href="" id="description" data-cols="100" data-rows="2" data-type="textarea" data-title=""></a>
+          </div>
         </div>
-        <div class="description">
-          <a href="" id="description" data-cols="100" data-rows="2" data-type="textarea" data-title=""></a>
-        </div>
+        <!-- <a href="#" class="toggle_header">Toggle</a> -->
       </div>
-      <!-- <a href="#" class="toggle_header">Toggle</a> -->
-    </div>
-    <div id="header-menu">
-      <div class="container-fluid">
-        <ul class="nav navbar-nav navbar-right">
-          <li><button ui-sref="services" class="btn btn-primary navbar-btn">Create Service</button></li>
-          <li><a href="" class="fa fa-chevron-up toggle_header"></a></li>
-        </ul>
-        <ul class="nav navbar-nav">
-          <li class="dropdown active">
-            <a href="" class="dropdown-toggle" data-toggle="dropdown">File <span class="sr-only">(current)</span></a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="/#/blockly" target="blank">New</a></li>
-              <li><a href="/" target="blank">Open</a></li>
-              <li><a href="" ng-click="save()">Save</a></li>
-            </ul>
-          </li>
-          <li class="dropdown active">
-            <a href="" class="dropdown-toggle" data-toggle="dropdown">Edit <span class="sr-only">(current)</span></a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="" class="undo">Undo</a></li>
-              <li><a href="" ng-click="clearWorkspace()">Clear board</a></li>
-            </ul>
-          </li>
-          <li class="dropdown">
-            <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Option</span></a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="#">Share on Cento</a></li>
-              <li><a href="" class="toggle_right">Advanced Option</a></li>
-              <li><a href="#">Help</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-  </div>
-
-  <div id="header_toggler">
-    <a href="" class="toggle_header fa fa-chevron-down"></a>
-  </div>
-
-
-
-  <div class="container0 down">
-    <div class="panel left">
-      <div id="blocklyDiv"></div>
-    </div>
-    <div class="panel right">
-      <div class="content">
-
-
-
-        <div>
-          <h2>Engine</h2>
-          <h3>List</h3>
-          <ul class="list-inline">
+      <div id="header-menu">
+        <div class="container-fluid">
+          <ul class="nav navbar-nav navbar-right">
+            <li><button ui-sref="services" class="btn btn-primary navbar-btn">Create Service</button></li>
+            <li><a href="" class="fa fa-chevron-up toggle_header"></a></li>
           </ul>
-          <ul id="data"  class="items list-unstyled">
-            <li ng-repeat="i in items track by i.id">
-              <div class="item_wrap">
-                <input type="checkbox" value="[[i.title]]" ng-checked="itemSelection.indexOf(i.title) > 0" ng-click="toggleItemSelection(i.id)">
-                <a href="" ng-click="load(i.id)">[[i.title]]</a>
-                <a href="" class="fa fa-remove" ng-click="deleteItem(i.id)"></a>
-              </div>
+          <ul class="nav navbar-nav">
+            <li class="dropdown active">
+              <a href="" class="dropdown-toggle" data-toggle="dropdown">File <span class="sr-only">(current)</span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="/#/blockly" target="blank">New</a></li>
+                <li><a href="/" target="blank">Open</a></li>
+                <li><a href="" ng-click="save()">Save</a></li>
+              </ul>
+            </li>
+            <li class="dropdown active">
+              <a href="" class="dropdown-toggle" data-toggle="dropdown">Edit <span class="sr-only">(current)</span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="" class="undo">Undo</a></li>
+                <li><a href="" ng-click="clearWorkspace()">Clear board</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Option</span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="#">Share on Cento</a></li>
+                <li><a href="" class="toggle_right">Advanced Option</a></li>
+                <li><a href="#">Help</a></li>
+              </ul>
             </li>
           </ul>
-
-
-          <ul id="tool-buttons" class="list-inline">
-            <li><a href="" title="reset" ng-click="engineReset()"><i class="fa fa-refresh"></i></a></li>
-            <!-- <li><a href=""><i class="fa fa-share"></i></a></li> -->
-            <li><a href=""><i class="fa fa-play" ng-click="engineLoadChecked()"></i></a></li>
-            <li><a href=""><i class="fa fa-download" ng-click="exportItems()"></i></a></li>
-            <li><a href=""><i class="fa fa-upload" ng-click="importItems()"></i></a></li>
-            <input type="file" style="display:none" id="itemsFile" name='file' onchange="angular.element(this).scope().itemsFileNameChanged(this)" >
-          </ul>
-          <!-- <ul class="list-inline"> -->
-            <!-- <li><button class="btn btn-sm btn-default" ng-click="runCurrent()">run current</button></li> -->
-            <!-- <li><button class="btn btn-sm btn-default" ng-click="export()">export</button></li> -->
-            <!-- <li><button class="btn btn-sm btn-default" ng-click="import()">import</button></li> -->
-            <!-- <li> -->
-              <!-- <button class="btn btn-sm btn-default" ng-click="exportItems()">export items</button> -->
-            <!-- </li> -->
-            <!-- <li> -->
-              <!-- <button class="btn btn-sm btn-default" ng-click="importItems()">import items</button> -->
-            <!-- </li> -->
-          <!-- </ul> -->
+        </div>
       </div>
+
+    </div>
+
+    <div id="header_toggler">
+      <a href="" class="toggle_header fa fa-chevron-down"></a>
+    </div>
+
+
+
+    <div class="container0 down body">
+      <div class="panel left" id="blocklyDiv">
+      </div>
+      <div class="panel right">
+        <div class="content">
+
+
+
+          <div>
+            <h2>Engine</h2>
+            <h3>List</h3>
+            <ul class="list-inline">
+            </ul>
+            <ul id="data"  class="items list-unstyled">
+              <li ng-repeat="i in items track by i.id">
+                <div class="item_wrap">
+                  <input type="checkbox" value="[[i.title]]" ng-checked="itemSelection.indexOf(i.title) > 0" ng-click="toggleItemSelection(i.id)">
+                  <a href="" ng-click="load(i.id)">[[i.title]]</a>
+                  <a href="" class="fa fa-remove" ng-click="deleteItem(i.id)"></a>
+                </div>
+              </li>
+            </ul>
+
+
+            <ul id="tool-buttons" class="list-inline">
+              <li><a href="" title="reset" ng-click="engineReset()"><i class="fa fa-refresh"></i></a></li>
+              <!-- <li><a href=""><i class="fa fa-share"></i></a></li> -->
+              <li><a href=""><i class="fa fa-play" ng-click="engineLoadChecked()"></i></a></li>
+              <li><a href=""><i class="fa fa-download" ng-click="exportItems()"></i></a></li>
+              <li><a href=""><i class="fa fa-upload" ng-click="importItems()"></i></a></li>
+              <input type="file" style="display:none" id="itemsFile" name='file' onchange="angular.element(this).scope().itemsFileNameChanged(this)" >
+            </ul>
+            <!-- <ul class="list-inline"> -->
+              <!-- <li><button class="btn btn-sm btn-default" ng-click="runCurrent()">run current</button></li> -->
+              <!-- <li><button class="btn btn-sm btn-default" ng-click="export()">export</button></li> -->
+              <!-- <li><button class="btn btn-sm btn-default" ng-click="import()">import</button></li> -->
+              <!-- <li> -->
+                <!-- <button class="btn btn-sm btn-default" ng-click="exportItems()">export items</button> -->
+              <!-- </li> -->
+              <!-- <li> -->
+                <!-- <button class="btn btn-sm btn-default" ng-click="importItems()">import items</button> -->
+              <!-- </li> -->
+            <!-- </ul> -->
+        </div>
+        </div>
       </div>
     </div>
-  </div>
   </div>
 
   <xml id="toolbox" style="display: none">
