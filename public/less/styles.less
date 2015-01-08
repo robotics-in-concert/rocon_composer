@@ -237,26 +237,21 @@ button {
 
 
 #workflow_index {
-  padding: 0px;
-  margin: 0;
-  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  height: 100vh;
 
   .right {
-    padding: 30px;
-    position: fixed;
-    top: 45px;
-    left: 445px;
-    right: 0;
-    padding: 20px;
-    bottom: 20px;
+    padding-top: 20px;
+    margin: 45px 0 20px 0px;;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
 
 
     .items {
-      position: absolute;
-      top: 250px;
-      right: 10px;
-      left: 30px;
-      bottom: 20px;
+      flex: 1;
       overflow-y: scroll;
       overflow-x: hidden;
       .items-list {
@@ -326,11 +321,9 @@ button {
   }
 
   .left {
-    position: fixed;
-    top: 45px;
-    left: 45px;
+    padding: 20px;
+    margin: 45px;
     bottom: 45px;
-    padding:20px;
     width: 400px;
     border-right: solid 1px rgb(235,235,235);
 
@@ -352,9 +345,6 @@ button {
   }
 
 }
-#workflow_index .right {
-}
-
 
 
 /* blockly override */
