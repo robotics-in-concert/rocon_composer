@@ -287,6 +287,8 @@ Requester.prototype.send_allocation_request = function(res, timeout){
   this.send_requests();
 
 
+  console.log("start to request resource", res, timeout);
+
   this.heartbeat_timer = setInterval(function(){
     console.log('hb', that.id.toString());
 
@@ -306,7 +308,7 @@ Requester.prototype.send_allocation_request = function(res, timeout){
     });
 
     timeout_timer = setTimeout(function(){ 
-      console.log('resource allocation timeout.');
+      console.log('resource allocation timeout.', res, timeout);
       clearInterval(that.heartbeat_timer);
       reject('timedout'); 
     }, timeout);
