@@ -2446,7 +2446,7 @@ app.controller('ServicesIndexCtrl', function($scope, blocksStore) {
 
 
 var app = angular.module('centoAuthoring');
-app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $rootScope, $stateParams) {
+app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $rootScope, $stateParams, $q) {
   $rootScope.$on('$stateChangeStart', function(e, to) {
     var dirty = checkDirty()
     if(dirty){
@@ -2592,96 +2592,99 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
 
 
 
-    var loadBlocks = function(url){
-      var $tb = $('#toolbox');
-      var generator = new BlockGenerator();
+  var loadBlocks = function(url){
+    var $tb = $('#toolbox');
+    var generator = new BlockGenerator();
+    
+
+    $q.all([blocksStore.loadRapp(), blocksStore.loadInteractions()]).then(function(data){
+      var x = data[0];
+      var interactions = data[1];
+
+      // 
+      // Rapps
+      // 
+      console.groupCollapsed("Rapp Blocks");
+
+      generator.generate_message_blocks(x.types);
+
+      R.mapObj.idx(function(subTypes, k){
+        var $el = generator.message_block_dom(k, subTypes);
+      })(x.types);
+
+      /*
+       * Rapp blocks
+       */
+      _.each(x.rapps, function(rapp){
+        _.each(rapp.rocon_apps, function(rocon_app, key){
+          var meta = rocon_app.interfaces;
+          var rapp_name = [rapp.name, key].join("/");
+          var compat = 'rocon:/pc';
+          var $ros = $tb.find('category[name=ROS]');
+
+          R.forEach(function(pair){
+            R.forEach(function(sub){
+              var $b = pair[1](
+                rapp_name, compat,
+                sub.name,
+                sub.type);
+              $ros.append($b);
+
+            })(pair[0]);
+
+          })([
+            [meta.action_servers, generator.scheduled_action_block_dom.bind(generator)],
+            [meta.publishers, generator.scheduled_subscribe_block_dom.bind(generator)],
+            [meta.subscribers, generator.scheduled_publish_block_dom.bind(generator)]
+          ]);
+
+        });
+
+      });
+      console.groupEnd();
+
+      //
+      // interactions
+      //
+      console.groupCollapsed('Load interactions');
+      console.log(interactions);
+
+      generator.generate_message_blocks(interactions.types);
+      R.mapObj.idx(function(subTypes, k){
+        var $el = generator.message_block_dom(k, subTypes);
+      })(interactions.types);
+
+
+      var sub_topics_el = R.compose(
+        R.map(function($el){ $tb.find('category[name=ROS]').append($el); }),
+        R.map(R.bind(generator.generate_client_app_blocks, generator)),
+        R.reject(R.isEmpty),
+        R.flatten,
+        R.map(function(i){ return {interface: i.interface, client_app_id: i._id}; })
+        // R.mapProp('interface'),
+        // R.map(function(i){ i.interface = R.map(R.assoc('client_app_id', i._id))(i.interface); return i;})
+      )(interactions.data);
       
-      blocksStore.loadRapp(url)
-        .catch(function(e){
-          console.log('cannot load blocks - msg database error');
-
-        })
-        .then(function(x){
-          console.groupCollapsed("Rapp Blocks");
-
-          generator.generate_message_blocks(x.types);
-
-          R.mapObj.idx(function(subTypes, k){
-            var $el = generator.message_block_dom(k, subTypes);
-          })(x.types);
-
-          /*
-           * Rapp blocks
-           */
-          _.each(x.rapps, function(rapp){
-            _.each(rapp.rocon_apps, function(rocon_app, key){
-              var meta = rocon_app.interfaces;
-              var rapp_name = [rapp.name, key].join("/");
-              var compat = 'rocon:/pc';
-              var $ros = $tb.find('category[name=ROS]');
-
-              R.forEach(function(pair){
-                R.forEach(function(sub){
-                  var $b = pair[1](
-                    rapp_name, compat,
-                    sub.name,
-                    sub.type);
-                  $ros.append($b);
-
-                })(pair[0]);
-
-              })([
-                [meta.action_servers, generator.scheduled_action_block_dom.bind(generator)],
-                [meta.publishers, generator.scheduled_subscribe_block_dom.bind(generator)],
-                [meta.subscribers, generator.scheduled_publish_block_dom.bind(generator)]
-              ]);
-
-            });
-
-          });
-          console.groupEnd();
 
 
-          console.log($('#toolbox').get(0));
+      console.groupEnd();
 
-          return blocksStore.loadInteractions();
-
-
-        })
-        .then(function(interactions){
-        
-          console.groupCollapsed('Load interactions');
-          console.log(interactions);
-
-          generator.generate_message_blocks(interactions.types);
-          R.mapObj.idx(function(subTypes, k){
-            var $el = generator.message_block_dom(k, subTypes);
-          })(interactions.types);
+      // IMPORTANT
+      ros_block_override();
 
 
-          var sub_topics_el = R.compose(
-            R.map(function($el){ $tb.find('category[name=ROS]').append($el); }),
-            R.map(R.bind(generator.generate_client_app_blocks, generator)),
-            R.reject(R.isEmpty),
-            R.flatten,
-            R.map(function(i){ return {interface: i.interface, client_app_id: i._id}; })
-            // R.mapProp('interface'),
-            // R.map(function(i){ i.interface = R.map(R.assoc('client_app_id', i._id))(i.interface); return i;})
-          )(interactions.data);
-          
+      Blockly.updateToolbox($('#toolbox').get(0));
+      reload_udf_blocks($scope.items);
 
+    })
+    .catch(function(e){
+      console.log('cannot load blocks - msg database error');
 
-          console.groupEnd();
+      
+    })
+      
 
-          // IMPORTANT
-          ros_block_override();
-
-
-          Blockly.updateToolbox($('#toolbox').get(0));
-          reload_udf_blocks($scope.items);
-        });;
-
-    };
+  };
   _.defer(loadBlocks);
 
 
