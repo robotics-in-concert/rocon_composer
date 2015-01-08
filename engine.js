@@ -215,22 +215,29 @@ Engine.prototype._waitForTopicsReadyF = function(required_topics){
   var fiber = Fiber.current;
 
   var timer = setInterval(function(){
-    engine.ros.getTopics(function(topics){
-      
-      var remapped_topics = R.filter(function(t){ return R.contains(t, required_topics); })(topics);
-      console.log('topic count check : ', [remapped_topics.length, required_topics.length].join("/"), remapped_topics, required_topics);
+    if(!fiber.stopped){
+      engine.ros.getTopics(function(topics){
+        var remapped_topics = R.filter(function(t){ return R.contains(t, required_topics); })(topics);
+        console.log('topic count check : ', [remapped_topics.length, required_topics.length].join("/"), remapped_topics, required_topics);
 
-      if(remapped_topics.length >= required_topics.length){
-        clearInterval(timer);
-        setTimeout(function(){ 
-          if(!fiber.stopped){
-            fiber.run(); 
-          }else{
-            fiber.throwInto('stopped');
-          }
-        }, delay);
-      }
-    });
+        if(remapped_topics.length >= required_topics.length){
+          clearInterval(timer);
+          setTimeout(function(){ 
+            if(!fiber.stopped){
+              fiber.run(); 
+            }else{
+              fiber.throwInto('stopped');
+            }
+          }, delay);
+        }
+      });
+    }else{
+      clearInterval(timer);
+      console.log('running fiber will stop');
+      fiber.throwInto('stopped');
+
+    }
+
   }, 1000);
 
 
