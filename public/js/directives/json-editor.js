@@ -56,11 +56,9 @@ function CAJsonEditor($q, JSONEditor){
         console.log('schema : ', schema);
 
 
-
-        scope.editor = new JSONEditor(element[0], {
-            startval: startVal,
-            schema: schema
-        });
+        var options = {schema: schema};
+        if(startVal){ options.startval = startVal; }
+        scope.editor = new JSONEditor(element[0], options);
 
         var editor = scope.editor;
 
@@ -70,9 +68,9 @@ function CAJsonEditor($q, JSONEditor){
 
         editor.on('change', function () {
           if (typeof scope.onChange === 'function') {
-              scope.onChange({
-                  $editorValue: editor.getValue()
-              });
+            console.log('---', editor.getValue());
+
+              scope.onChange({data: editor.getValue()});
           }
           scope.$apply(function () {
               scope.isValid = (editor.validate().length === 0);

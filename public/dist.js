@@ -2100,15 +2100,104 @@ app.service('serviceAuthoring', function($http, $q){
 
 
 
+angular.module('centoAuthoring')
+  .provider('caJsonEditor', CAJsonEditorProvider)
+  .directive('caJsonEditor', CAJsonEditor);
+
+function CAJsonEditorProvider(){
+  this.$get = function($window){
+    return $window.JSONEditor;
+  };
+
+};
+
+CAJsonEditor.$inject = ['$q', 'caJsonEditor'];
+
+function CAJsonEditor($q, JSONEditor){
+  return {
+    restrict: 'E',
+    scope: {
+      schema: '=',
+      startval: '=',
+      onChange: '&'
+    },
+    link: function(scope, element, attrs){
+      var valueToResolve,
+          startValPromise = $q.when(null),
+          schemaPromise = $q.when(null);
+
+      scope.isValid = false;
+
+      console.log('ATTRS', attrs);
+
+
+      if (!angular.isString(attrs.schema)) {
+          throw new Error('no schema specified');
+      }
+      if (angular.isObject(scope.schema)) {
+          schemaPromise = $q.when(scope.schema);
+      }
+      if (angular.isObject(scope.startval)) {
+          valueToResolve = scope.startval;
+          if (angular.isDefined(valueToResolve.$promise)) {
+              startValPromise = $q.when(valueToResolve.$promise);
+          } else {
+              startValPromise = $q.when(valueToResolve);
+          }
+      }
+
+      $q.all([schemaPromise, startValPromise]).then(function (result) {
+
+        var schema = result[0].data || result[0],
+            startVal = result[1];
+        if (schema === null) {
+            throw new Error('no schema');
+        }
+
+        console.log('schema : ', schema);
+
+
+        var options = {schema: schema};
+        if(startVal){ options.startval = startVal; }
+        scope.editor = new JSONEditor(element[0], options);
+
+        var editor = scope.editor;
+
+        editor.on('ready', function () {
+          scope.isValid = (editor.validate().length === 0);
+        });
+
+        editor.on('change', function () {
+          if (typeof scope.onChange === 'function') {
+            console.log('---', editor.getValue());
+
+              scope.onChange({data: editor.getValue()});
+          }
+          scope.$apply(function () {
+              scope.isValid = (editor.validate().length === 0);
+          });
+        });
+
+      });
+
+    }
+
+  }
+
+}
+
+
 angular.module('centoAuthoring').controller('ConfigCtrl', ConfigCtrl);
                                             
                                             
                                             
-ConfigCtrl.$inject = ['$scope', 'blocksStore', '$http'];                                            
+ConfigCtrl.$inject = ['$scope', 'blocksStore', '$http', '$modalInstance'];                                            
 
-function ConfigCtrl($scope, blocksStore, $http) {
+function ConfigCtrl($scope, blocksStore, $http, $mi) {
   console.log('x');
 
+
+  var ctrl = this;
   this.blockConfigs = {};
   this.currentBlockConfig = '';
 
@@ -2154,12 +2243,8 @@ function ConfigCtrl($scope, blocksStore, $http) {
   };
   this.startval = null;
 
-  if(Blockly.selected){
-    var cfg = Blockly.selected.extra_config;
-    if(cfg){
-      this.startval = cfg;
-    }else{
-    }
+  if(Blockly.selected && Blockly.selected.extra_config){
+    this.startval = Blockly.selected.extra_config;
   }
 
 
@@ -2184,40 +2269,18 @@ function ConfigCtrl($scope, blocksStore, $http) {
   // var default_value = editor.getValue();
   // window.editor = editor;
 
-  this.onChange = function(){
-
+  this.onChange = function(data){
+    console.log(data);
+    ctrl.value = data;
   };
 
   this.ok = function(){
-    alert('ok');
     if(Blockly.selected){
-      Blockly.selected.extra_config = editor.getValue();
+      Blockly.selected.extra_config = ctrl.value;
     };
+    $mi.dismiss();
 
   };
-
-  Blockly.mainWorkspace.getCanvas().addEventListener('blocklySelectChange2', function(){
-    editor.setValue(default_value);
-    console.log("DEF", default_value);
-
-    if(Blockly.selected){
-      var cfg = Blockly.selected.extra_config;
-
-
-      if(cfg){
-        editor.setValue(R.mixin(default_value, cfg));
-        console.log(editor.getValue(), "---------");
-
-
-      }else{
-        // var v = editor.getValue()
-        // v.remappings = [];
-        editor.setValue(default_value);
-        // editor.setValue({remappings: []});
-      }
-    }
-
-  });
 
 
 };

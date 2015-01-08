@@ -3,11 +3,13 @@ angular.module('centoAuthoring').controller('ConfigCtrl', ConfigCtrl);
                                             
                                             
                                             
-ConfigCtrl.$inject = ['$scope', 'blocksStore', '$http'];                                            
+ConfigCtrl.$inject = ['$scope', 'blocksStore', '$http', '$modalInstance'];                                            
 
-function ConfigCtrl($scope, blocksStore, $http) {
+function ConfigCtrl($scope, blocksStore, $http, $mi) {
   console.log('x');
 
+
+  var ctrl = this;
   this.blockConfigs = {};
   this.currentBlockConfig = '';
 
@@ -53,12 +55,8 @@ function ConfigCtrl($scope, blocksStore, $http) {
   };
   this.startval = null;
 
-  if(Blockly.selected){
-    var cfg = Blockly.selected.extra_config;
-    if(cfg){
-      this.startval = cfg;
-    }else{
-    }
+  if(Blockly.selected && Blockly.selected.extra_config){
+    this.startval = Blockly.selected.extra_config;
   }
 
 
@@ -83,40 +81,18 @@ function ConfigCtrl($scope, blocksStore, $http) {
   // var default_value = editor.getValue();
   // window.editor = editor;
 
-  this.onChange = function(){
-
+  this.onChange = function(data){
+    console.log(data);
+    ctrl.value = data;
   };
 
   this.ok = function(){
-    alert('ok');
     if(Blockly.selected){
-      Blockly.selected.extra_config = editor.getValue();
+      Blockly.selected.extra_config = ctrl.value;
     };
+    $mi.dismiss();
 
   };
-
-  Blockly.mainWorkspace.getCanvas().addEventListener('blocklySelectChange2', function(){
-    editor.setValue(default_value);
-    console.log("DEF", default_value);
-
-    if(Blockly.selected){
-      var cfg = Blockly.selected.extra_config;
-
-
-      if(cfg){
-        editor.setValue(R.mixin(default_value, cfg));
-        console.log(editor.getValue(), "---------");
-
-
-      }else{
-        // var v = editor.getValue()
-        // v.remappings = [];
-        editor.setValue(default_value);
-        // editor.setValue({remappings: []});
-      }
-    }
-
-  });
 
 
 };
