@@ -1435,6 +1435,8 @@ BlockGenerator.prototype._buildBlockTree = function(lst, meta, parent){
   console.log('build block tree', meta);
   var that = this;
 
+  console.log('_buildBlockTree', lst, meta, parent);
+
   if(!parent)
     var p = $('<block />').attr('type', 'ros_msg_'+meta.type.replace('/', '-'));
   else
@@ -1541,11 +1543,17 @@ BlockGenerator.prototype.message_block_dom = function(k, subTypes){
     var $el = this._buildBlockTree(subTypes, t);
 
   }else{
-    var $el = this._buildBlockTree(subTypes, subTypes[k]);
+    try {
+      var $el = this._buildBlockTree(subTypes, subTypes[k]);
+    }catch(e){
+      console.error('failed to get message block dom', k);
+    }
   }
 
-  $el.attr('collapsed', true);
-  this.type_blocks[k] = $el.get(0);
+  if($el){
+    $el.attr('collapsed', true);
+    this.type_blocks[k] = $el.get(0);
+  }
   return $el;
 
 };
@@ -1624,6 +1632,9 @@ BlockGenerator.prototype.publish_block_dom = function(opts){
   var $valueBlock = $('<value name="VALUE"></value>');
   $valueBlock.append($(typeBlock).clone());
 
+
+
+
   this.publish_blocks.push(name);
   Blockly.register_publish_block(name, opts.type, {client_app_id: opts.client_app_id});
   var $block = $('<block type="ros_publish_'+name+'"></block>');
@@ -1689,6 +1700,7 @@ $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary btn-sm
 
 var reload_udf_blocks = function(items){
 
+
   var $cat = $('category[name=Utils]');
 
   // $('category[name=Utils] block').remove();
@@ -1710,6 +1722,7 @@ var reload_udf_blocks = function(items){
     Blockly.updateToolbox($('#toolbox').get(0));
 
   });
+  console.log('udf reloaded');
 
 };
 
@@ -2650,6 +2663,10 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
           console.groupCollapsed('Load interactions');
           console.log(interactions);
 
+          generator.generate_message_blocks(interactions.types);
+          R.mapObj.idx(function(subTypes, k){
+            var $el = generator.message_block_dom(k, subTypes);
+          })(interactions.types);
 
 
           var sub_topics_el = R.compose(

@@ -7,6 +7,7 @@ $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary btn-sm
 
 var reload_udf_blocks = function(items){
 
+
   var $cat = $('category[name=Utils]');
 
   // $('category[name=Utils] block').remove();
@@ -28,6 +29,7 @@ var reload_udf_blocks = function(items){
     Blockly.updateToolbox($('#toolbox').get(0));
 
   });
+  console.log('udf reloaded');
 
 };
 

@@ -19,6 +19,8 @@ BlockGenerator.prototype._buildBlockTree = function(lst, meta, parent){
   console.log('build block tree', meta);
   var that = this;
 
+  console.log('_buildBlockTree', lst, meta, parent);
+
   if(!parent)
     var p = $('<block />').attr('type', 'ros_msg_'+meta.type.replace('/', '-'));
   else
@@ -125,11 +127,17 @@ BlockGenerator.prototype.message_block_dom = function(k, subTypes){
     var $el = this._buildBlockTree(subTypes, t);
 
   }else{
-    var $el = this._buildBlockTree(subTypes, subTypes[k]);
+    try {
+      var $el = this._buildBlockTree(subTypes, subTypes[k]);
+    }catch(e){
+      console.error('failed to get message block dom', k);
+    }
   }
 
-  $el.attr('collapsed', true);
-  this.type_blocks[k] = $el.get(0);
+  if($el){
+    $el.attr('collapsed', true);
+    this.type_blocks[k] = $el.get(0);
+  }
   return $el;
 
 };
@@ -207,6 +215,9 @@ BlockGenerator.prototype.publish_block_dom = function(opts){
   var typeBlock = this.type_blocks[type];
   var $valueBlock = $('<value name="VALUE"></value>');
   $valueBlock.append($(typeBlock).clone());
+
+
+
 
   this.publish_blocks.push(name);
   Blockly.register_publish_block(name, opts.type, {client_app_id: opts.client_app_id});

@@ -219,6 +219,10 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
           console.groupCollapsed('Load interactions');
           console.log(interactions);
 
+          generator.generate_message_blocks(interactions.types);
+          R.mapObj.idx(function(subTypes, k){
+            var $el = generator.message_block_dom(k, subTypes);
+          })(interactions.types);
 
 
           var sub_topics_el = R.compose(

@@ -41,8 +41,16 @@ module.exports = function(app, db){
     var apiPath = URL.resolve(process.env.MSG_DATABASE, "api/interaction_interfaces");
 
     requestP(apiPath, {json: true}).spread(function(res0, data){
+      console.log("ZZZZZZZ", data);
 
-      var types_to_load = R.compose( R.mapProp('type'), R.flatten,  R.mapProp('interface'))(data);
+
+
+      var types_to_load = R.compose(R.uniq,
+                                    R.mapProp('type'), 
+                                    R.flatten,
+                                    R.map(R.values),
+                                    R.flatten,  
+                                    R.mapProp('interface'))(data);
       load_types(types_to_load, function(types){
         res.send({data: data, types: types});
       });
