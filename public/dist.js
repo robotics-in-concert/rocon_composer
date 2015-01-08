@@ -2155,6 +2155,18 @@ function ConfigCtrl($scope, blocksStore, $http) {
   this.startval = {};
 
 
+  if(Blockly.selected){
+    var cfg = Blockly.selected.extra_config;
+
+
+    if(cfg){
+      this.startval = cfg;
+    }else{
+
+    }
+  }
+
+
 
   this.editor_options = {
     disable_array_reorder: true,
@@ -2176,13 +2188,14 @@ function ConfigCtrl($scope, blocksStore, $http) {
   // var default_value = editor.getValue();
   // window.editor = editor;
 
-
   this.onChange = function(){
-    console.log('onChange');
 
-    // if(Blockly.selected){
-      // Blockly.selected.extra_config = editor.getValue();
-    // };
+  };
+
+  this.ok = function(){
+    if(Blockly.selected){
+      Blockly.selected.extra_config = editor.getValue();
+    };
 
   };
 
