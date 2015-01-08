@@ -2118,6 +2118,7 @@ function CAJsonEditor($q, JSONEditor){
     restrict: 'E',
     scope: {
       schema: '=',
+      editorOptions: '=',
       startval: '=',
       onChange: '&'
     },
@@ -2159,6 +2160,9 @@ function CAJsonEditor($q, JSONEditor){
 
         var options = {schema: schema};
         if(startVal){ options.startval = startVal; }
+
+
+        options = R.mixin(options, scope.editorOptions);
         scope.editor = new JSONEditor(element[0], options);
 
         var editor = scope.editor;
@@ -2255,6 +2259,8 @@ function ConfigCtrl($scope, blocksStore, $http, $mi) {
     disable_edit_json: true,
     disable_properties: true
   };
+
+
 
 
 

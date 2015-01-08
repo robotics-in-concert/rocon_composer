@@ -70,6 +70,8 @@ function ConfigCtrl($scope, blocksStore, $http, $mi) {
 
 
 
+
+
   // var editor = this.editor = new JSONEditor($('#config-editor').get(0), {
     // disable_array_reorder: true,
     // disable_collapse: true,
