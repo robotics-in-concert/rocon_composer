@@ -345,6 +345,7 @@ Engine.prototype.runScheduledAction = function(ctx, name, type, goal, onResult, 
 
 
   engine._waitForTopicsReadyF(required_topics);
+  this.schedule_requests_ref_counts[ctx.req_id] = this.schedule_requests_ref_counts[ctx.req_id] + 1;
   engine.runAction(name, type, goal, 
     function(items){ 
       onResult(items); 
@@ -421,7 +422,6 @@ Engine.prototype.runAction = function(name, type, goal, onResult, onFeedback){
   goal.on('result', onResult);
 
   goal.send();
-  this.schedule_requests_ref_counts[ctx.req_id] = this.schedule_requests_ref_counts[ctx.req_id] + 1;
 
 };
 
