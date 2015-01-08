@@ -240,6 +240,7 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
 
 
           Blockly.updateToolbox($('#toolbox').get(0));
+          reload_udf_blocks($scope.items);
         });;
 
     };
