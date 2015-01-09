@@ -268,7 +268,7 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, 
   var future = new Future();
   r.send_allocation_request(res, options.timeout).then(function(reqId){
     engine.schedule_requests[reqId] = r;
-    engine.schedule_requests_ref_counts[reqId] = 1;
+    engine.schedule_requests_ref_counts[reqId] = 0;
     future.return({req_id: reqId, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type});
   }).catch(function(e){
     future.return(null);
