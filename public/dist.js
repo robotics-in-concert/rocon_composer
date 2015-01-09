@@ -1961,6 +1961,19 @@ app.directive("roconSelect2", ["$interval", function($interval) {
 }]);
 
 
+
+
+
+
+
+
+
+
+
+// Socket.io
+window.socket = io.connect();
+
+
 UNDO_CHECK_INTERVAL = 1000;
 UNDO_MAX_SIZE = 100;
 var UndoManager = function(){
@@ -3005,6 +3018,50 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
 
 
   };
+
+  var onBlocksChange = function(){
+    var ws = Blockly.mainWorkspace;
+    var scroll = {x: ws.scrollX, y: ws.scrollY};
+    var myId = new Date().getTime();
+
+    window.socket.emit('blockly:workspace:changed', {id: myId, metrics: ws.getMetrics(), scroll: scroll, xml: _xml()});
+
+  }
+
+  window.socket.on('blockly:workspace:first', function(e){
+    alert('im host');
+  });
+  window.socket.on('blockly:workspace:changed', function(e){
+    var ws = Blockly.mainWorkspace;
+    var xml = e.xml;
+    dom = Blockly.Xml.textToDom(xml);
+    Blockly.mainWorkspace.clear();
+    var m = e.metrics;
+
+
+    var x = (-m.contentLeft) - e.scroll.x;
+    var y = (-m.contentTop) - e.scroll.y;
+
+
+
+    ws.scrollbar.set(x, y);
+
+
+
+
+    Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, dom);
+    
+
+    console.log(e, x, y);
+
+
+  });
+  Blockly.mainWorkspace.getCanvas().addEventListener('blocklyWorkspaceChange', onBlocksChange);
+
+
+
+
+
 };
 
 

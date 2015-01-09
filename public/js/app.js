@@ -210,3 +210,16 @@ app.directive("roconSelect2", ["$interval", function($interval) {
     }
 }]);
 
+
+
+
+
+
+
+
+
+
+
+// Socket.io
+window.socket = io.connect();
+
