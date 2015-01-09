@@ -424,9 +424,12 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
       $(this).removeAttr('y');
       var blockDom = this;
       var dom = Blockly.Xml.domToBlock(ws, blockDom);
-      dom.moveBy(x, y);
+      console.log('will move', x, y);
+
+      dom.moveTo(x, y);
+    ws.scrollbar.resize();
     });;
-    return;
+    // return;
 
 
 
@@ -444,7 +447,7 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
 
 
 
-    Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, dom);
+    // Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, dom);
 
     var dx = Math.abs(m.contentLeft - m.viewLeft);
     var dy = Math.abs(m.contentTop - m.viewTop);
@@ -462,7 +465,7 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
 
 
     // ws.scrollbar.resize();
-    ws.scrollbar.set(dx, dy);
+    ws.scrollbar.set(sx, sy);
     
 
 
