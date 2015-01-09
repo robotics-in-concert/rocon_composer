@@ -38,7 +38,7 @@ module.exports = function(app, db){
 
   app.get('/api/load_interactions', function(req, res){
 
-    var apiPath = URL.resolve(process.env.MSG_DATABASE, "api/interaction_interfaces");
+    var apiPath = URL.resolve(process.env.MSG_DATABASE, "api/hic_app");
 
     requestP(apiPath, {json: true}).spread(function(res0, data){
       console.log("ZZZZZZZ", data);
@@ -61,7 +61,7 @@ module.exports = function(app, db){
   app.post('/api/load_rapp', function(req, res){
 
 
-    var apiPath = URL.resolve(process.env.MSG_DATABASE, "api/interfaces");
+    var apiPath = URL.resolve(process.env.MSG_DATABASE, "api/rocon_app");
     console.log(apiPath);
 
     request.get(apiPath, function(e, res0, body){
