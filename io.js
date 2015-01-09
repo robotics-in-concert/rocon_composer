@@ -1,21 +1,16 @@
 module.exports = function(io){
-  var first = true;
   io.on('connection', function(socket){
     console.log('socket connected');
-    if(first){
-      socket.first = true;
-      first = false;
-      socket.emit('blockly:workspace:first');
-    }
-
 
     socket.on('disconnect', function(){
-      if(socket.first){
-        first = true;
-      }
+      console.log('socket disconnected');
+    });
+    socket.on('blockly:workspace:lock', function(e){
+      socket.host = true;
+      socket.emit('blockly:workspace:locked');
     });
     socket.on('blockly:workspace:changed', function(e){
-      if(socket.first)
+      if(socket.host)
         socket.broadcast.emit('blockly:workspace:changed', e);
     });
 

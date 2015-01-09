@@ -402,31 +402,69 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
 
   }
 
-  window.socket.on('blockly:workspace:first', function(e){
+
+  $('body').on('click', '.sync_lock', function(){
+    window.socket.emit('blockly:workspace:lock');
+  });
+
+  window.socket.on('blockly:workspace:locked', function(e){
     alert('im host');
   });
   window.socket.on('blockly:workspace:changed', function(e){
     var ws = Blockly.mainWorkspace;
     var xml = e.xml;
     dom = Blockly.Xml.textToDom(xml);
+
+
     Blockly.mainWorkspace.clear();
+    $(xml).find('block[x]').each(function(){
+      var x = $(this).attr('x');
+      var y = $(this).attr('y');
+      $(this).removeAttr('x');
+      $(this).removeAttr('y');
+      var blockDom = this;
+      var dom = Blockly.Xml.domToBlock(ws, blockDom);
+      dom.moveBy(x, y);
+    });;
+    return;
+
+
+
+
     var m = e.metrics;
 
 
-    var x = (-m.contentLeft) - e.scroll.x;
-    var y = (-m.contentTop) - e.scroll.y;
+    // var x = (-m.contentLeft) - e.scroll.x;
+    // var y = (-m.contentTop) - e.scroll.y;
 
 
 
-    ws.scrollbar.set(x, y);
+    // ws.scrollbar.set(x, y);
 
 
 
 
     Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, dom);
+
+    var dx = Math.abs(m.contentLeft - m.viewLeft);
+    var dy = Math.abs(m.contentTop - m.viewTop);
+
+    // ratio
+    var rx = dx / (m.contentWidth - m.viewWidth);
+    var ry = dy / (m.contentHeight - m.viewHeight);
+
+
+    // scroll value
+    // var sx = e.scroll.x * rx;
+    // var sy = e.scroll.y * ry;
+    var sx = ws.scrollX * rx;
+    var sy = ws.scrollY * ry;
+
+
+    // ws.scrollbar.resize();
+    ws.scrollbar.set(dx, dy);
     
 
-    console.log(e, x, y);
 
 
   });
