@@ -2671,7 +2671,7 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
        */
       _.each(x.rapps, function(rapp){
         _.each(rapp.rocon_apps, function(rocon_app, key){
-          var meta = rocon_app.interfaces;
+          var meta = rocon_app.public_interface;
           var rapp_name = [rapp.name, key].join("/");
           var compat = 'rocon:/pc';
           var $ros = $tb.find('category[name=ROS]');

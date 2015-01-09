@@ -74,7 +74,7 @@ module.exports = function(app, db){
 
       var ifs = R.pipe(
           R.map(R.prop('rocon_apps')),
-          R.map(R.mapObj(R.prop('interfaces'))),
+          R.map(R.mapObj(R.prop('public_interface'))),
           R.map(R.values),
           R.flatten
         )(data);
