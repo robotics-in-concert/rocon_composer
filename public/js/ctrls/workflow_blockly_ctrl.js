@@ -395,10 +395,20 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
 
   var onBlocksChange = function(){
     var ws = Blockly.mainWorkspace;
-    var scroll = {x: ws.scrollX, y: ws.scrollY};
-    var myId = new Date().getTime();
+    var m0 = ws.getMetrics();
+    // Blockly.svgResize();
+    // var scroll = {x: ws.scrollX, y: ws.scrollY};
+    var dx = Math.abs(m0.contentLeft - m0.viewLeft);
+    var dy = Math.abs(m0.contentTop - m0.viewTop);
 
-    window.socket.emit('blockly:workspace:changed', {id: myId, metrics: ws.getMetrics(), scroll: scroll, xml: _xml()});
+    var scroll = {x: dx, y: dy};
+    var myId = new Date().getTime();
+    console.log('.');
+
+
+    setTimeout(function(){
+      window.socket.emit('blockly:workspace:changed', {id: myId, metrics: ws.getMetrics(), scroll: scroll, xml: _xml()});
+    });
 
   }
 
@@ -411,7 +421,11 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
     alert('im host');
   });
   window.socket.on('blockly:workspace:changed', function(e){
+    console.log(e);
+
     var ws = Blockly.mainWorkspace;
+    var m = e.metrics;
+    var m0 = ws.getMetrics();
     var xml = e.xml;
     dom = Blockly.Xml.textToDom(xml);
 
@@ -420,21 +434,22 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
     $(xml).find('block[x]').each(function(){
       var x = $(this).attr('x');
       var y = $(this).attr('y');
-      $(this).removeAttr('x');
-      $(this).removeAttr('y');
+      // $(this).removeAttr('x');
+      // $(this).removeAttr('y');
+      $(this).attr('x', 0);
+      $(this).attr('y', 0);
       var blockDom = this;
       var dom = Blockly.Xml.domToBlock(ws, blockDom);
       console.log('will move', x, y);
 
-      dom.moveTo(x, y);
-    ws.scrollbar.resize();
+      dom.moveBy(x, y);
     });;
+    // Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, dom);
     // return;
 
 
 
 
-    var m = e.metrics;
 
 
     // var x = (-m.contentLeft) - e.scroll.x;
@@ -447,26 +462,46 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
 
 
 
-    // Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, dom);
-
-    var dx = Math.abs(m.contentLeft - m.viewLeft);
-    var dy = Math.abs(m.contentTop - m.viewTop);
-
-    // ratio
-    var rx = dx / (m.contentWidth - m.viewWidth);
-    var ry = dy / (m.contentHeight - m.viewHeight);
 
 
-    // scroll value
-    // var sx = e.scroll.x * rx;
-    // var sy = e.scroll.y * ry;
+    var dx = Math.abs((-m.viewLeft) - 15);
+    var dy = Math.abs((-m.viewTop) - 15);
+    console.log('s', ws.scrollX - dx, ws.scrollY - dy);
+
+    // var dx = Math.abs(m0.contentLeft - m.viewLeft);
+    // var dy = Math.abs(m0.contentTop - m.viewTop);
+    ws.scrollbar.set(ws.scrollX - dx, ws.scrollY - dy);
+    // ws.scrollbar.set(dx, dy);
+
+      // Blockly.svgResize();
+      // var dx = Math.abs(m0.contentLeft - m.viewLeft);
+      // var dy = Math.abs(m0.contentTop - m.viewTop);
+
+      // // ratio
+    var rx = dx / (m0.contentWidth - m.viewWidth);
+    var ry = dy / (m0.contentHeight - m.viewHeight);
+
+
+      // // scroll value
+      // // var sx = e.scroll.x * rx;
+      // // var sy = e.scroll.y * ry;
     var sx = ws.scrollX * rx;
     var sy = ws.scrollY * ry;
 
 
-    // ws.scrollbar.resize();
-    ws.scrollbar.set(sx, sy);
-    
+
+      
+
+      // console.log('s', m0, m, dx, dy);
+
+        // ws.scrollbar.set(e.scroll.x, e.scroll.y);
+        // console.log('s');
+
+      
+
+    // setTimeout(function(){
+    // }, 1000);
+
 
 
 
