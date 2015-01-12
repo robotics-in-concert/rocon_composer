@@ -1974,6 +1974,26 @@ app.directive("roconSelect2", ["$interval", function($interval) {
 window.socket = io.connect();
 
 
+
+// blockly
+var blockly_remove_scrollbar = function(){
+  var ws = Blockly.mainWorkspace;
+  var s = ws.scrollbar;
+  $(s.corner_).remove();
+
+  s.vScroll.dispose();
+  s.hScroll.dispose();
+
+  ws.scrollbar = null;
+
+};
+var blockly_add_scrollbar = function(){
+  var ws = Blockly.mainWorkspace;
+  ws.scrollbar = new Blockly.ScrollbarPair(ws);
+  Blockly.fireUiEvent(window, 'resize');
+
+};
+
 UNDO_CHECK_INTERVAL = 1000;
 UNDO_MAX_SIZE = 100;
 var UndoManager = function(){
