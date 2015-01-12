@@ -470,7 +470,7 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
 
     // var dx = Math.abs(m0.contentLeft - m.viewLeft);
     // var dy = Math.abs(m0.contentTop - m.viewTop);
-    ws.scrollbar.set(ws.scrollX - dx, ws.scrollY - dy);
+    // ws.scrollbar.set(ws.scrollX - dx, ws.scrollY - dy);
     // ws.scrollbar.set(dx, dy);
 
       // Blockly.svgResize();
