@@ -1979,6 +1979,9 @@ window.socket = io.connect();
 var blockly_remove_scrollbar = function(){
   var ws = Blockly.mainWorkspace;
   var s = ws.scrollbar;
+  if(!s){
+    return;
+  }
   $(s.corner_).remove();
 
   s.vScroll.dispose();
@@ -3060,34 +3063,8 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
 
 
 
-  var socket = window.socket;
-  $('body').on('click', '.sync_lock', function(){
-    window.socket.emit('blockly:workspace:lock');
-  });
-
-
-  $('body').on('click', '.sync_join_channel', function(){
-    bootbox.prompt('Channel name?', function(n){
-      socket.emit('blockly:channel:join', {name: n}, function(x){
-        console.log('joined', arguments);
-
-      });
-      blockly_remove_scrollbar();
-    });
-
-  });
-  $('body').on('click', '.sync_new_channel', function(){
-    bootbox.prompt('Channel name?', function(n){
-      socket.emit('blockly:channel:create', {name: n}, function(x){
-        console.log('create callback', arguments);
-      });
-      blockly_remove_scrollbar();
-    });
-
-  });
-
-  window.socket.on('blockly:workspace:changed', function(e){
-    console.log(e);
+  var _updateWorkspace = function(e){
+    console.log('UPDATE', e);
 
     var ws = Blockly.mainWorkspace;
     var m = e.metrics;
@@ -3169,6 +3146,46 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
     // }, 1000);
 
 
+
+  };
+
+
+  var socket = window.socket;
+  $('body').on('click', '.sync_lock', function(){
+    window.socket.emit('blockly:workspace:lock');
+  });
+
+
+  $('body').on('click', '.sync_join_channel', function(){
+    bootbox.prompt('Channel name?', function(n){
+      socket.emit('blockly:channel:join', {name: n}, function(data){
+        console.log('1');
+
+        if(data){
+        console.log('2');
+
+          _updateWorkspace(data);
+        }
+        console.log('joined', data);
+
+      });
+      blockly_remove_scrollbar();
+    });
+
+  });
+  $('body').on('click', '.sync_new_channel', function(){
+    bootbox.prompt('Channel name?', function(n){
+      socket.emit('blockly:channel:create', {name: n}, function(x){
+        console.log('create callback', arguments);
+        Blockly.mainWorkspace.clear();
+        blockly_remove_scrollbar();
+      });
+    });
+
+  });
+
+  window.socket.on('blockly:workspace:changed', function(e){
+    _updateWorkspace(e);
 
 
   });

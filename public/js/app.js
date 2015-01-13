@@ -229,6 +229,9 @@ window.socket = io.connect();
 var blockly_remove_scrollbar = function(){
   var ws = Blockly.mainWorkspace;
   var s = ws.scrollbar;
+  if(!s){
+    return;
+  }
   $(s.corner_).remove();
 
   s.vScroll.dispose();
