@@ -1,6 +1,10 @@
 
-var app = angular.module('centoAuthoring');
-app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $rootScope, $stateParams, $q) {
+angular.module('centoAuthoring')
+  .controller('WorkflowBlocklyCtrl', WorkflowBlocklyCtrl);
+              
+              
+function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParams, $modal, $q) {
+
   $rootScope.$on('$stateChangeStart', function(e, to) {
     var dirty = checkDirty()
     if(dirty){
@@ -17,6 +21,17 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
     }
 
   });
+
+
+  $scope.modalBlockConfig = function(){
+    var modalInstance = $modal.open({
+      templateUrl: '/js/tpl/block_config.html',
+      controller: 'ConfigCtrl',
+      controllerAs: 'ctrl'
+    });
+    
+
+  };
 
   window.onbeforeunload = function(e){
     var dirty = checkDirty()
@@ -377,5 +392,5 @@ app.controller('WorkflowBlocklyCtrl', function($scope, blocksStore, $http, $root
 
 
   };
-});
+};
 

@@ -337,3 +337,8 @@ button {
 #service-editor .select2-container.form-control {
   border: none;
 }
+/* FIXES */
+/* 1. angular ui modal backdrop */
+.modal-backdrop {
+  bottom: 0;
+}

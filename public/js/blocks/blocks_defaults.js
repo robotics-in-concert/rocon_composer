@@ -14,7 +14,8 @@ var ros_block_override = function(){
     if(b.configable){
       b.customContextMenu = function(opts){
         opts.push({text: 'Config', enabled: true, callback: function(){ 
-          $('#block-config-modal').modal();
+          var $scope = angular.element('#blockly-page').scope();
+          $scope.modalBlockConfig();
         }});
         return opts;
 
