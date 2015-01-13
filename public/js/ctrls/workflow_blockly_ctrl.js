@@ -3,7 +3,7 @@ angular.module('centoAuthoring')
   .controller('WorkflowBlocklyCtrl', WorkflowBlocklyCtrl);
               
               
-function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParams, $modal) {
+function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParams, $modal, $q) {
 
   $rootScope.$on('$stateChangeStart', function(e, to) {
     var dirty = checkDirty()
