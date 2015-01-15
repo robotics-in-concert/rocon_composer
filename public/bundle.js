@@ -67208,6 +67208,9 @@ app.service('blocksStore', require('./services/blocks'));
 app.service('serviceAuthoring', require('./services/services'));
 app.controller('RootCtrl', require('./ctrls/root_ctrl'));
 
+app.provider('caJsonEditor', require('./directives/json-editor').provider)
+app.directive('caJsonEditor', require('./directives/json-editor').directive)
+
 app.config(function($stateProvider, $interpolateProvider) {
   $interpolateProvider.startSymbol('[[');
   $interpolateProvider.endSymbol(']]');
@@ -67270,7 +67273,7 @@ app.directive("roconSelect2", ["$interval", function($interval) {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./blocks/index":"/Users/eskim/current/cento_authoring/public/js/blocks/index.js","./ctrls/root_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/root_ctrl.js","./ctrls/services_form_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/services_form_ctrl.js","./ctrls/services_index_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/services_index_ctrl.js","./ctrls/workflow_blockly_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/workflow_blockly_ctrl.js","./ctrls/workflow_index_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/workflow_index_ctrl.js","./services/blocks":"/Users/eskim/current/cento_authoring/public/js/services/blocks.js","./services/services":"/Users/eskim/current/cento_authoring/public/js/services/services.js","./utils":"/Users/eskim/current/cento_authoring/public/js/utils.js","angular":"/Users/eskim/current/cento_authoring/node_modules/angular/angular.js","angular-bootstrap":"/Users/eskim/current/cento_authoring/node_modules/angular-bootstrap/dist/ui-bootstrap-tpls.js","angular-ui-router":"/Users/eskim/current/cento_authoring/node_modules/angular-ui-router/release/angular-ui-router.js","bootstrap":"/Users/eskim/current/cento_authoring/node_modules/bootstrap/dist/js/bootstrap.js","jquery":"/Users/eskim/current/cento_authoring/node_modules/jquery/dist/jquery.js","json-editor":"/Users/eskim/current/cento_authoring/node_modules/json-editor/dist/jsoneditor.js","mousetrap":"/Users/eskim/current/cento_authoring/node_modules/mousetrap/mousetrap.js"}],"/Users/eskim/current/cento_authoring/public/js/block_gen.js":[function(require,module,exports){
+},{"./blocks/index":"/Users/eskim/current/cento_authoring/public/js/blocks/index.js","./ctrls/root_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/root_ctrl.js","./ctrls/services_form_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/services_form_ctrl.js","./ctrls/services_index_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/services_index_ctrl.js","./ctrls/workflow_blockly_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/workflow_blockly_ctrl.js","./ctrls/workflow_index_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/workflow_index_ctrl.js","./directives/json-editor":"/Users/eskim/current/cento_authoring/public/js/directives/json-editor.js","./services/blocks":"/Users/eskim/current/cento_authoring/public/js/services/blocks.js","./services/services":"/Users/eskim/current/cento_authoring/public/js/services/services.js","./utils":"/Users/eskim/current/cento_authoring/public/js/utils.js","angular":"/Users/eskim/current/cento_authoring/node_modules/angular/angular.js","angular-bootstrap":"/Users/eskim/current/cento_authoring/node_modules/angular-bootstrap/dist/ui-bootstrap-tpls.js","angular-ui-router":"/Users/eskim/current/cento_authoring/node_modules/angular-ui-router/release/angular-ui-router.js","bootstrap":"/Users/eskim/current/cento_authoring/node_modules/bootstrap/dist/js/bootstrap.js","jquery":"/Users/eskim/current/cento_authoring/node_modules/jquery/dist/jquery.js","json-editor":"/Users/eskim/current/cento_authoring/node_modules/json-editor/dist/jsoneditor.js","mousetrap":"/Users/eskim/current/cento_authoring/node_modules/mousetrap/mousetrap.js"}],"/Users/eskim/current/cento_authoring/public/js/block_gen.js":[function(require,module,exports){
 var _ = require('lodash'),
   $ = require('jquery'),
   R = require('ramda');
@@ -69049,11 +69052,123 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/cento_authoring/public/js/config.json","lodash":"/Users/eskim/current/cento_authoring/node_modules/lodash/dist/lodash.js"}],"/Users/eskim/current/cento_authoring/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100
 }
+
+},{}],"/Users/eskim/current/cento_authoring/public/js/ctrls/config_ctrl.js":[function(require,module,exports){
+
+                                            
+                                            
+                                            
+ConfigCtrl.$inject = ['$scope', 'blocksStore', '$http', '$modalInstance'];                                            
+
+function ConfigCtrl($scope, blocksStore, $http, $mi) {
+  console.log('x');
+
+
+  var ctrl = this;
+  this.blockConfigs = {};
+  this.currentBlockConfig = '';
+
+
+
+
+  this.schema = blocksStore.loadRapp().then(function(){
+    var schema = {
+      title: 'blockconfig',
+      type: "object",
+      properties: {
+        rapp: {type: 'string'},
+        uri: {type: 'string'},
+        timeout: {
+          type: 'integer',
+          default: 15000
+        },
+        remappings: { 
+          type: 'array',
+          format: 'table',
+          title: 'Remappings',
+          items: {
+            type: 'object',
+            properties: {
+              remap_from: {type: 'string'},
+              remap_to: {type: 'string'}
+            }
+
+          }
+        },
+        parameters: { 
+          type: 'array',
+          format: 'table',
+          title: 'Parameters',
+          items: {
+            type: 'object',
+            properties: {
+              key: {type: 'string'},
+              value: {type: 'string'}
+            }
+
+          }
+        },
+      }
+    };
+
+
+    return schema;
+  });
+  
+
+
+  this.startval = null;
+
+  if(Blockly.selected && Blockly.selected.extra_config){
+    this.startval = Blockly.selected.extra_config;
+  }
+
+
+
+  this.editor_options = {
+    disable_array_reorder: true,
+    disable_collapse: true,
+    disable_edit_json: true,
+    disable_properties: true
+  };
+
+
+
+
+
+  // var editor = this.editor = new JSONEditor($('#config-editor').get(0), {
+    // disable_array_reorder: true,
+    // disable_collapse: true,
+    // disable_edit_json: true,
+    // disable_properties: true,
+    // schema: 
+    
+  // });
+  // var default_value = editor.getValue();
+  // window.editor = editor;
+
+  this.onChange = function(data){
+    console.log(data);
+    ctrl.value = data;
+  };
+
+  this.ok = function(){
+    if(Blockly.selected){
+      Blockly.selected.extra_config = ctrl.value;
+    };
+    $mi.dismiss();
+
+  };
+
+
+};
+
+module.exports = ConfigCtrl;
 
 },{}],"/Users/eskim/current/cento_authoring/public/js/ctrls/root_ctrl.js":[function(require,module,exports){
 var _ = require('lodash');
@@ -69411,7 +69526,7 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
   $scope.modalBlockConfig = function(){
     var modalInstance = $modal.open({
       templateUrl: '/js/tpl/block_config.html',
-      controller: 'ConfigCtrl',
+      controller: require('./config_ctrl'),
       controllerAs: 'ctrl'
     });
     
@@ -69791,7 +69906,7 @@ module.exports = WorkflowBlocklyCtrl;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../block_gen":"/Users/eskim/current/cento_authoring/public/js/block_gen.js","../blocks/blocks_defaults":"/Users/eskim/current/cento_authoring/public/js/blocks/blocks_defaults.js","../undo_manager":"/Users/eskim/current/cento_authoring/public/js/undo_manager.js","../utils":"/Users/eskim/current/cento_authoring/public/js/utils.js","jquery":"/Users/eskim/current/cento_authoring/node_modules/jquery/dist/jquery.js","lodash":"/Users/eskim/current/cento_authoring/node_modules/lodash/dist/lodash.js","ramda":"/Users/eskim/current/cento_authoring/node_modules/ramda/ramda.js"}],"/Users/eskim/current/cento_authoring/public/js/ctrls/workflow_index_ctrl.js":[function(require,module,exports){
+},{"../block_gen":"/Users/eskim/current/cento_authoring/public/js/block_gen.js","../blocks/blocks_defaults":"/Users/eskim/current/cento_authoring/public/js/blocks/blocks_defaults.js","../undo_manager":"/Users/eskim/current/cento_authoring/public/js/undo_manager.js","../utils":"/Users/eskim/current/cento_authoring/public/js/utils.js","./config_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/config_ctrl.js","jquery":"/Users/eskim/current/cento_authoring/node_modules/jquery/dist/jquery.js","lodash":"/Users/eskim/current/cento_authoring/node_modules/lodash/dist/lodash.js","ramda":"/Users/eskim/current/cento_authoring/node_modules/ramda/ramda.js"}],"/Users/eskim/current/cento_authoring/public/js/ctrls/workflow_index_ctrl.js":[function(require,module,exports){
 var R = require('ramda');
 
 module.exports = function($scope, blocksStore) {
@@ -69808,7 +69923,101 @@ module.exports = function($scope, blocksStore) {
   });
 };
 
-},{"ramda":"/Users/eskim/current/cento_authoring/node_modules/ramda/ramda.js"}],"/Users/eskim/current/cento_authoring/public/js/services/blocks.js":[function(require,module,exports){
+},{"ramda":"/Users/eskim/current/cento_authoring/node_modules/ramda/ramda.js"}],"/Users/eskim/current/cento_authoring/public/js/directives/json-editor.js":[function(require,module,exports){
+var R = require('ramda');
+
+function CAJsonEditorProvider(){
+  this.$get = function(){
+    return require('json-editor');
+  };
+
+};
+
+CAJsonEditor.$inject = ['$q', 'caJsonEditor'];
+
+function CAJsonEditor($q, JSONEditor){
+  return {
+    restrict: 'E',
+    scope: {
+      schema: '=',
+      editorOptions: '=',
+      startval: '=',
+      onChange: '&'
+    },
+    link: function(scope, element, attrs){
+      var valueToResolve,
+          startValPromise = $q.when(null),
+          schemaPromise = $q.when(null);
+
+      scope.isValid = false;
+
+      console.log('ATTRS', attrs);
+
+
+      if (!angular.isString(attrs.schema)) {
+          throw new Error('no schema specified');
+      }
+      if (angular.isObject(scope.schema)) {
+          schemaPromise = $q.when(scope.schema);
+      }
+      if (angular.isObject(scope.startval)) {
+          valueToResolve = scope.startval;
+          if (angular.isDefined(valueToResolve.$promise)) {
+              startValPromise = $q.when(valueToResolve.$promise);
+          } else {
+              startValPromise = $q.when(valueToResolve);
+          }
+      }
+
+      $q.all([schemaPromise, startValPromise]).then(function (result) {
+
+        var schema = result[0].data || result[0],
+            startVal = result[1];
+        if (schema === null) {
+            throw new Error('no schema');
+        }
+
+        console.log('schema : ', schema);
+
+
+        var options = {schema: schema};
+        if(startVal){ options.startval = startVal; }
+
+
+        options = R.mixin(options, scope.editorOptions);
+        scope.editor = new JSONEditor(element[0], options);
+
+        var editor = scope.editor;
+
+        editor.on('ready', function () {
+          scope.isValid = (editor.validate().length === 0);
+        });
+
+        editor.on('change', function () {
+          if (typeof scope.onChange === 'function') {
+            console.log('---', editor.getValue());
+
+              scope.onChange({data: editor.getValue()});
+          }
+          scope.$apply(function () {
+              scope.isValid = (editor.validate().length === 0);
+          });
+        });
+
+      });
+
+    }
+
+  }
+
+}
+
+module.exports = {
+  provider: CAJsonEditorProvider,
+  directive: CAJsonEditor
+};
+
+},{"json-editor":"/Users/eskim/current/cento_authoring/node_modules/json-editor/dist/jsoneditor.js","ramda":"/Users/eskim/current/cento_authoring/node_modules/ramda/ramda.js"}],"/Users/eskim/current/cento_authoring/public/js/services/blocks.js":[function(require,module,exports){
 
 module.exports = function($http, $q){
 

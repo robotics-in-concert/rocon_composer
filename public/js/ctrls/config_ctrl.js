@@ -1,5 +1,4 @@
 
-angular.module('centoAuthoring').controller('ConfigCtrl', ConfigCtrl);
                                             
                                             
                                             
@@ -107,3 +106,5 @@ function ConfigCtrl($scope, blocksStore, $http, $mi) {
 
 
 };
+
+module.exports = ConfigCtrl;

@@ -1,11 +1,8 @@
-
-angular.module('centoAuthoring')
-  .provider('caJsonEditor', CAJsonEditorProvider)
-  .directive('caJsonEditor', CAJsonEditor);
+var R = require('ramda');
 
 function CAJsonEditorProvider(){
-  this.$get = function($window){
-    return $window.JSONEditor;
+  this.$get = function(){
+    return require('json-editor');
   };
 
 };
@@ -88,3 +85,8 @@ function CAJsonEditor($q, JSONEditor){
   }
 
 }
+
+module.exports = {
+  provider: CAJsonEditorProvider,
+  directive: CAJsonEditor
+};

@@ -149,6 +149,9 @@ app.service('blocksStore', require('./services/blocks'));
 app.service('serviceAuthoring', require('./services/services'));
 app.controller('RootCtrl', require('./ctrls/root_ctrl'));
 
+app.provider('caJsonEditor', require('./directives/json-editor').provider)
+app.directive('caJsonEditor', require('./directives/json-editor').directive)
+
 app.config(function($stateProvider, $interpolateProvider) {
   $interpolateProvider.startSymbol('[[');
   $interpolateProvider.endSymbol(']]');
