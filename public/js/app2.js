@@ -7,9 +7,6 @@ var angular = require('angular'),
 require('bootstrap');
 require('./blocks/index');
 
-console.log($);
-
-
 // require('x-editable');
 
 ITEMS_PARAM_KEY = 'cento_authoring_items';

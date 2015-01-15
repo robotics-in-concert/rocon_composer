@@ -1,4 +1,6 @@
-var Blockly = require('blockly');
+var Blockly = require('blockly'),
+  _ = require('lodash');
+var ACTION_COLOR = require('../config').action_color;
 
 Blockly.JavaScript['declare_var'] = function(block){
 

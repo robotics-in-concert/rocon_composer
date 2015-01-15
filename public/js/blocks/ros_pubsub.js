@@ -1,4 +1,5 @@
 var Blockly = require('blockly');
+var ACTION_COLOR = require('../config').action_color;
 
 Blockly.register_scheduled_publish_block = function(rapp, uri, name, type){
   Blockly.Blocks['ros_scheduled_publish_'+name] = {
