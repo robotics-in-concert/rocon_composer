@@ -1,3 +1,4 @@
+var Blockly = require('blockly');
 
 /*
  * object

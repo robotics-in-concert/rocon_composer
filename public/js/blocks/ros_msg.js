@@ -1,3 +1,5 @@
+var Blockly = require('blockly');
+var _ = require('lodash');
 
 var msg_registered = [];
 Blockly.register_message_block = function(type, meta, tooltip){

@@ -8,13 +8,11 @@ var paths = {
   js: {
     vendor: [
       './public/js/tools/vkbeautify.0.99.00.beta.js',
-      './public/js/tools/select2.js',
       './public/js/tools/beautify.js',
       './public/js/blockly/blockly_compressed.js',
       './public/js/blockly/blocks_compressed.js',
       './public/js/blockly/javascript_compressed.js',
       './public/js/blockly/msg/en.js',
-      './public/js/tools/jsoneditor.min.js'
     ],
 
     user: [

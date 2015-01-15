@@ -1,6 +1,6 @@
+var _ = require('lodash');
 
-var app = angular.module('centoAuthoring');
-app.controller('RootCtrl', function($scope, blocksStore, $http, $state, $rootScope) {
+module.exports = function($scope, blocksStore, $http, $state, $rootScope) {
 
   angular.element(document).on('unload', function(e){
     console.log('unload');
@@ -65,4 +65,4 @@ app.controller('RootCtrl', function($scope, blocksStore, $http, $state, $rootSco
     return v.toString().toLowerCase().indexOf(keyword.toLowerCase()) >= 0;
   };
 
-});
+};

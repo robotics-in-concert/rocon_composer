@@ -1,9 +1,14 @@
-
-angular.module('centoAuthoring')
-  .controller('WorkflowBlocklyCtrl', WorkflowBlocklyCtrl);
+var _ = require('lodash'),
+  $ = require('jquery'),
+  Blockly = require('blockly'),
+  BlockGenerator = require('../block_gen'),
+  ros_block_override = require('../blocks/blocks_defaults'),
+  R = require('ramda'),
+  Utils = require('../utils');
               
               
 function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParams, $modal, $q) {
+
 
   $rootScope.$on('$stateChangeStart', function(e, to) {
     var dirty = checkDirty()
@@ -68,13 +73,13 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
 
 
   $rootScope.$on('items:loaded', function(){
-    reload_udf_blocks($scope.items);
+    Utils.reload_udf_blocks($scope.items);
     if($stateParams.id){ // load
       $scope.load($stateParams.id);
     }
   });
   $rootScope.$on('items:saved', function(){
-    reload_udf_blocks($scope.items);
+    Utils.reload_udf_blocks($scope.items);
 
     $('#alert .alert').html('Saved');
     $('#alert').show().delay(500).fadeOut('fast');
@@ -91,6 +96,8 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
 
 
   var setupEditable = function(re){
+    // FIX ME
+    return false;
     $('#description, #title').editable('destroy');
 
     $('#title').editable({
@@ -242,12 +249,18 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
       ros_block_override();
 
 
+      console.log('----------------------a');
+      console.log($('#toolbox').get(0));
+
+
+
       Blockly.updateToolbox($('#toolbox').get(0));
-      reload_udf_blocks($scope.items);
+      console.log('----------------------/a');
+      Utils.reload_udf_blocks($scope.items);
 
     })
     .catch(function(e){
-      console.log('cannot load blocks - msg database error');
+      console.error('cannot load blocks - msg database error', e);
 
       
     })
@@ -393,4 +406,6 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
 
   };
 };
+
+module.exports = WorkflowBlocklyCtrl;
 

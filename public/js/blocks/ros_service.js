@@ -1,3 +1,5 @@
+var Blockly = require('blockly');
+
 Blockly.Blocks['ros_service'] = {
   init: function() {
     this.setColour(ACTION_COLOR);

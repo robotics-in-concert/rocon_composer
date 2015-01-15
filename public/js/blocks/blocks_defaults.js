@@ -1,4 +1,4 @@
-
+var R = require('ramda');
 
 var ros_block_override = function(){
   var ros_block_keys = R.pipe(
@@ -62,3 +62,5 @@ var ros_block_override = function(){
   console.log(ros_block_keys);
 }
 
+
+module.exports = ros_block_override;

@@ -1,6 +1,5 @@
-var app = angular.module('centoAuthoring');
 
-app.service('blocksStore', function($http, $q){
+module.exports = function($http, $q){
 
 
   this.setParam = function(k, v){
@@ -55,4 +54,4 @@ app.service('blocksStore', function($http, $q){
   };
 
 
-});
+};

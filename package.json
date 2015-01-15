@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "napa": "napa"
   },
   "author": "",
   "license": "ISC",
@@ -39,9 +40,61 @@
     "xml2js": "^0.4.4"
   },
   "devDependencies": {
+    "angular": "^1.3.9",
+    "angular-bootstrap": "^0.12.0",
+    "angular-ui-router": "^0.2.13",
+    "bootstrap": "^3.3.1",
+    "browserify": "^8.1.0",
+    "browserify-shim": "^3.8.2",
     "gulp": "^3.8.10",
     "gulp-concat": "^2.4.2",
     "gulp-eol": "^0.1.1",
-    "gulp-less": "^2.0.1"
+    "gulp-less": "^2.0.1",
+    "jquery": "^2.1.3",
+    "json-editor": "^0.7.13",
+    "mousetrap": "^1.4.6",
+    "napa": "^1.2.0"
+  },
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  },
+  "browser": {
+    "angular": "./node_modules/angular/angular.js",
+    "angular-bootstrap": "./node_modules/angular-bootstrap/dist/ui-bootstrap-tpls.js",
+    "mousetrap": "./node_modules/mousetrap/mousetrap.js",
+    "json-editor": "./node_modules/json-editor/dist/jsoneditor.js",
+    "x-editable": "./node_modules/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js",
+    "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js"
+  },
+  "browserify-shim": {
+    "jquery": "$",
+    "blockly": "global:Blockly",
+    "angular": {
+      "depends": ["jquery:jQuery"],
+      "exports": "angular"
+    },
+    "mousetrap": "Mousetrap",
+    "json-editor": "JSONEditor",
+    "x-editable": {
+      "depends": [
+        "jquery:$"
+      ],
+      "exports": null
+    },
+    "angular-bootstrap": {
+      "depends": [
+        "angular"
+      ],
+      "exports": "angular.module('ui.bootstrap').name"
+    },
+    "bootstrap": {
+      "depends": ["jquery:jQuery"],
+      "exports": null
+    }
+  },
+  "napa": {
+    "x-editable": "vitalets/x-editable"
   }
 }

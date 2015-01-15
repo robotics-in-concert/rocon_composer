@@ -1,3 +1,5 @@
+var Blockly = require('blockly');
+
 Blockly.JavaScript['declare_var'] = function(block){
 
   // var key = Blockly.JavaScript.valueToCode(block, 'KEY', Blockly.JavaScript.ORDER_NONE) || "''";

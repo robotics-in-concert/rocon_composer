@@ -1,3 +1,5 @@
+var Blockly = require('blockly');
+
 Blockly.Blocks['ros_requester_allocate'] = {
   configable: true,
   init: function() {

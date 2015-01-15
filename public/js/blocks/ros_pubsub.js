@@ -1,3 +1,4 @@
+var Blockly = require('blockly');
 
 Blockly.register_scheduled_publish_block = function(rapp, uri, name, type){
   Blockly.Blocks['ros_scheduled_publish_'+name] = {

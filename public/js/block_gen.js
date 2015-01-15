@@ -1,3 +1,7 @@
+var _ = require('lodash'),
+  $ = require('jquery'),
+  R = require('ramda');
+
 var BlockGenerator = function(){
 
   this.message_blocks = [];
@@ -243,3 +247,6 @@ BlockGenerator.prototype.subscribe_block_dom = function(opts){
 
 
 };
+
+
+module.exports = BlockGenerator;

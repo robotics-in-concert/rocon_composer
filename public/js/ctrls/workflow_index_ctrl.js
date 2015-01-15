@@ -1,6 +1,6 @@
+var R = require('ramda');
 
-var app = angular.module('centoAuthoring');
-app.controller('WorkflowIndexCtrl', function($scope, blocksStore) {
+module.exports = function($scope, blocksStore) {
   $scope.items = [];
   $scope.recents = [];
   blocksStore.getParam(ITEMS_PARAM_KEY).then(function(rows){
@@ -12,4 +12,4 @@ app.controller('WorkflowIndexCtrl', function($scope, blocksStore) {
       $scope.recents = R.take(5, R.sort(function(a, b){ return b.id - a.id; }, rows));
     }
   });
-});
+};
