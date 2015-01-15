@@ -8,15 +8,15 @@ var angular = require('angular'),
 require('bootstrap');
 require('./blocks/index');
 
-// require('x-editable');
+require('x-editable');
 
 ITEMS_PARAM_KEY = 'cento_authoring_items';
 SERVICES_PARAM_KEY = 'cento_authoring_services';
 
 JSONEditor.defaults.options.theme = 'bootstrap3';
-// FIX
-// $.fn.editable.defaults.mode = 'inline';
-// $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary btn-sm editable-submit"><i class="fa fa-check"></i></button><button type="button" class="btn btn-default btn-sm editable-cancel"><i class="fa fa-remove"></i></button>'
+
+$.fn.editable.defaults.mode = 'inline';
+$.fn.editableform.buttons = '<button type="submit" class="btn btn-primary btn-sm editable-submit"><i class="fa fa-check"></i></button><button type="button" class="btn btn-default btn-sm editable-cancel"><i class="fa fa-remove"></i></button>'
 
 
 var toggle_header_menu = function(){

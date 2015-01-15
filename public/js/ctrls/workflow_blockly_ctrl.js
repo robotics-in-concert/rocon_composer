@@ -101,8 +101,6 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
 
 
   var setupEditable = function(re){
-    // FIX ME
-    return false;
     $('#description, #title').editable('destroy');
 
     $('#title').editable({

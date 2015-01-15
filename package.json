@@ -77,12 +77,6 @@
     },
     "mousetrap": "Mousetrap",
     "json-editor": "JSONEditor",
-    "x-editable": {
-      "depends": [
-        "jquery:$"
-      ],
-      "exports": null
-    },
     "angular-bootstrap": {
       "depends": [
         "angular"
