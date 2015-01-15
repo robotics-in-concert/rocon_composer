@@ -1,4 +1,4 @@
 
-var app = angular.module('centoAuthoring');
-app.controller('ServicesIndexCtrl', function($scope, blocksStore) {
-});
+module.exports = function ServicesIndex($scope, blocksStore){
+
+};

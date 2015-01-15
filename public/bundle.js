@@ -67205,6 +67205,7 @@ var app = angular.module('centoAuthoring', [
 
 
 app.service('blocksStore', require('./services/blocks'));
+app.service('serviceAuthoring', require('./services/services'));
 app.controller('RootCtrl', require('./ctrls/root_ctrl'));
 
 app.config(function($stateProvider, $interpolateProvider) {
@@ -67215,14 +67216,17 @@ app.config(function($stateProvider, $interpolateProvider) {
   $stateProvider
     .state('services_index', {
       url: '/services_index',
+      controller: require('./ctrls/services_index_ctrl'),
       templateUrl: '/js/tpl/services_index.html'
     })
     .state('services', {
       url: '/services?new_name',
+      controller: require('./ctrls/services_form_ctrl'),
       templateUrl: '/js/tpl/services.html'
     })
     .state('services_edit', {
       url: '/services/:service_id',
+      controller: require('./ctrls/services_form_ctrl'),
       templateUrl: '/js/tpl/services.html'
     })
     .state('workflow_index', {
@@ -67266,7 +67270,7 @@ app.directive("roconSelect2", ["$interval", function($interval) {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./blocks/index":"/Users/eskim/current/cento_authoring/public/js/blocks/index.js","./ctrls/root_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/root_ctrl.js","./ctrls/workflow_blockly_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/workflow_blockly_ctrl.js","./ctrls/workflow_index_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/workflow_index_ctrl.js","./services/blocks":"/Users/eskim/current/cento_authoring/public/js/services/blocks.js","./utils":"/Users/eskim/current/cento_authoring/public/js/utils.js","angular":"/Users/eskim/current/cento_authoring/node_modules/angular/angular.js","angular-bootstrap":"/Users/eskim/current/cento_authoring/node_modules/angular-bootstrap/dist/ui-bootstrap-tpls.js","angular-ui-router":"/Users/eskim/current/cento_authoring/node_modules/angular-ui-router/release/angular-ui-router.js","bootstrap":"/Users/eskim/current/cento_authoring/node_modules/bootstrap/dist/js/bootstrap.js","jquery":"/Users/eskim/current/cento_authoring/node_modules/jquery/dist/jquery.js","json-editor":"/Users/eskim/current/cento_authoring/node_modules/json-editor/dist/jsoneditor.js","mousetrap":"/Users/eskim/current/cento_authoring/node_modules/mousetrap/mousetrap.js"}],"/Users/eskim/current/cento_authoring/public/js/block_gen.js":[function(require,module,exports){
+},{"./blocks/index":"/Users/eskim/current/cento_authoring/public/js/blocks/index.js","./ctrls/root_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/root_ctrl.js","./ctrls/services_form_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/services_form_ctrl.js","./ctrls/services_index_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/services_index_ctrl.js","./ctrls/workflow_blockly_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/workflow_blockly_ctrl.js","./ctrls/workflow_index_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/workflow_index_ctrl.js","./services/blocks":"/Users/eskim/current/cento_authoring/public/js/services/blocks.js","./services/services":"/Users/eskim/current/cento_authoring/public/js/services/services.js","./utils":"/Users/eskim/current/cento_authoring/public/js/utils.js","angular":"/Users/eskim/current/cento_authoring/node_modules/angular/angular.js","angular-bootstrap":"/Users/eskim/current/cento_authoring/node_modules/angular-bootstrap/dist/ui-bootstrap-tpls.js","angular-ui-router":"/Users/eskim/current/cento_authoring/node_modules/angular-ui-router/release/angular-ui-router.js","bootstrap":"/Users/eskim/current/cento_authoring/node_modules/bootstrap/dist/js/bootstrap.js","jquery":"/Users/eskim/current/cento_authoring/node_modules/jquery/dist/jquery.js","json-editor":"/Users/eskim/current/cento_authoring/node_modules/json-editor/dist/jsoneditor.js","mousetrap":"/Users/eskim/current/cento_authoring/node_modules/mousetrap/mousetrap.js"}],"/Users/eskim/current/cento_authoring/public/js/block_gen.js":[function(require,module,exports){
 var _ = require('lodash'),
   $ = require('jquery'),
   R = require('ramda');
@@ -69045,7 +69049,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/cento_authoring/public/js/config.json","lodash":"/Users/eskim/current/cento_authoring/node_modules/lodash/dist/lodash.js"}],"/Users/eskim/current/cento_authoring/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100
@@ -69121,7 +69125,253 @@ module.exports = function($scope, blocksStore, $http, $state, $rootScope) {
 
 };
 
-},{"lodash":"/Users/eskim/current/cento_authoring/node_modules/lodash/dist/lodash.js"}],"/Users/eskim/current/cento_authoring/public/js/ctrls/workflow_blockly_ctrl.js":[function(require,module,exports){
+},{"lodash":"/Users/eskim/current/cento_authoring/node_modules/lodash/dist/lodash.js"}],"/Users/eskim/current/cento_authoring/public/js/ctrls/services_form_ctrl.js":[function(require,module,exports){
+var R = require('ramda')
+  $ = require('jquery'),
+  Utils = require('../utils');
+
+var _interaction_to_json_editor_value = function(i){
+  var kv = {
+    _id: i._id, 
+    display_name: i.defaults.display_name, 
+    name: i.defaults.display_name, 
+    description: i.defaults.description,
+    compatibility: i.compatibility,
+    max: -1,
+    role: 'Role', 
+
+  };
+
+  kv.remappings = R.map(function(if0){
+    return {
+      remap_to: if0.name,
+      remap_from: "/"+if0.name
+    };
+  })(i.interface);
+
+  console.log(kv.remappings);
+
+
+  kv.parameters = R.map(function(p){
+    return {
+      key: p.name, 
+      value: (p.default || '')
+    };
+  })(i.parameters);
+  return kv;
+
+};
+
+
+
+module.exports = function($scope, blocksStore, $http, serviceAuthoring, $stateParams, $state) {
+   $scope.select2Options = {
+     allowClear:true
+   };
+
+
+   $http.get('/js/schema/service_form.json').success(function(schema){
+
+     // $scope.blockConfigs = {};
+     // $scope.currentBlockConfig = '';
+     $scope.destPackage = null;
+     blocksStore.getParam(ITEMS_PARAM_KEY).then(function(rows){
+       blocksStore.loadInteractions().then(function(interactions){
+         interactions = interactions.data;
+
+
+         var titles = R.pluck('title')(rows);
+         console.log(titles);
+         schema.properties.workflows.items.enum = titles;
+
+         var editor = window.editor =$scope.editor = new JSONEditor($('#service-editor').get(0), {
+           disable_array_reorder: true,
+           disable_collapse: true,
+           disable_edit_json: true,
+           disable_properties: true,
+           schema: schema,
+           ajax: true
+
+         });
+
+         editor.on('ready', function(){
+           console.log('ready');
+
+
+         });
+
+
+         var form_v = editor.getValue();
+         if($stateParams.service_id){
+           var vv = R.find(R.propEq('id', $stateParams.service_id))($scope.services);
+           form_v = vv;
+
+           console.log("FORM V", form_v);
+
+
+         }
+         if($stateParams.new_name){
+           form_v.name = $stateParams.new_name;
+         }
+         editor.setValue(form_v);
+         var e0 = editor.getEditor('root.parameters');
+
+
+
+         var selected_workflows = 0;
+
+
+         editor.on('change', function(){
+           var propIn = R.useWith(R.compose, R.flip(R.contains), R.prop);
+           console.log('editor changed');
+
+           var cur = editor.getValue();
+           console.log('current value', cur);
+           var curlen = cur.workflows.length;
+           if(selected_workflows !== curlen){
+
+             var rows_selected = R.filter(propIn(cur.workflows, 'title'))(rows);
+
+
+
+             if(rows_selected.length == 0){
+               var v = editor.getValue();
+               v.interactions = [];
+               editor.setValue(v);
+             }
+
+
+             R.map(function(rs){
+               var xml = rs.xml;
+               var extras = $(xml).find('mutation[extra]').map(function(){
+                 var extra = $(this).attr('extra');  
+                 return JSON.parse(extra);
+               }).toArray();
+
+               client_app_ids = R.uniq(R.pluck('client_app_id', extras));
+
+               var v = editor.getValue();
+               console.log(v.interactions);
+
+               var used_interactions = R.compose(
+                 R.reject(propIn(R.pluck('_id')(v.interactions), '_id')),
+                 R.filter(propIn(client_app_ids, '_id'))
+               )(interactions);
+               console.log("used interactions :", used_interactions);
+
+
+               v.interactions = v.interactions.concat( R.map(_interaction_to_json_editor_value)(used_interactions) );
+               editor.setValue(v);
+
+
+
+
+
+             })(rows_selected);
+
+
+
+
+             selected_workflows = curlen;
+           };
+         });
+
+       });
+
+
+
+     });
+
+
+   });
+
+
+
+  serviceAuthoring.getPackages().then(function(packs){
+    $scope.packageList = packs;
+  });
+
+  $scope.exportOk = function(){
+    var v = editor.getValue();
+    console.log($scope.destPackage);
+
+    serviceAuthoring.saveService(v, $scope.destPackage).then(function(){
+      alert('saved');
+      $('#modal-package-select').modal('hide');
+      
+    });
+
+  };
+  $scope.export = function(){
+    serviceAuthoring.getPackages().then(function(packs){
+      // $scope.packageList = packs;
+
+      // var v = editor.getValue();
+      // serviceAuthoring.saveService(v);
+
+      $('#modal-package-select').modal();
+
+    });
+
+
+  };
+  $scope.save = function(){
+    console.log('save');
+
+    var v = editor.getValue();
+
+    console.log("save data : ", v);
+
+    if(v.id){
+      console.log($scope.services);
+
+      var idx = -1;
+      for(var i = 0; i<$scope.services.length; i++){
+        if($scope.services[i].id == v.id){
+          idx = i;
+          break;
+        }
+
+      }
+      if(idx >= 0){
+        console.log('x');
+
+         $scope.services[idx] = v;
+
+      }
+
+
+
+    }else{
+      v.id = Utils.uuid();
+      v.created_at = new Date().getTime();
+      $scope.services.push(v);
+      $state.go('services_edit', {service_id: v.id});
+
+      
+    }
+    
+
+
+    // serviceAuthoring.saveService(v, $scope.destPackage[0].name).then(function(){
+      // alert('saved');
+      
+    // });
+    $('#modal-package-select').modal('hide');
+
+
+  };
+
+
+};
+
+},{"../utils":"/Users/eskim/current/cento_authoring/public/js/utils.js","jquery":"/Users/eskim/current/cento_authoring/node_modules/jquery/dist/jquery.js","ramda":"/Users/eskim/current/cento_authoring/node_modules/ramda/ramda.js"}],"/Users/eskim/current/cento_authoring/public/js/ctrls/services_index_ctrl.js":[function(require,module,exports){
+
+module.exports = function ServicesIndex($scope, blocksStore){
+
+};
+
+},{}],"/Users/eskim/current/cento_authoring/public/js/ctrls/workflow_blockly_ctrl.js":[function(require,module,exports){
 (function (global){
 var _ = require('lodash'),
   $ = require('jquery'),
@@ -69616,6 +69866,29 @@ module.exports = function($http, $q){
 
 
 };
+
+},{}],"/Users/eskim/current/cento_authoring/public/js/services/services.js":[function(require,module,exports){
+
+module.exports = function($http, $q){
+
+  this.saveService = function(serviceMeta, package){
+    return $http.post('/api/services/save', {service: serviceMeta, package: package}).then(function(res){
+      return res.data;
+    });
+
+  };
+
+  this.getPackages = function(serviceMeta){
+    return $http.get('/api/packages').then(function(res){
+      return res.data;
+    });
+
+  };
+
+};
+
+
+
 
 },{}],"/Users/eskim/current/cento_authoring/public/js/undo_manager.js":[function(require,module,exports){
 var Utils = require('./utils'),

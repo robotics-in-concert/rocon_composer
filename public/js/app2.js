@@ -146,6 +146,7 @@ var app = angular.module('centoAuthoring', [
 
 
 app.service('blocksStore', require('./services/blocks'));
+app.service('serviceAuthoring', require('./services/services'));
 app.controller('RootCtrl', require('./ctrls/root_ctrl'));
 
 app.config(function($stateProvider, $interpolateProvider) {
@@ -156,14 +157,17 @@ app.config(function($stateProvider, $interpolateProvider) {
   $stateProvider
     .state('services_index', {
       url: '/services_index',
+      controller: require('./ctrls/services_index_ctrl'),
       templateUrl: '/js/tpl/services_index.html'
     })
     .state('services', {
       url: '/services?new_name',
+      controller: require('./ctrls/services_form_ctrl'),
       templateUrl: '/js/tpl/services.html'
     })
     .state('services_edit', {
       url: '/services/:service_id',
+      controller: require('./ctrls/services_form_ctrl'),
       templateUrl: '/js/tpl/services.html'
     })
     .state('workflow_index', {

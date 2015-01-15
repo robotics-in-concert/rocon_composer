@@ -1,5 +1,5 @@
 
-app.service('serviceAuthoring', function($http, $q){
+module.exports = function($http, $q){
 
   this.saveService = function(serviceMeta, package){
     return $http.post('/api/services/save', {service: serviceMeta, package: package}).then(function(res){
@@ -15,7 +15,7 @@ app.service('serviceAuthoring', function($http, $q){
 
   };
 
-});
+};
 
 
 
