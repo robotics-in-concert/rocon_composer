@@ -1,3 +1,4 @@
+var channels = [];
 var channel_data = {};
 
 module.exports = function(io){
@@ -21,6 +22,7 @@ module.exports = function(io){
       socket.host = true;
       socket.channel = e.name;
       socket.join(e.name);
+      channels.push(e.name);
       cb('created');
     });
     socket.on('blockly:channel:join', function(e, cb){
@@ -40,8 +42,15 @@ module.exports = function(io){
     });
 
 
+    socket.on('blockly:channels', function(f){
+      f(channels);
+    });
+
+
 
 
   });
+
+
 
 };

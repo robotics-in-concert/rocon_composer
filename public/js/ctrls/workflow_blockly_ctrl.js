@@ -33,6 +33,9 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
 
   };
 
+
+
+
   window.onbeforeunload = function(e){
     var dirty = checkDirty()
     if(dirty){
@@ -497,6 +500,35 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
     // }, 1000);
 
 
+
+  };
+
+
+  var _joinChannel = function(name){
+    socket.emit('blockly:channel:join', {name: name}, function(data){
+      console.log('1');
+
+      if(data){
+      console.log('2');
+
+        _updateWorkspace(data);
+      }
+      console.log('joined', data);
+
+    });
+    blockly_remove_scrollbar();
+  };
+
+  $scope.selectChannel = function(){
+    var modalInstance = $modal.open({
+      templateUrl: '/js/tpl/modal/select_channel.html',
+      controller: 'SelectChannelCtrl',
+      controllerAs: 'ctrl'
+    });
+    modalInstance.result.then(function(selectedChannel){
+      _joinChannel(selectedChannel);
+
+    });
 
   };
 
