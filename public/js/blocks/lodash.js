@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var Blockly = require('blockly');
 
 Blockly.Blocks['lodash_find'] = {

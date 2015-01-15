@@ -1137,3 +1137,6 @@ function js_beautify(js_source_text, options) {
 // and you will be able to `var js_beautify = require("beautify").js_beautify`.
 if (typeof exports !== "undefined")
     exports.js_beautify = js_beautify;
+
+
+module.exports = js_beautify;

@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var Blockly = require('blockly');
 
 Blockly.register_scheduled_action_block = function(rapp, uri, name, type){

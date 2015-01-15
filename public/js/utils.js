@@ -1,6 +1,8 @@
 var _ = require('lodash'),
   R = require('ramda'),
   $ = require('jquery'),
+  js_beautify = require('./tools/beautify'),
+  vkbeautify = require('vkbeautify'),
   Blockly = require('blockly');
 
 R.mapProp = R.compose( R.map, R.prop );

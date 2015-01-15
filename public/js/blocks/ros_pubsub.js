@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var Blockly = require('blockly');
 var ACTION_COLOR = require('../config').action_color;
 

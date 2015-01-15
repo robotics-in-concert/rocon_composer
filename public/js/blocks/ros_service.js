@@ -1,4 +1,5 @@
 var Blockly = require('blockly');
+var _ = require('lodash');
 var ACTION_COLOR = require('../config').action_color;
 
 Blockly.Blocks['ros_service'] = {

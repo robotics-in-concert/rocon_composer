@@ -66,7 +66,8 @@
     "mousetrap": "./node_modules/mousetrap/mousetrap.js",
     "json-editor": "./node_modules/json-editor/dist/jsoneditor.js",
     "x-editable": "./node_modules/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js",
-    "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js"
+    "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js",
+    "vkbeautify": "./public/js/tools/vkbeautify.0.99.00.beta.js"
   },
   "browserify-shim": {
     "jquery": "$",
@@ -86,7 +87,8 @@
     "bootstrap": {
       "depends": ["jquery:jQuery"],
       "exports": null
-    }
+    },
+    "vkbeautify": "vkbeautify"
   },
   "napa": {
     "x-editable": "vitalets/x-editable"

@@ -7,39 +7,17 @@ var gulp = require('gulp'),
 var paths = {
   js: {
     vendor: [
-      './public/js/tools/vkbeautify.0.99.00.beta.js',
-      './public/js/tools/beautify.js',
       './public/js/blockly/blockly_compressed.js',
       './public/js/blockly/blocks_compressed.js',
       './public/js/blockly/javascript_compressed.js',
       './public/js/blockly/msg/en.js',
     ],
 
-    user: [
-      // './public/js/test.js',
-      './public/js/blocks.js',
-      './public/js/blocks/**/*js',
-      './public/js/block_gen.js',
-      './public/js/utils.js',
-      './public/js/app.js',
-      './public/js/undo_manager.js',
-      './public/js/services/**/*js',
-      './public/js/directives/**/*js',
-      './public/js/ctrls/**/*js',
-      './public/js/blocks_defaults.js',
-    ]
-
   }
 
 
 };
 
-gulp.task('js-user', function(){
-  gulp.src(paths.js.user)
-    .pipe(concat('dist.js'))
-    .pipe(gulp.dest('./public'))
-
-});
 gulp.task('js-vendor', function(){
   gulp.src(paths.js.vendor)
     .pipe(concat('vendor.js'))
@@ -57,8 +35,7 @@ gulp.task('less', function () {
 
 gulp.task('watch', function(){
   gulp.watch('./public/less/**/*.less', ['less']);
-  gulp.watch(paths.js.user, ['js-user']);
 });
 
 
-gulp.task('default', ['less', 'js-vendor', 'js-user', 'watch']);
+gulp.task('default', ['less', 'js-vendor', 'watch']);
