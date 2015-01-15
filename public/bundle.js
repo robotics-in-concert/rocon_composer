@@ -67061,6 +67061,7 @@ var angular = require('angular'),
   Mousetrap = require('mousetrap'),
   Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null),
   JSONEditor = require('json-editor'),
+  Utils = require('./utils'),
   $ = require('jquery');
 
 require('bootstrap');
@@ -67177,7 +67178,7 @@ Mousetrap.bind('ctrl+alt+z', function() {
 Mousetrap.bind('ctrl+alt+j', function() { 
   $('.code-modal .modal-title').text('Javascript');
   var $code = $('.code-modal code');
-  $code.text(_js(true));
+  $code.text(Utils.js(true));
   $code.attr('class', 'javascript');
   hljs.highlightBlock($('.code-modal code').get(0));
   jQuery('.code-modal').modal({});
@@ -67187,7 +67188,7 @@ Mousetrap.bind('ctrl+alt+l', function() {
   $('.code-modal .modal-title').text('XML');
 
   var $code = $('.code-modal code');
-  $code.text(_xml(true));
+  $code.text(Utils.xml(true));
   $code.attr('class', 'xml');
   hljs.highlightBlock($('.code-modal code').get(0));
   jQuery('.code-modal').modal({});
@@ -67265,7 +67266,7 @@ app.directive("roconSelect2", ["$interval", function($interval) {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./blocks/index":"/Users/eskim/current/cento_authoring/public/js/blocks/index.js","./ctrls/root_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/root_ctrl.js","./ctrls/workflow_blockly_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/workflow_blockly_ctrl.js","./ctrls/workflow_index_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/workflow_index_ctrl.js","./services/blocks":"/Users/eskim/current/cento_authoring/public/js/services/blocks.js","angular":"/Users/eskim/current/cento_authoring/node_modules/angular/angular.js","angular-bootstrap":"/Users/eskim/current/cento_authoring/node_modules/angular-bootstrap/dist/ui-bootstrap-tpls.js","angular-ui-router":"/Users/eskim/current/cento_authoring/node_modules/angular-ui-router/release/angular-ui-router.js","bootstrap":"/Users/eskim/current/cento_authoring/node_modules/bootstrap/dist/js/bootstrap.js","jquery":"/Users/eskim/current/cento_authoring/node_modules/jquery/dist/jquery.js","json-editor":"/Users/eskim/current/cento_authoring/node_modules/json-editor/dist/jsoneditor.js","mousetrap":"/Users/eskim/current/cento_authoring/node_modules/mousetrap/mousetrap.js"}],"/Users/eskim/current/cento_authoring/public/js/block_gen.js":[function(require,module,exports){
+},{"./blocks/index":"/Users/eskim/current/cento_authoring/public/js/blocks/index.js","./ctrls/root_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/root_ctrl.js","./ctrls/workflow_blockly_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/workflow_blockly_ctrl.js","./ctrls/workflow_index_ctrl":"/Users/eskim/current/cento_authoring/public/js/ctrls/workflow_index_ctrl.js","./services/blocks":"/Users/eskim/current/cento_authoring/public/js/services/blocks.js","./utils":"/Users/eskim/current/cento_authoring/public/js/utils.js","angular":"/Users/eskim/current/cento_authoring/node_modules/angular/angular.js","angular-bootstrap":"/Users/eskim/current/cento_authoring/node_modules/angular-bootstrap/dist/ui-bootstrap-tpls.js","angular-ui-router":"/Users/eskim/current/cento_authoring/node_modules/angular-ui-router/release/angular-ui-router.js","bootstrap":"/Users/eskim/current/cento_authoring/node_modules/bootstrap/dist/js/bootstrap.js","jquery":"/Users/eskim/current/cento_authoring/node_modules/jquery/dist/jquery.js","json-editor":"/Users/eskim/current/cento_authoring/node_modules/json-editor/dist/jsoneditor.js","mousetrap":"/Users/eskim/current/cento_authoring/node_modules/mousetrap/mousetrap.js"}],"/Users/eskim/current/cento_authoring/public/js/block_gen.js":[function(require,module,exports){
 var _ = require('lodash'),
   $ = require('jquery'),
   R = require('ramda');
@@ -69044,7 +69045,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/cento_authoring/public/js/config.json","lodash":"/Users/eskim/current/cento_authoring/node_modules/lodash/dist/lodash.js"}],"/Users/eskim/current/cento_authoring/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100
@@ -69676,9 +69677,11 @@ UndoManager.prototype.undo = function(){
 module.exports = UndoManager;
 
 },{"./config":"/Users/eskim/current/cento_authoring/public/js/config.json","./utils":"/Users/eskim/current/cento_authoring/public/js/utils.js"}],"/Users/eskim/current/cento_authoring/public/js/utils.js":[function(require,module,exports){
+(function (global){
 var _ = require('lodash'),
   R = require('ramda'),
-  $ = require('jquery');
+  $ = require('jquery'),
+  Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
 
 R.mapProp = R.compose( R.map, R.prop );
 
@@ -69749,4 +69752,5 @@ module.exports = {
 
 };
 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"jquery":"/Users/eskim/current/cento_authoring/node_modules/jquery/dist/jquery.js","lodash":"/Users/eskim/current/cento_authoring/node_modules/lodash/dist/lodash.js","ramda":"/Users/eskim/current/cento_authoring/node_modules/ramda/ramda.js"}]},{},["/Users/eskim/current/cento_authoring/public/js/app2.js"]);

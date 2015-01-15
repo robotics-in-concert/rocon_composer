@@ -2,6 +2,7 @@ var angular = require('angular'),
   Mousetrap = require('mousetrap'),
   Blockly = require('blockly'),
   JSONEditor = require('json-editor'),
+  Utils = require('./utils'),
   $ = require('jquery');
 
 require('bootstrap');
@@ -118,7 +119,7 @@ Mousetrap.bind('ctrl+alt+z', function() {
 Mousetrap.bind('ctrl+alt+j', function() { 
   $('.code-modal .modal-title').text('Javascript');
   var $code = $('.code-modal code');
-  $code.text(_js(true));
+  $code.text(Utils.js(true));
   $code.attr('class', 'javascript');
   hljs.highlightBlock($('.code-modal code').get(0));
   jQuery('.code-modal').modal({});
@@ -128,7 +129,7 @@ Mousetrap.bind('ctrl+alt+l', function() {
   $('.code-modal .modal-title').text('XML');
 
   var $code = $('.code-modal code');
-  $code.text(_xml(true));
+  $code.text(Utils.xml(true));
   $code.attr('class', 'xml');
   hljs.highlightBlock($('.code-modal code').get(0));
   jQuery('.code-modal').modal({});

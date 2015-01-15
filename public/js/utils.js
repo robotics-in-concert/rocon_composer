@@ -1,6 +1,7 @@
 var _ = require('lodash'),
   R = require('ramda'),
-  $ = require('jquery');
+  $ = require('jquery'),
+  Blockly = require('blockly');
 
 R.mapProp = R.compose( R.map, R.prop );
 
