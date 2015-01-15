@@ -69044,8 +69044,10 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/cento_authoring/public/js/config.json","lodash":"/Users/eskim/current/cento_authoring/node_modules/lodash/dist/lodash.js"}],"/Users/eskim/current/cento_authoring/public/js/config.json":[function(require,module,exports){
-module.exports={
-  "action_color": 100
+module.exports=module.exports=module.exports=module.exports=module.exports={
+  "action_color": 100,
+  "undo_check_interval": 1000,
+  "undo_max_size": 100
 }
 
 },{}],"/Users/eskim/current/cento_authoring/public/js/ctrls/root_ctrl.js":[function(require,module,exports){
@@ -69126,10 +69128,15 @@ var _ = require('lodash'),
   BlockGenerator = require('../block_gen'),
   ros_block_override = require('../blocks/blocks_defaults'),
   R = require('ramda'),
+  UndoManager = require('../undo_manager'),
   Utils = require('../utils');
               
               
 function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParams, $modal, $q) {
+  Blockly.inject(document.getElementById('blocklyDiv'),
+    {path: './', toolbox: document.getElementById('toolbox')});
+  var undo_manager = new UndoManager();
+  undo_manager.start();
 
 
   $rootScope.$on('$stateChangeStart', function(e, to) {
@@ -69533,7 +69540,7 @@ module.exports = WorkflowBlocklyCtrl;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../block_gen":"/Users/eskim/current/cento_authoring/public/js/block_gen.js","../blocks/blocks_defaults":"/Users/eskim/current/cento_authoring/public/js/blocks/blocks_defaults.js","../utils":"/Users/eskim/current/cento_authoring/public/js/utils.js","jquery":"/Users/eskim/current/cento_authoring/node_modules/jquery/dist/jquery.js","lodash":"/Users/eskim/current/cento_authoring/node_modules/lodash/dist/lodash.js","ramda":"/Users/eskim/current/cento_authoring/node_modules/ramda/ramda.js"}],"/Users/eskim/current/cento_authoring/public/js/ctrls/workflow_index_ctrl.js":[function(require,module,exports){
+},{"../block_gen":"/Users/eskim/current/cento_authoring/public/js/block_gen.js","../blocks/blocks_defaults":"/Users/eskim/current/cento_authoring/public/js/blocks/blocks_defaults.js","../undo_manager":"/Users/eskim/current/cento_authoring/public/js/undo_manager.js","../utils":"/Users/eskim/current/cento_authoring/public/js/utils.js","jquery":"/Users/eskim/current/cento_authoring/node_modules/jquery/dist/jquery.js","lodash":"/Users/eskim/current/cento_authoring/node_modules/lodash/dist/lodash.js","ramda":"/Users/eskim/current/cento_authoring/node_modules/ramda/ramda.js"}],"/Users/eskim/current/cento_authoring/public/js/ctrls/workflow_index_ctrl.js":[function(require,module,exports){
 var R = require('ramda');
 
 module.exports = function($scope, blocksStore) {
@@ -69609,7 +69616,66 @@ module.exports = function($http, $q){
 
 };
 
-},{}],"/Users/eskim/current/cento_authoring/public/js/utils.js":[function(require,module,exports){
+},{}],"/Users/eskim/current/cento_authoring/public/js/undo_manager.js":[function(require,module,exports){
+var Utils = require('./utils'),
+  config = require('./config');
+  
+var UndoManager = function(){
+  this.stack = [];
+
+
+};
+
+UndoManager.prototype.start = function(){
+  // this.timer = setInterval(this.pushSnapshot.bind(this), UNDO_CHECK_INTERVAL);
+  Blockly.mainWorkspace.getCanvas().addEventListener('blocklyWorkspaceChange', this.pushSnapshot.bind(this));
+
+};
+
+UndoManager.prototype.stop = function(){
+  Blockly.mainWorkspace.getCanvas().removeEventListener('blocklyWorkspaceChange', this.pushSnapshot.bind(this));
+  // clearInterval(this.timer);
+}
+
+UndoManager.prototype.pushSnapshot = function(){
+  if(this.stack.length >= config.undo_max_size)
+    return;
+
+  var curXml = Utils.xml();
+
+  if(this.stack.length == 0 || curXml != this.stack[this.stack.length-1]){
+    console.log('snapshot pushed');
+    // console.log('cur: '+curXml+' , was:'+this.stack[this.stack.length-1]);
+    this.stack.push(curXml);
+    this.stack.slice(0, config.undo_max_size);
+  }else{
+    // console.log('no snapshot pushed - equal');
+  }
+
+
+
+};
+
+UndoManager.prototype.undo = function(){
+  if(this.stack.length < 2)
+    return;
+
+  this.stop();
+  this.stack.pop(); // pop current
+  var dom = Blockly.Xml.textToDom(this.stack.pop())
+  Blockly.mainWorkspace.clear();
+  Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, dom);
+
+  this.start();
+
+
+};
+
+
+
+module.exports = UndoManager;
+
+},{"./config":"/Users/eskim/current/cento_authoring/public/js/config.json","./utils":"/Users/eskim/current/cento_authoring/public/js/utils.js"}],"/Users/eskim/current/cento_authoring/public/js/utils.js":[function(require,module,exports){
 var _ = require('lodash'),
   R = require('ramda'),
   $ = require('jquery');

@@ -4,10 +4,15 @@ var _ = require('lodash'),
   BlockGenerator = require('../block_gen'),
   ros_block_override = require('../blocks/blocks_defaults'),
   R = require('ramda'),
+  UndoManager = require('../undo_manager'),
   Utils = require('../utils');
               
               
 function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParams, $modal, $q) {
+  Blockly.inject(document.getElementById('blocklyDiv'),
+    {path: './', toolbox: document.getElementById('toolbox')});
+  var undo_manager = new UndoManager();
+  undo_manager.start();
 
 
   $rootScope.$on('$stateChangeStart', function(e, to) {

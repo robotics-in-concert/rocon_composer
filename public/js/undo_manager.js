@@ -1,5 +1,6 @@
-UNDO_CHECK_INTERVAL = 1000;
-UNDO_MAX_SIZE = 100;
+var Utils = require('./utils'),
+  config = require('./config');
+  
 var UndoManager = function(){
   this.stack = [];
 
@@ -18,16 +19,16 @@ UndoManager.prototype.stop = function(){
 }
 
 UndoManager.prototype.pushSnapshot = function(){
-  if(this.stack.length >= UNDO_MAX_SIZE)
+  if(this.stack.length >= config.undo_max_size)
     return;
 
-  var curXml = _xml();
+  var curXml = Utils.xml();
 
   if(this.stack.length == 0 || curXml != this.stack[this.stack.length-1]){
     console.log('snapshot pushed');
     // console.log('cur: '+curXml+' , was:'+this.stack[this.stack.length-1]);
     this.stack.push(curXml);
-    this.stack.slice(0, UNDO_MAX_SIZE);
+    this.stack.slice(0, config.undo_max_size);
   }else{
     // console.log('no snapshot pushed - equal');
   }
@@ -53,4 +54,4 @@ UndoManager.prototype.undo = function(){
 
 
 
-
+module.exports = UndoManager;

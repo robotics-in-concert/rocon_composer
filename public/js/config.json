@@ -1,3 +1,5 @@
 {
-  "action_color": 100
+  "action_color": 100,
+  "undo_check_interval": 1000,
+  "undo_max_size": 100
 }
