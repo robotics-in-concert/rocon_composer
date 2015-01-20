@@ -12,13 +12,10 @@ var _ = require('lodash'),
   
 
 
-
-
 MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
   if(e) throw e;
 
 
-  require('./cli')(db, argv);
 
   /*
    * Express
