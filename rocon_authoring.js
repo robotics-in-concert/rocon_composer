@@ -11,17 +11,18 @@ var _ = require('lodash'),
   Engine = require('./engine');
   
 
+
+
+
 MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
   if(e) throw e;
-  console.log('mongo connected');
+
+
+  require('./cli')(db, argv);
 
   /*
    * Express
    */
-
-
-
-
   if(argv.web){
     var app = express();
     app.use(express.static('public'));
