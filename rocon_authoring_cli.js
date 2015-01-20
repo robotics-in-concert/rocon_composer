@@ -4,6 +4,7 @@ var R = require('ramda'),
   argv = require('minimist')(process.argv.slice(2)),
   Promise = require('bluebird'),
   MongoClient = require('mongodb').MongoClient,
+  uuid = require('node-uuid'),
   fs = require('fs');
 
 
@@ -44,7 +45,7 @@ function _process(argv){
             var newData = files.forEach(function(fn){
               var json = fs.readFileSync(fn);
               var data = JSON.parse(json);
-              data.id = new Date().getTime()+'';
+              data.id = uuid.v4().replace(/-/g, "");
               list.push(data);
 
               console.log(data.title + ' added');

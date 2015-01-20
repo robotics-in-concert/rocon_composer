@@ -92,7 +92,7 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
   });
 
   var resetCurrent = function(){
-    $scope.current = {id: new Date().getTime() + "", title: 'Untitled', description: 'Service Description'};
+    $scope.current = {id: Utils.uuid(), title: 'Untitled', description: 'Service Description', created_at: new Date().getTime()};
   };
   resetCurrent();
   if($stateParams.new_name){
@@ -134,6 +134,7 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
     var id = $scope.current.id;
     var title = $scope.current.title;
     var description = $scope.current.description;
+    var created_at = $scope.current.created_at;
     try {
       var js = _js();
       var xml = _xml();
@@ -147,14 +148,14 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
 
     var idx = _.findIndex($scope.items, {id: id});
     if(idx >= 0){
-      $scope.items[idx] = {id: id, js: js, xml: xml, title: $scope.current.title, description: description};
+      $scope.items[idx] = {id: id, js: js, xml: xml, title: $scope.current.title, description: description, created_at: created_at};
       console.log(1);
 
 
     }
     else {
       
-      $scope.items.push({id: id, title: title, js: js, xml: xml, description: description});
+      $scope.items.push({id: id, title: title, js: js, xml: xml, description: description, created_at: created_at});
       console.log(2);
 
     }
@@ -391,7 +392,7 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
       var item = JSON.parse(json);
 
       $scope.$apply(function(){
-        item.id = new Date().getTime().toString();
+        item.id = Utils.uuid();
         $scope.items.push(item);
 
       });
