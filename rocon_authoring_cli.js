@@ -26,11 +26,17 @@ function _process(argv){
     var items_param_key = 'cento_authoring_items';
     var _load = function(cb){
       return col.findOneAsync({key: items_param_key})
-        .then(function(doc){ return doc.value.data; });
+
+        .then(function(doc){ 
+          if(!doc){
+            return [];
+          }
+          return doc.value.data; 
+        });
     };
 
     var _update = function(items, cb){
-      return col.updateAsync({key: items_param_key}, {$set: {value: {data: items}}});
+      return col.updateAsync({key: items_param_key}, {$set: {value: {data: items}}}, {w:1, upsert: true});
     }
 
 
@@ -39,6 +45,7 @@ function _process(argv){
 
       _load()
         .then(function(list){
+
 
           if(argv.a){
             var files = [].concat(argv.a);
