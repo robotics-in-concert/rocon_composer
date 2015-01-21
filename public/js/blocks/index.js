@@ -320,3 +320,4 @@ require('./ros_pubsub');
 require('./ros_requester');
 require('./ros_service');
 require('./utils.js');
+require('./prezi.js');

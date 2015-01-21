@@ -6,7 +6,9 @@ var _ = require('lodash'),
   colors = require('colors'),
   bodyParser = require('body-parser'),
   swig = require('swig'),
+  http = require('http'),
   express = require('express'),
+  socketio = require('socket.io'),
   MongoClient = require('mongodb').MongoClient,
   Engine = require('./engine');
 
@@ -21,7 +23,12 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
    * Express
    */
   if(argv.web){
-    var app = express();
+
+    var app = express(); 
+    var server = http.createServer(app);
+    var io = socketio.listen(server);
+
+
     app.use(express.static('public'));
     app.use(bodyParser.json({limit: '50mb'}));
 
@@ -37,7 +44,7 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
 
     require('./routes')(app, db);
 
-    server = app.listen(process.env.ROCON_AUTHORING_SERVER_PORT, function(){
+    server = server.listen(process.env.ROCON_AUTHORING_SERVER_PORT, function(){
       console.log('Listening on port %d (%s)', server.address().port, process.env.NODE_ENV);
     });
 
