@@ -26,7 +26,7 @@ DEBUG = process.env.DEBUG || false
  * Engine class
  */
 
-var Engine = function(db, opts){
+var Engine = function(db, io, opts){
   this.options = R.mixin({
     ros_retries: 0,
     ros_retry_interval: 1000
