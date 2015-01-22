@@ -37,6 +37,11 @@ module.exports = function(app, db){
 
 
   app.get('/api/load_interactions', function(req, res){
+    if(!process.env.MSG_DATABASE){
+      res.send('no rocon protocols web', 500);
+      return
+    }
+
 
     var apiPath = URL.resolve(process.env.MSG_DATABASE, "api/hic_app");
 
@@ -59,6 +64,10 @@ module.exports = function(app, db){
   });
 
   app.post('/api/load_rapp', function(req, res){
+    if(!process.env.MSG_DATABASE){
+      res.send('no rocon protocols web', 500);
+      return;
+    }
 
 
     var apiPath = URL.resolve(process.env.MSG_DATABASE, "api/rocon_app");

@@ -9,8 +9,8 @@ var _ = require('lodash'),
   express = require('express'),
   MongoClient = require('mongodb').MongoClient,
   Engine = require('./engine');
-  
 
+checkEnvVars();
 
 MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
   if(e) throw e;
@@ -74,4 +74,18 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
 });
 
 
+function checkEnvVars(){
 
+  ['ROCON_AUTHORING_SERVER_PORT',
+    'ROCON_AUTHORING_ROSBRIDGE_URL',
+    'ROCON_AUTHORING_MONGO_URL',
+    'MSG_DATABASE'].forEach(function(e){
+      var v = process.env[e]
+      if(v){
+        console.log(e, process.env[e].green);
+      }else{
+        console.log(e, 'null'.red);
+      }
+    });
+
+};
