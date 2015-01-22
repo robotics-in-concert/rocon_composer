@@ -6,11 +6,16 @@ var gulp = require('gulp'),
 
 var paths = {
   js: {
-    vendor: [
+    blockly: [
       './public/js/blockly/blockly_compressed.js',
       './public/js/blockly/blocks_compressed.js',
       './public/js/blockly/javascript_compressed.js',
       './public/js/blockly/msg/en.js',
+    ],
+    vendor: [
+      './public/js/vendor/socket.min.js',
+      './public/js/vendor/bootstrap-editable.min.js',
+      './public/js/vendor/jsoneditor.min.js'
     ],
 
   }
@@ -18,6 +23,12 @@ var paths = {
 
 };
 
+gulp.task('js-blockly', function(){
+  gulp.src(paths.js.blockly)
+    .pipe(concat('blockly.js'))
+    .pipe(gulp.dest('./public'))
+
+});
 gulp.task('js-vendor', function(){
   gulp.src(paths.js.vendor)
     .pipe(concat('vendor.js'))

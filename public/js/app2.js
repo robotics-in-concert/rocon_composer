@@ -5,14 +5,13 @@ var angular = require('angular'),
   Utils = require('./utils'),
   $ = require('jquery');
 
-require('bootstrap');
 require('./blocks/index');
-require('x-editable');
 
 ITEMS_PARAM_KEY = 'cento_authoring_items';
 SERVICES_PARAM_KEY = 'cento_authoring_services';
 
 JSONEditor.defaults.options.theme = 'bootstrap3';
+
 
 $.fn.editable.defaults.mode = 'inline';
 $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary btn-sm editable-submit"><i class="fa fa-check"></i></button><button type="button" class="btn btn-default btn-sm editable-cancel"><i class="fa fa-remove"></i></button>'
@@ -138,9 +137,8 @@ Mousetrap.bind('ctrl+alt+l', function() {
 
 
 var app = angular.module('centoAuthoring', [
-  require('angular-ui-router'),
-  require('angular-bootstrap'),
-  // 'ui.select2'
+  'ui.router',
+  'ui.bootstrap'
 ]);
 
 
