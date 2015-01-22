@@ -24,7 +24,7 @@ function PreziDemoController($scope, preziSocket){
 
 
   // sample id : vq59j-nslium
-  $scope.prezi = {id: 'vq59j-nslium'};
+  $scope.prezi = {id: '32iuijp9zylz'};
   $scope.player = null;
   $scope.loadPrezi = function(){
     if($scope.preziForm.$invalid)
