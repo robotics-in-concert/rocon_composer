@@ -35,10 +35,10 @@ function PreziDemoController($scope, preziSocket){
       controls: true
     });
     console.log($scope.player);
-    preziSocket.on(['prezi', $scope.prezi.key, 'move-next'], function(){
+    preziSocket.on(['prezi', $scope.prezi.channel, 'next'].join(':'), function(){
       $scope.player.flyToNextStep();
     });
-    preziSocket.on(['prezi', $scope.prezi.key, 'move-prev'], function(){
+    preziSocket.on(['prezi', $scope.prezi.channel, 'prev'].join(':'), function(){
       $scope.player.flyToPreviousStep();
     });
 

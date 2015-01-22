@@ -102,9 +102,12 @@ Engine.prototype.initSocket = function(){
   });
 
 };
-Engine.prototype.socketBroadcast = function(msg){
-  this.io.emit('message', msg);
+Engine.prototype.socketBroadcast = function(key, msg){
+  this.io.emit(key, msg);
+  console.log('socket#emit', key, msg);
+
 };
+
 
 Engine.prototype.getMessageDetails = function(type, cb){
   var engine = this;
