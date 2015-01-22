@@ -26,7 +26,14 @@ DEBUG = process.env.DEBUG || false
  * Engine class
  */
 
-var Engine = function(db){
+var Engine = function(db, opts){
+  this.options = R.mixin({
+    ros_retries: 0,
+    ros_retry_interval: 1000
+  }, opts);
+  console.log('engine options', opts);
+  console.log('engine options', this.options);
+
   this.db = db;
   this.ee = new EventEmitter();
   this.executions = [];
@@ -74,7 +81,11 @@ var Engine = function(db){
     });
     ros.connect(process.env.ROCON_AUTHORING_ROSBRIDGE_URL);
 
-  }, 0, 1000);
+  }, function(e){
+    console.log('ros connection failed', e);
+
+    
+  }, this.options.ros_retries, this.options.ros_retry_interval);
 
   _.defer(function(){
     // engine.emit('started');

@@ -14,7 +14,7 @@ var fs = require('fs'),
 
 module.exports = {
 
-  retry: function(f, n, ms){
+  retry: function(f, cb, n, ms){
     var op = {};
     var remains = (n <= 0) ? Infinity : n;
 
@@ -28,7 +28,10 @@ module.exports = {
     };
 
     op.retry = function(){
-      if(remains-- <= 0) throw new Error('retry failed');
+      if(remains-- <= 0){
+        cb(new Error('retry failed'));
+        return;
+      }
       _.delay(f2, ms);
     };
 
