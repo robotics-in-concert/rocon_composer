@@ -42,6 +42,11 @@ function PreziDemoController($scope, preziSocket){
     preziSocket.on(['prezi', $scope.prezi.channel, 'next'].join(':'), function(){
       $scope.player.flyToNextStep();
     });
+    preziSocket.on(['prezi', $scope.prezi.channel, 'move'].join(':'), function(opt){
+      console.log('MOVE', opt);
+      var step = opt.step;
+      $scope.player.flyToStep(step);
+    });
     preziSocket.on(['prezi', $scope.prezi.channel, 'prev'].join(':'), function(){
       $scope.player.flyToPreviousStep();
     });

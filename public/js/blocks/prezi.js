@@ -82,6 +82,23 @@ Blockly.Blocks['prezi_next_with_channel'] = {
     this.setNextStatement(true);
   }
 };
+Blockly.Blocks['prezi_move_with_channel'] = {
+  /**
+   * Mutator bolck for adding items.
+   * @this Blockly.Block
+   */
+  init: function() {
+    this.setColour(260);
+    this.appendDummyInput()
+      .appendField('prezi - move')
+    this.appendDummyInput().appendField(new Blockly.FieldTextInput('channel', null), 'CHANNEL')
+    this.appendDummyInput().appendField('step : ').appendField(new Blockly.FieldTextInput('0', null), 'STEP')
+    this.setInputsInline(true);
+    this.setOutput(false);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+  }
+};
 
 
 Blockly.JavaScript['prezi_next_with_channel'] = function(block){
@@ -98,5 +115,15 @@ Blockly.JavaScript['prezi_prev_with_channel'] = function(block){
   return code;
 
 };
+Blockly.JavaScript['prezi_move_with_channel'] = function(block){
+  // var key = Blockly.JavaScript.valueToCode(block, 'KEY', Blockly.JavaScript.ORDER_NONE) || "''";
+  var chan = this.getFieldValue('CHANNEL');
+  var step = this.getFieldValue('STEP');
+  var code = _.template("$engine.socketBroadcast('prezi:<%= channel %>:move', {step: <%= step%>});")({channel: chan, step: step});
+  return code;
+
+};
+
+
 
 
