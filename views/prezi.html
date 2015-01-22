@@ -1,0 +1,46 @@
+<!doctype html>
+<html ng-app="prezi-demo">
+  <head>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/g/bootstrap@3.3.1(css/bootstrap.min.css),highlight.js(styles/github.min.css)" />
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/fontawesome/4.2.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+
+  </head>
+
+  <body>
+    <div class="container">
+      <div ng-controller="PreziDemoController">
+        <h1>Prezi Demo</h1>
+
+        <h2>Load Prezi</h2>
+        <form novalidate class="well" name="preziForm">
+          <div class="form-group" ng-class="{'has-error': preziForm.channel.$invalid}">
+            <label>Channel</label>
+            <input type="text" ng-model="prezi.channel" name="channel" class="form-control" required>
+          </div>
+          <div class="form-group" ng-class="{'has-error': preziForm.id.$invalid}">
+            <label>Prezi Id</label>
+            <input type="text" ng-model="prezi.id" name="id" class="form-control" required>
+          </div>
+
+          <button class="btn btn-primary" ng-click="loadPrezi()">Load</button>
+
+        </form>
+        [[foo]]
+        <div id="prezi-div">
+        </div>
+        <button class="btn btn-default prev" ng-click="preziMove(-1)">Prev</button>
+        <button class="btn btn-default next" ng-click="preziMove(1)">Next</button>
+        <!-- <button class="btn btn-default" ng-click="enterFullScreen()">Fullscreen</button> -->
+      </div>
+      <!-- <iframe src="http://prezi.com/embed/vq59j-nslium/?bgcolor=ffffff&amp;lock_to_path=1&amp;autoplay=1&amp;autohide_ctrls=0&amp;features=undefined&amp;token=undefined&amp;disabled_features=undefined" width="1100" height="800" frameBorder="0" webkitAllowFullScreen mozAllowFullscreen allowfullscreen></iframe> -->
+    </div>
+    <script src="http://cdn.jsdelivr.net/g/jquery,angularjs" type="text/javascript"></script>
+    <script src="/socket.io/socket.io.js" type="text/javascript"></script>
+    <script src="/js/vendor/socket.min.js" type="text/javascript"></script>
+    <script src="/js/prezi/prezi_player.js"></script>
+    <script src="/bundle-prezi.js"></script>
+  </body>
+
+</html>
+

@@ -74725,8 +74725,9 @@ require('./ros_pubsub');
 require('./ros_requester');
 require('./ros_service');
 require('./utils.js');
+require('./prezi.js');
 
-},{"../config":"/Users/eskim/current/cento_authoring/public/js/config.json","./lodash":"/Users/eskim/current/cento_authoring/public/js/blocks/lodash.js","./object":"/Users/eskim/current/cento_authoring/public/js/blocks/object.js","./ros_action":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_action.js","./ros_msg":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_msg.js","./ros_pubsub":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_pubsub.js","./ros_requester":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_requester.js","./ros_service":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_service.js","./utils.js":"/Users/eskim/current/cento_authoring/public/js/blocks/utils.js","lodash":"/Users/eskim/current/cento_authoring/node_modules/lodash/dist/lodash.js"}],"/Users/eskim/current/cento_authoring/public/js/blocks/lodash.js":[function(require,module,exports){
+},{"../config":"/Users/eskim/current/cento_authoring/public/js/config.json","./lodash":"/Users/eskim/current/cento_authoring/public/js/blocks/lodash.js","./object":"/Users/eskim/current/cento_authoring/public/js/blocks/object.js","./prezi.js":"/Users/eskim/current/cento_authoring/public/js/blocks/prezi.js","./ros_action":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_action.js","./ros_msg":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_msg.js","./ros_pubsub":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_pubsub.js","./ros_requester":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_requester.js","./ros_service":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_service.js","./utils.js":"/Users/eskim/current/cento_authoring/public/js/blocks/utils.js","lodash":"/Users/eskim/current/cento_authoring/node_modules/lodash/dist/lodash.js"}],"/Users/eskim/current/cento_authoring/public/js/blocks/lodash.js":[function(require,module,exports){
 (function (global){
 var _ = require('lodash');
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
@@ -75061,6 +75062,112 @@ Blockly.Blocks['object_create_with_container'] = {
     this.contextMenu = false;
   }
 };
+
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"lodash":"/Users/eskim/current/cento_authoring/node_modules/lodash/dist/lodash.js"}],"/Users/eskim/current/cento_authoring/public/js/blocks/prezi.js":[function(require,module,exports){
+(function (global){
+
+var _ = require('lodash');
+var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
+
+Blockly.Blocks['prezi_prev'] = {
+  /**
+   * Mutator bolck for adding items.
+   * @this Blockly.Block
+   */
+  init: function() {
+    this.setColour(260);
+    this.appendDummyInput()
+      .appendField('prezi - prev')
+    this.setInputsInline(true);
+    this.setOutput(false);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+  }
+};
+Blockly.Blocks['prezi_next'] = {
+  /**
+   * Mutator bolck for adding items.
+   * @this Blockly.Block
+   */
+  init: function() {
+    this.setColour(260);
+    this.appendDummyInput()
+      .appendField('prezi - next')
+    this.setInputsInline(true);
+    this.setOutput(false);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+  }
+};
+
+
+Blockly.JavaScript['prezi_next'] = function(block){
+  // var key = Blockly.JavaScript.valueToCode(block, 'KEY', Blockly.JavaScript.ORDER_NONE) || "''";
+  var data = {action: 'prezi-next'};
+  var code = _.template("$engine.socketBroadcast('message', <%= data %>);")({data: JSON.stringify(data)});
+  return code;
+
+};
+Blockly.JavaScript['prezi_prev'] = function(block){
+  // var key = Blockly.JavaScript.valueToCode(block, 'KEY', Blockly.JavaScript.ORDER_NONE) || "''";
+  var data = {action: 'prezi-prev'};
+  var code = _.template("$engine.socketBroadcast('message', <%= data %>);")({data: JSON.stringify(data)});
+  return code;
+
+};
+
+
+Blockly.Blocks['prezi_prev_with_channel'] = {
+  /**
+   * Mutator bolck for adding items.
+   * @this Blockly.Block
+   */
+  init: function() {
+    this.setColour(260);
+    this.appendDummyInput()
+      .appendField('prezi - prev')
+    this.appendDummyInput().appendField(new Blockly.FieldTextInput('channel', null), 'CHANNEL')
+    this.setInputsInline(true);
+    this.setOutput(false);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+  }
+};
+Blockly.Blocks['prezi_next_with_channel'] = {
+  /**
+   * Mutator bolck for adding items.
+   * @this Blockly.Block
+   */
+  init: function() {
+    this.setColour(260);
+    this.appendDummyInput()
+      .appendField('prezi - next')
+    this.appendDummyInput().appendField(new Blockly.FieldTextInput('channel', null), 'CHANNEL')
+    this.setInputsInline(true);
+    this.setOutput(false);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+  }
+};
+
+
+Blockly.JavaScript['prezi_next_with_channel'] = function(block){
+  // var key = Blockly.JavaScript.valueToCode(block, 'KEY', Blockly.JavaScript.ORDER_NONE) || "''";
+  var chan = this.getFieldValue('CHANNEL');
+  var code = _.template("$engine.socketBroadcast('prezi:<%= channel %>:next');")({channel: chan});
+  return code;
+
+};
+Blockly.JavaScript['prezi_prev_with_channel'] = function(block){
+  // var key = Blockly.JavaScript.valueToCode(block, 'KEY', Blockly.JavaScript.ORDER_NONE) || "''";
+  var chan = this.getFieldValue('CHANNEL');
+  var code = _.template("$engine.socketBroadcast('prezi:<%= channel %>:prev');")({channel: chan});
+  return code;
+
+};
+
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
@@ -75865,7 +75972,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/cento_authoring/public/js/config.json","lodash":"/Users/eskim/current/cento_authoring/node_modules/lodash/dist/lodash.js"}],"/Users/eskim/current/cento_authoring/public/js/config.json":[function(require,module,exports){
-module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100
@@ -76829,7 +76936,7 @@ module.exports = {
 };
 
 },{"json-editor":"/Users/eskim/current/cento_authoring/node_modules/json-editor/dist/jsoneditor.js","ramda":"/Users/eskim/current/cento_authoring/node_modules/ramda/ramda.js"}],"/Users/eskim/current/cento_authoring/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {
