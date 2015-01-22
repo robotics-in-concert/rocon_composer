@@ -13,14 +13,14 @@
         <h1>Prezi Demo</h1>
 
         <h2>Load Prezi</h2>
-        <form novalidate class="well">
-          <div class="form-group">
+        <form novalidate class="well" name="preziForm">
+          <div class="form-group" ng-class="{'has-error': preziForm.channel.$invalid}">
             <label>Channel</label>
-            <input type="text" ng-model="prezi.channel" class="form-control">
+            <input type="text" ng-model="prezi.channel" name="channel" class="form-control" required>
           </div>
-          <div class="form-group">
+          <div class="form-group" ng-class="{'has-error': preziForm.id.$invalid}">
             <label>Prezi Id</label>
-            <input type="text" ng-model="prezi.id" class="form-control">
+            <input type="text" ng-model="prezi.id" name="id" class="form-control" required>
           </div>
 
           <button class="btn btn-primary" ng-click="loadPrezi()">Load</button>

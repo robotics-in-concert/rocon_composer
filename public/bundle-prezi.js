@@ -28,6 +28,9 @@ function PreziDemoController($scope, preziSocket){
   $scope.prezi = {id: 'vq59j-nslium'};
   $scope.player = null;
   $scope.loadPrezi = function(){
+    if($scope.preziForm.$invalid)
+      return;
+
     $scope.player = new PreziPlayer('prezi-div', {
       preziId: $scope.prezi.id,
       // width: 1100,
