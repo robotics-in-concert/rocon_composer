@@ -1,7 +1,14 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/Users/eskim/current/cento_authoring/public/js/prezi/app.js":[function(require,module,exports){
 
-angular.module('prezi-demo', [])
+angular.module('prezi-demo', [
+  'btford.socket-io'
+])
   .config(PreziConfig)
+  .factory('preziSocket', ['socketFactory', function(socketFactory){
+    var sock = socketFactory({prefix: 'prezi:'});
+    sock.forward('error');
+    return sock;
+  }])
   .controller('PreziDemoController', PreziDemoController);
 
 
@@ -14,7 +21,7 @@ function PreziConfig($interpolateProvider){
 }
 
 /* @ngInject */
-function PreziDemoController($scope){
+function PreziDemoController($scope, preziSocket){
 
 
   // sample id : vq59j-nslium
@@ -29,6 +36,15 @@ function PreziDemoController($scope){
       controls: true
     });
     console.log($scope.player);
+    preziSocket.on(['prezi', $scope.prezi.key, 'move-next'], function(){
+      $scope.player.flyToNextStep();
+    });
+    preziSocket.on(['prezi', $scope.prezi.key, 'move-prev'], function(){
+      $scope.player.flyToPreviousStep();
+    });
+
+
+
 
 
   }

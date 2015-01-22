@@ -1,6 +1,13 @@
 
-angular.module('prezi-demo', [])
+angular.module('prezi-demo', [
+  'btford.socket-io'
+])
   .config(PreziConfig)
+  .factory('preziSocket', ['socketFactory', function(socketFactory){
+    var sock = socketFactory({prefix: 'prezi:'});
+    sock.forward('error');
+    return sock;
+  }])
   .controller('PreziDemoController', PreziDemoController);
 
 
@@ -13,7 +20,7 @@ function PreziConfig($interpolateProvider){
 }
 
 /* @ngInject */
-function PreziDemoController($scope){
+function PreziDemoController($scope, preziSocket){
 
 
   // sample id : vq59j-nslium
@@ -28,6 +35,15 @@ function PreziDemoController($scope){
       controls: true
     });
     console.log($scope.player);
+    preziSocket.on(['prezi', $scope.prezi.key, 'move-next'], function(){
+      $scope.player.flyToNextStep();
+    });
+    preziSocket.on(['prezi', $scope.prezi.key, 'move-prev'], function(){
+      $scope.player.flyToPreviousStep();
+    });
+
+
+
 
 
   }
