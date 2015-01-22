@@ -75972,7 +75972,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/cento_authoring/public/js/config.json","lodash":"/Users/eskim/current/cento_authoring/node_modules/lodash/dist/lodash.js"}],"/Users/eskim/current/cento_authoring/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100
@@ -76538,6 +76538,7 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
   });
 
   $scope.save = function() {
+    var cur = $scope.current;
 
 
     var id = $scope.current.id;
@@ -76563,6 +76564,12 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
 
     }
     else {
+      var sameTitleIdx = R.findIndex(R.propEq('title', cur.title))($scope.items);
+      if(sameTitleIdx >= 0){
+        alert('item with same title exists');
+        return;
+
+      }
       
       $scope.items.push({id: id, title: title, js: js, xml: xml, description: description, created_at: created_at});
       console.log(2);
@@ -76792,22 +76799,41 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
     $('#itemsFile').click()
   };
   $scope.itemsFileNameChanged = function(e){
+    console.log('here!');
+
     var files = e.files;
     var f = files[0];
 
     var r = new FileReader();
     r.onload = function(e) { 
       var json = e.target.result;
+      console.log(json);
+
       var item = JSON.parse(json);
+      console.log(item);
 
-      $scope.$apply(function(){
-        item.id = Utils.uuid();
-        $scope.items.push(item);
 
-      });
 
-      console.log($scope.items);
 
+
+      var sameTitleIdx = R.findIndex(R.propEq('title', item.title))($scope.items);
+      console.log(sameTitleIdx);
+      if(sameTitleIdx >= 0){
+        if(confirm('item with same title exists, overrite?')){
+          $scope.$apply(function(){
+            item.id = Utils.uuid();
+            $scope.items[sameTitleIdx] = item;
+          });
+        }
+      }else{
+        $scope.$apply(function(){
+          console.log('here');
+
+          item.id = Utils.uuid();
+          $scope.items.push(item);
+        });
+      }
+      $('#itemsFile').val('');
 
 
 
@@ -76936,7 +76962,7 @@ module.exports = {
 };
 
 },{"json-editor":"/Users/eskim/current/cento_authoring/node_modules/json-editor/dist/jsoneditor.js","ramda":"/Users/eskim/current/cento_authoring/node_modules/ramda/ramda.js"}],"/Users/eskim/current/cento_authoring/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {
