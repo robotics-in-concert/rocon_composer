@@ -24,10 +24,22 @@ function PreziDemoController($scope){
       preziId: $scope.prezi.id,
       // width: 1100,
       width: "100%",
-      height: 800
+      height: 800,
+      controls: true
     });
+    console.log($scope.player);
+
 
   }
+  $scope.enterFullScreen = function(){
+    // var div = $('#prezi-div iframe').get(0);
+    // $('#prezi-div iframe').on('webkitfullscreenchange', function(){
+      // $scope.player.setDimensions({height: '100%', width: '100%'})
+      // $scope.player.flyToStep($scope.player.getCurrentStep());
+
+    // });
+    // div.webkitRequestFullscreen();
+  };
   $scope.preziMove = function(delta){
     if(!$scope.player){
       return;
