@@ -46,6 +46,7 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 
    // $scope.blockConfigs = {};
    // $scope.currentBlockConfig = '';
+   $scope.value = {};
    $scope.destPackage = null;
    blocksStore.getParam(ITEMS_PARAM_KEY).then(function(rows){
      blocksStore.loadInteractions().then(function(interactions){
@@ -163,10 +164,12 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
   });
 
   $scope.exportOk = function(){
-    var v = editor.getValue();
-    console.log($scope.destPackage);
+    var destPackage = $scope.value.destPackage;
 
-    serviceAuthoring.saveService(v, $scope.destPackage).then(function(){
+
+    var v = editor.getValue();
+
+    serviceAuthoring.saveService(v, destPackage).then(function(){
       alert('saved');
       $('#modal-package-select').modal('hide');
       

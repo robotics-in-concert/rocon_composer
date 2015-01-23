@@ -9,9 +9,12 @@
             <h4 class="modal-title">Select Package</h4>
           </div>
           <div class="modal-body">
-            <select id="package_select" style="width:100%;" ng-model="destPackage" ui-select2 >
-              <option ng-repeat="pack in packageList" value="[[pack.name]]" >[[pack.name]]</option>
-            </select>
+            <ui-select ng-model="value.destPackage" style="width: 100%;">
+              <ui-select-match placeholder="Select Package...">[[$select.selected.name]]</ui-select-match>
+              <ui-select-choices repeat="pack.name as pack in packageList | filter: $select.search">
+                [[pack.name]]
+              </ui-select-choices>
+            </ui-select>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

@@ -139,8 +139,10 @@ Mousetrap.bind('ctrl+alt+l', function() {
 
 
 var app = angular.module('centoAuthoring', [
+  'ngSanitize',
   'ui.router',
-  'ui.bootstrap'
+  'ui.bootstrap',
+  'ui.select'
 ]);
 
 
@@ -151,7 +153,9 @@ app.controller('RootCtrl', require('./ctrls/root_ctrl'));
 app.provider('caJsonEditor', require('./directives/json-editor').provider)
 app.directive('caJsonEditor', require('./directives/json-editor').directive)
 
-app.config(function($stateProvider, $interpolateProvider) {
+app.config(function(uiSelectConfig, $stateProvider, $interpolateProvider) {
+  uiSelectConfig.theme = 'select2';
+
   $interpolateProvider.startSymbol('[[');
   $interpolateProvider.endSymbol(']]');
 
@@ -2138,7 +2142,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/cento_authoring/public/js/config.json"}],"/Users/eskim/current/cento_authoring/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100
@@ -2378,6 +2382,7 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 
    // $scope.blockConfigs = {};
    // $scope.currentBlockConfig = '';
+   $scope.value = {};
    $scope.destPackage = null;
    blocksStore.getParam(ITEMS_PARAM_KEY).then(function(rows){
      blocksStore.loadInteractions().then(function(interactions){
@@ -2495,10 +2500,12 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
   });
 
   $scope.exportOk = function(){
-    var v = editor.getValue();
-    console.log($scope.destPackage);
+    var destPackage = $scope.value.destPackage;
 
-    serviceAuthoring.saveService(v, $scope.destPackage).then(function(){
+
+    var v = editor.getValue();
+
+    serviceAuthoring.saveService(v, destPackage).then(function(){
       alert('saved');
       $('#modal-package-select').modal('hide');
       
@@ -3136,7 +3143,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/cento_authoring/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {

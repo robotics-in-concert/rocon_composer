@@ -137,8 +137,10 @@ Mousetrap.bind('ctrl+alt+l', function() {
 
 
 var app = angular.module('centoAuthoring', [
+  'ngSanitize',
   'ui.router',
-  'ui.bootstrap'
+  'ui.bootstrap',
+  'ui.select'
 ]);
 
 
@@ -149,7 +151,9 @@ app.controller('RootCtrl', require('./ctrls/root_ctrl'));
 app.provider('caJsonEditor', require('./directives/json-editor').provider)
 app.directive('caJsonEditor', require('./directives/json-editor').directive)
 
-app.config(function($stateProvider, $interpolateProvider) {
+app.config(function(uiSelectConfig, $stateProvider, $interpolateProvider) {
+  uiSelectConfig.theme = 'select2';
+
   $interpolateProvider.startSymbol('[[');
   $interpolateProvider.endSymbol(']]');
 
