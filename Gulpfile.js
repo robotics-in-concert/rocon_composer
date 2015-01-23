@@ -2,7 +2,10 @@ var gulp = require('gulp'),
   less = require('gulp-less'),
   concat = require('gulp-concat'),
   path = require('path'),
-  mainBowerFiles = require('main-bower-files');
+  mainBowerFiles = require('main-bower-files'),
+  removeUseStrict = require('gulp-remove-use-strict'),
+  uglify  = require('gulp-uglify')
+  replace = require('gulp-replace');
 
 
 var paths = {
@@ -52,7 +55,9 @@ gulp.task('js-vendor', function(){
     // .pipe(concat('vendor.js'))
     // .pipe(gulp.dest('./public'))
   gulp.src(bower_files)
+    .pipe(replace(/"use strict";?/g, ""))
     .pipe(concat('vendor.js'))
+    .pipe(uglify())
     .pipe(gulp.dest('./public'))
 
 });
