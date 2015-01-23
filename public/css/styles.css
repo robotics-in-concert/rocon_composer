@@ -69,6 +69,8 @@ button {
 }
 #workflow-blockly .blockly_container .body .right #tool-buttons li a {
   color: black;
+  height: 50px;
+  display: inline-block;
 }
 #workflow-blockly .blockly_container .body .right #tool-buttons li i {
   font-size: 20px;
