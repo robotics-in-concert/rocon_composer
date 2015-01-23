@@ -52,6 +52,7 @@
     "gulp-eol": "^0.1.1",
     "gulp-less": "^2.0.1",
     "jquery": "^2.1.3",
+    "main-bower-files": "^2.5.0",
     "mousetrap": "^1.4.6",
     "napa": "^1.2.0"
   },
@@ -60,8 +61,7 @@
       "browserify-shim"
     ]
   },
-  "browser": {
-  },
+  "browser": {},
   "browserify-shim": {
     "jquery": "global:$",
     "blockly": "global:Blockly",
@@ -72,6 +72,5 @@
     "lodash": "global:_",
     "ramda": "global:R"
   },
-  "napa": {
-  }
+  "napa": {}
 }

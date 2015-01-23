@@ -1,7 +1,8 @@
 var gulp = require('gulp'),
   less = require('gulp-less'),
   concat = require('gulp-concat'),
-  path = require('path');
+  path = require('path'),
+  mainBowerFiles = require('main-bower-files');
 
 
 var paths = {
@@ -13,6 +14,7 @@ var paths = {
       './public/js/blockly/msg/en.js',
     ],
     vendor: [
+      './public/components/js/vendor/socket.min.js',
       './public/js/vendor/socket.min.js',
       './public/js/vendor/bootstrap-editable.min.js',
       './public/js/vendor/jsoneditor.min.js'
@@ -29,8 +31,27 @@ gulp.task('js-blockly', function(){
     .pipe(gulp.dest('./public'))
 
 });
+gulp.task('css-vendor', function(){
+  var bower_files = mainBowerFiles({
+    filter: /.+\.css$/
+  });
+  gulp.src(bower_files)
+    .pipe(concat('vendor.css'))
+    .pipe(gulp.dest('./public'))
+
+
+});
+
 gulp.task('js-vendor', function(){
-  gulp.src(paths.js.vendor)
+  var bower_files = mainBowerFiles({
+    filter: /.+\.js$/
+  });
+  console.log(bower_files);
+
+  // gulp.src(paths.js.vendor)
+    // .pipe(concat('vendor.js'))
+    // .pipe(gulp.dest('./public'))
+  gulp.src(bower_files)
     .pipe(concat('vendor.js'))
     .pipe(gulp.dest('./public'))
 

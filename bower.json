@@ -1,0 +1,43 @@
+{
+  "name": "rocon_authoring",
+  "version": "0.0.0",
+  "authors": [
+    "Eunsub Kim <eunsub@gmail.com>"
+  ],
+  "license": "BSD",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.2",
+    "json-editor": "~0.7.13",
+    "angular-ui-select": "~0.9.6",
+    "angular-socket-io": "~0.7.0",
+    "angular-ui-router": "~0.2.13",
+    "angular-ui-bootstrap": "~0.12.0",
+    "angular-bootstrap": "~0.12.0",
+    "x-editable": "~1.5.1",
+    "lodash": "~3.0.0",
+    "ramda": "~0.8.0",
+    "mousetrap": "~1.4.6",
+    "highlightjs": "~8.4.0",
+    "vkbeautify-wrapper": "*"
+  },
+  "overrides": {
+    "x-editable": {
+      "main": [
+        "dist/bootstrap3-editable/js/bootstrap-editable.js",
+        "dist/bootstrap3-editable/css/bootstrap-editable.css"
+      ],
+      "dependencies": {
+        "bootstrap": "*"
+      }
+    }
+  }
+}
