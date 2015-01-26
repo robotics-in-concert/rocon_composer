@@ -13,6 +13,22 @@ function ConfigCtrl($scope, blocksStore, $http, $mi) {
   this.currentBlockConfig = '';
 
 
+  this.config = {
+    remappings: [],
+    parameters: []
+  }; 
+  this.addRemapping = function(){
+    ctrl.config.remappings.push({remap_from: '', remap_to: ''});
+  };
+  this.deleteRemapping = function(idx){
+    ctrl.config.remappings.splice(idx, 1);
+  };
+  this.addParameter = function(){
+    ctrl.config.parameters.push({key: '', value: ''});
+  };
+  this.deleteParameter = function(idx){
+    ctrl.config.parameters.splice(idx, 1);
+  };
 
 
   this.schema = blocksStore.loadRapp().then(function(){
