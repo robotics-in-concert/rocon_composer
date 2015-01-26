@@ -8,7 +8,7 @@
 
     <div class="form-group">
       <label for="">rapp</label>
-      <ui-select ng-model="ctrl.config.rapp" style="width: 100%">
+      <ui-select ng-model="ctrl.config.rapp" style="width: 100%" on-select="ctrl.rappSelected($item, $model)">
         <ui-select-match placeholder="Select Rapp...">[[$select.selected]]</ui-select-match>
         <ui-select-choices repeat="rapp in ctrl.rapps | filter: $select.search">
           [[rapp]]

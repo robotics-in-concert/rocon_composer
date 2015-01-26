@@ -2161,6 +2161,11 @@ function ConfigCtrl($scope, $rootScope, blocksStore, $http, $modalInstance, rapp
   this.currentBlockConfig = '';
 
   this.rapps = rapps.rapps;
+  this.config = {
+    timeout: 15000,
+    remappings: [],
+    parameters: []
+  }; 
 
 
 
@@ -2173,11 +2178,24 @@ function ConfigCtrl($scope, $rootScope, blocksStore, $http, $modalInstance, rapp
   this.rapps = R.flatten(this.rapps);
   console.log(this.rapps);
 
+  this.rappSelected = function(item){
+    var pair = item.split("/");
+    var rapp = R.find(R.propEq('name', pair[0]))(rapps.rapps);
+    var rocon_app = rapp['rocon_apps'][pair[1]];
 
-  this.config = {
-    remappings: [],
-    parameters: []
-  }; 
+
+    ctrl.config.uri = rocon_app.compatibility;
+    if(rocon_app.public_parameters){
+      ctrl.config.parameters = [];
+      R.mapObj.idx(function(v, k){
+        ctrl.config.parameters.push({key: k, value: v});
+      })(rocon_app.public_parameters)
+
+    }
+
+
+  };
+
   this.addRemapping = function(){
     ctrl.config.remappings.push({remap_from: '', remap_to: ''});
   };
