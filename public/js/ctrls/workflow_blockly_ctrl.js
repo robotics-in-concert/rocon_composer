@@ -37,7 +37,13 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
     var modalInstance = $modal.open({
       templateUrl: '/js/tpl/block_config.html',
       controller: require('./config_ctrl'),
-      controllerAs: 'ctrl'
+      controllerAs: 'ctrl',
+      resolve: {
+        rapps: function(){
+          return $rootScope.rapps;
+        }
+
+      }
     });
     
 

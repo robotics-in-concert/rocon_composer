@@ -2153,15 +2153,25 @@ module.exports={
                                             
                                             
                                             
-ConfigCtrl.$inject = ['$scope', 'blocksStore', '$http', '$modalInstance'];                                            
-
-function ConfigCtrl($scope, blocksStore, $http, $mi) {
-  console.log('x');
-
+// @ngInject
+function ConfigCtrl($scope, $rootScope, blocksStore, $http, $modalInstance, rapps) {
 
   var ctrl = this;
   this.blockConfigs = {};
   this.currentBlockConfig = '';
+
+  this.rapps = rapps.rapps;
+
+
+
+  this.rapps = rapps.rapps.map(function(rapp){
+    var apps = R.keys(rapp.rocon_apps);
+    return R.map(
+      R.concat(rapp.name + "/")
+    )(apps);
+  });
+  this.rapps = R.flatten(this.rapps);
+  console.log(this.rapps);
 
 
   this.config = {
@@ -2192,7 +2202,7 @@ function ConfigCtrl($scope, blocksStore, $http, $mi) {
     if(Blockly.selected){
       Blockly.selected.extra_config = ctrl.config;
     };
-    $mi.dismiss();
+    $modalInstance.dismiss();
 
   };
 
@@ -2217,6 +2227,18 @@ module.exports = function($scope, blocksStore, $http, $state, $rootScope) {
 
   $scope.services = [];
   $scope.state = $state;
+
+
+  console.log('00000000000000');
+
+  blocksStore.loadRapp().then(function(data){
+
+    console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXX', data);
+
+    $rootScope.rapps = data;
+  console.log('9999999999');
+
+  });
 
   blocksStore.getParam(ITEMS_PARAM_KEY).then(function(rows){
     console.log('loaded ', rows);
@@ -2564,7 +2586,13 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
     var modalInstance = $modal.open({
       templateUrl: '/js/tpl/block_config.html',
       controller: require('./config_ctrl'),
-      controllerAs: 'ctrl'
+      controllerAs: 'ctrl',
+      resolve: {
+        rapps: function(){
+          return $rootScope.rapps;
+        }
+
+      }
     });
     
 
