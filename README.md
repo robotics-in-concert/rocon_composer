@@ -30,6 +30,7 @@ rocon_authoring
   - `ROCON_AUTHORING_MONGO_URL` : mongodb connection URL (eg. mongodb://localhost:27017/cento_authoring)
   - `MSG_DATABASE` : message database server address (eg. http://localhost:10000)
   - `ROCON_AUTHORING_DELAY_AFTER_TOPICS` : delay in milliseconds after required topics are ready (default: 2000)
+  - `ROCON_AUTHORING_PUBLISH_DELAY` : delay in milliseconds betweeb publishs
 
 ## Run
 
