@@ -61,7 +61,11 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
 
 
   if(argv.engine){
-    $engine = new Engine(db, io,argv.engine_options);
+    var engine_opts = _.merge(argv.engine_options, {
+      publish_delay: +process.env.ROCON_AUTHORING_PUBLISH_DELAY
+    });
+
+    $engine = new Engine(db, io, engine_opts);
 
     var args = argv.workflow
     if(args && args.length){
@@ -86,6 +90,7 @@ function checkEnvVars(){
   ['ROCON_AUTHORING_SERVER_PORT',
     'ROCON_AUTHORING_ROSBRIDGE_URL',
     'ROCON_AUTHORING_MONGO_URL',
+    'ROCON_AUTHORING_PUBLISH_DELAY',
     'MSG_DATABASE'].forEach(function(e){
       var v = process.env[e]
       if(v){

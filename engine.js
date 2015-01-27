@@ -45,6 +45,8 @@ var Engine = function(db, io, opts){
   this.schedule_requests = {};
   this.schedule_requests_ref_counts = {};
 
+  this.last_topic_publish_time = 0;
+
   var retry_op = Utils.retry(function(){
     engine.log('trying to connect to ros ' + process.env.ROCON_AUTHORING_ROSBRIDGE_URL);
     var connected = false;
@@ -157,6 +159,18 @@ Engine.prototype.subscribe = function(topic, type){
 
 Engine.prototype.pub = function(topic, type, msg){
 
+
+  var now = new Date().getTime();
+  var diff = now - this.last_topic_publish_time;
+  console.log(diff, this.options.publish_delay);
+
+
+  if(diff < this.options.publish_delay){
+    var delay = this.options.publish_delay - diff;
+    this.log('wait '+delay+' ms before publish');
+    this.sleep(delay); // force delay before pub
+  }
+
   var topic = new ROSLIB.Topic({
     ros : this.ros,
     name : topic,
@@ -168,7 +182,9 @@ Engine.prototype.pub = function(topic, type, msg){
 
   // And finally, publish.
   topic.publish(msg);
+  this.debug("published "+topic.name);
 
+  this.last_topic_publish_time = now;
 
   return topic;
 
