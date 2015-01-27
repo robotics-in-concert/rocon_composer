@@ -45,7 +45,7 @@ var Engine = function(db, io, opts){
   this.schedule_requests = {};
   this.schedule_requests_ref_counts = {};
 
-  this.last_topic_publish_time = 0;
+  this.publish_queue = [];
 
   var retry_op = Utils.retry(function(){
     engine.log('trying to connect to ros ' + process.env.ROCON_AUTHORING_ROSBRIDGE_URL);
@@ -88,6 +88,8 @@ var Engine = function(db, io, opts){
 
     
   }, this.options.ros_retries, this.options.ros_retry_interval);
+
+  engine.startPublishLoop();
 
   _.defer(function(){
     // engine.emit('started');
@@ -157,38 +159,40 @@ Engine.prototype.subscribe = function(topic, type){
 };
 
 
+Engine.prototype.startPublishLoop = function(){
+
+  var engine = this;
+  this.publish_loop_timer = setInterval(function(){
+
+    var data = engine.publish_queue.shift();
+    if(!data){
+      return;
+    }
+
+    var topic = new ROSLIB.Topic({
+      ros : engine.ros,
+      name : data.name,
+      messageType : data.type
+    });
+
+    var msg = new ROSLIB.Message(data.msg);
+
+
+    // And finally, publish.
+    topic.publish(msg);
+    engine.debug("published "+topic.name);
+
+  }, this.options.publish_delay);
+  engine.log('publish loop started');
+};
+Engine.prototype.stopPublishLoop = function(){
+  clearInterval(this.publish_loop_timer);
+};
+
+
 Engine.prototype.pub = function(topic, type, msg){
-
-
-  var now = new Date().getTime();
-  var diff = now - this.last_topic_publish_time;
-  console.log(diff, this.options.publish_delay);
-
-
-  if(diff < this.options.publish_delay){
-    var delay = this.options.publish_delay - diff;
-    this.log('wait '+delay+' ms before publish');
-    this.sleep(delay); // force delay before pub
-  }
-
-  var topic = new ROSLIB.Topic({
-    ros : this.ros,
-    name : topic,
-    messageType : type
-  });
-
-  var msg = new ROSLIB.Message(msg);
-
-
-  // And finally, publish.
-  topic.publish(msg);
-  this.debug("published "+topic.name);
-
-  this.last_topic_publish_time = now;
-
-  return topic;
-
-
+  this.publish_queue.push({name: topic,  type: type, msg: msg});
+  return null;
 };
 
 
