@@ -61,7 +61,7 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
 
 
   if(argv.engine){
-    var engine_opts = _.merge(argv.engine_options, {
+    var engine_opts = _.merge(argv.engine_options || {}, {
       publish_delay: +process.env.ROCON_AUTHORING_PUBLISH_DELAY
     });
 
