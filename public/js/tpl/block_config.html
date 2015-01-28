@@ -17,6 +17,14 @@
     </div>
     <div class="form-group">
       <label for="">uri</label>
+
+      <ui-select ng-model="ctrl.config.uri" style="width: 100%" on-select="ctrl.uriSelected($item, $model)">
+        <ui-select-match placeholder="Select URI...">[[$select.selected]]</ui-select-match>
+        <ui-select-choices repeat="uri in ctrl.uris | filter: $select.search">
+          [[uri]]
+        </ui-select-choices>
+      </ui-select>
+      <br />
       <input type="text" name="uri" class="form-control" ng-model="ctrl.config.uri" id="" value="" />
     </div>
     <div class="form-group">

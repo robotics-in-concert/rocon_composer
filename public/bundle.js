@@ -2142,7 +2142,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/cento_authoring/public/js/config.json"}],"/Users/eskim/current/cento_authoring/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100
@@ -2178,6 +2178,20 @@ function ConfigCtrl($scope, $rootScope, blocksStore, $http, $modalInstance, rapp
   this.rapps = R.flatten(this.rapps);
   console.log(this.rapps);
 
+
+  var fillUris = function(rapp){
+    var pair = rapp.split("/");
+    var rapp = R.find(R.propEq('name', pair[0]))(rapps.rapps);
+    var rocon_app = rapp['rocon_apps'][pair[1]];
+
+    if(rocon_app.children){
+      ctrl.uris = JSONSelect.match('.compatibility', rocon_app.children).concat('rocon:/*')
+    }else{
+      ctrl.uris = [rocon_app.compatibility];
+    }
+
+  };
+
   this.rappSelected = function(item){
     var pair = item.split("/");
     var rapp = R.find(R.propEq('name', pair[0]))(rapps.rapps);
@@ -2189,7 +2203,10 @@ function ConfigCtrl($scope, $rootScope, blocksStore, $http, $modalInstance, rapp
     ctrl.config.timeout = 15000;
     ctrl.config.uri = null;
 
-    ctrl.config.uri = rocon_app.compatibility;
+
+    fillUris(item);
+    ctrl.config.uri = ctrl.uris[0];
+
 
 
     var names = JSONSelect.match('.public_interface .name', rocon_app)
@@ -2223,8 +2240,12 @@ function ConfigCtrl($scope, $rootScope, blocksStore, $http, $modalInstance, rapp
     ctrl.config.parameters.splice(idx, 1);
   };
 
+
+
+  // default
   if(Blockly.selected && Blockly.selected.extra_config){
     this.config = Blockly.selected.extra_config;
+    fillUris(this.config.rapp);
   }
 
 
@@ -3148,7 +3169,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/cento_authoring/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {
