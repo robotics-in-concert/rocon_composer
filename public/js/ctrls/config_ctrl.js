@@ -2,105 +2,109 @@
                                             
                                             
                                             
-ConfigCtrl.$inject = ['$scope', 'blocksStore', '$http', '$modalInstance'];                                            
-
-function ConfigCtrl($scope, blocksStore, $http, $mi) {
-  console.log('x');
-
+// @ngInject
+function ConfigCtrl($scope, $rootScope, blocksStore, $http, $modalInstance, rapps) {
 
   var ctrl = this;
   this.blockConfigs = {};
   this.currentBlockConfig = '';
 
+  this.rapps = rapps.rapps;
+  this.config = {
+    timeout: 15000,
+    remappings: [],
+    parameters: []
+  }; 
 
 
 
-  this.schema = blocksStore.loadRapp().then(function(){
-    var schema = {
-      title: 'blockconfig',
-      type: "object",
-      properties: {
-        rapp: {type: 'string'},
-        uri: {type: 'string'},
-        timeout: {
-          type: 'integer',
-          default: 15000
-        },
-        remappings: { 
-          type: 'array',
-          format: 'table',
-          title: 'Remappings',
-          items: {
-            type: 'object',
-            properties: {
-              remap_from: {type: 'string'},
-              remap_to: {type: 'string'}
-            }
-
-          }
-        },
-        parameters: { 
-          type: 'array',
-          format: 'table',
-          title: 'Parameters',
-          items: {
-            type: 'object',
-            properties: {
-              key: {type: 'string'},
-              value: {type: 'string'}
-            }
-
-          }
-        },
-      }
-    };
-
-
-    return schema;
+  this.rapps = rapps.rapps.map(function(rapp){
+    var apps = R.keys(rapp.rocon_apps);
+    return R.map(
+      R.concat(rapp.name + "/")
+    )(apps);
   });
-  
+  this.rapps = R.flatten(this.rapps);
+  console.log(this.rapps);
 
 
-  this.startval = null;
+  var fillUris = function(rapp){
+    var pair = rapp.split("/");
+    var rapp = R.find(R.propEq('name', pair[0]))(rapps.rapps);
+    var rocon_app = rapp['rocon_apps'][pair[1]];
 
+    if(rocon_app.children){
+      ctrl.uris = JSONSelect.match('.compatibility', rocon_app.children).concat('rocon:/*')
+    }else{
+      ctrl.uris = [rocon_app.compatibility];
+    }
+
+  };
+
+  this.rappSelected = function(item){
+    var pair = item.split("/");
+    var rapp = R.find(R.propEq('name', pair[0]))(rapps.rapps);
+    var rocon_app = rapp['rocon_apps'][pair[1]];
+
+
+    ctrl.config.parameters = [];
+    ctrl.config.remappings = [];
+    ctrl.config.timeout = 15000;
+    ctrl.config.uri = null;
+
+
+    fillUris(item);
+    ctrl.config.uri = ctrl.uris[0];
+
+
+
+    var names = JSONSelect.match('.public_interface .name', rocon_app)
+    names.forEach(function(nm){
+      var to = nm.match(/\/.+/) ? nm : "/"+nm;
+      ctrl.config.remappings.push({remap_from: nm, remap_to: to});
+    });
+
+
+    if(rocon_app.public_parameters){
+      ctrl.config.parameters = [];
+      R.mapObj.idx(function(v, k){
+        ctrl.config.parameters.push({key: k, value: v});
+      })(rocon_app.public_parameters)
+
+    }
+
+
+  };
+
+  this.addRemapping = function(){
+    ctrl.config.remappings.push({remap_from: '', remap_to: ''});
+  };
+  this.deleteRemapping = function(idx){
+    ctrl.config.remappings.splice(idx, 1);
+  };
+  this.addParameter = function(){
+    ctrl.config.parameters.push({key: '', value: ''});
+  };
+  this.deleteParameter = function(idx){
+    ctrl.config.parameters.splice(idx, 1);
+  };
+
+
+
+  // default
   if(Blockly.selected && Blockly.selected.extra_config){
-    this.startval = Blockly.selected.extra_config;
+    this.config = Blockly.selected.extra_config;
+    fillUris(this.config.rapp);
   }
 
 
 
-  this.editor_options = {
-    disable_array_reorder: true,
-    disable_collapse: true,
-    disable_edit_json: true,
-    disable_properties: true
-  };
-
-
-
-
-
-  // var editor = this.editor = new JSONEditor($('#config-editor').get(0), {
-    // disable_array_reorder: true,
-    // disable_collapse: true,
-    // disable_edit_json: true,
-    // disable_properties: true,
-    // schema: 
-    
-  // });
-  // var default_value = editor.getValue();
-  // window.editor = editor;
-
-  this.onChange = function(data){
-    console.log(data);
-    ctrl.value = data;
-  };
 
   this.ok = function(){
     if(Blockly.selected){
-      Blockly.selected.extra_config = ctrl.value;
+      Blockly.selected.extra_config = ctrl.config;
     };
-    $mi.dismiss();
+    $modalInstance.dismiss();
 
   };
 

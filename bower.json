@@ -29,9 +29,15 @@
     "mousetrap": "~1.4.6",
     "highlightjs": "~8.4.0",
     "vkbeautify-wrapper": "*",
-    "angular-sanitize": "~1.3.10"
+    "angular-sanitize": "~1.3.10",
+    "jsonselect": "~0.2.1"
   },
   "overrides": {
+    "jsonselect": {
+      "main": [
+        "src/jsonselect.js"
+      ]
+    },
     "blockly": {
       "main": [
         "blockly_compressed.js",
@@ -39,7 +45,6 @@
         "javascript_compressed.js",
         "msg/js/en.js"
       ]
-
     },
     "x-editable": {
       "main": [

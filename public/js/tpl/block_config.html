@@ -3,8 +3,98 @@
   <h4 class="modal-title" id="myModalLabel">Block Config</h4>
 </div>
 <div class="modal-body">
-  <ca-json-editor schema="ctrl.schema" startval="ctrl.startval" on-change="ctrl.onChange(data)" editor-options="ctrl.editor_options" />
-  <div id="config-editor"></div>
+
+  <form name="blockConfigForm" class="well well-sm">
+
+    <div class="form-group">
+      <label for="">rapp</label>
+      <ui-select ng-model="ctrl.config.rapp" style="width: 100%" on-select="ctrl.rappSelected($item, $model)">
+        <ui-select-match placeholder="Select Rapp...">[[$select.selected]]</ui-select-match>
+        <ui-select-choices repeat="rapp in ctrl.rapps | filter: $select.search">
+          [[rapp]]
+        </ui-select-choices>
+      </ui-select>
+    </div>
+    <div class="form-group">
+      <label for="">uri</label>
+
+      <ui-select ng-model="ctrl.config.uri" style="width: 100%" on-select="ctrl.uriSelected($item, $model)">
+        <ui-select-match placeholder="Select URI...">[[$select.selected]]</ui-select-match>
+        <ui-select-choices repeat="uri in ctrl.uris | filter: $select.search">
+          [[uri]]
+        </ui-select-choices>
+      </ui-select>
+      <br />
+      <input type="text" name="uri" class="form-control" ng-model="ctrl.config.uri" id="" value="" />
+    </div>
+    <div class="form-group">
+      <label for="">timeout</label>
+      <input type="text" name="uri" class="form-control" ng-model="ctrl.config.timeout" id="" value="" />
+    </div>
+
+
+    <h4>Remappings</h4>
+    <div class="well well-sm">
+      <button class="btn btn-default" ng-click="ctrl.addRemapping()">Add</button>
+      <table class="table table-bordered" ng-if="ctrl.config.remappings.length > 0">
+        <thead>
+        	<tr>
+        		<th>remap_from</th>
+        		<th>remap_to</th>
+        		<th></th>
+        	</tr>
+        </thead>
+        <tbody>
+        	<tr ng-repeat="remapping in ctrl.config.remappings">
+            <td>
+              <input type="text" class="form-control" name="remap_from" ng-model="remapping.remap_from" id="" value="" />
+            </td>
+            <td>
+              <input type="text" class="form-control" name="remap_to" ng-model="remapping.remap_to" id="" value="" />
+            </td>
+            <td>
+              <button class="btn btn-default" ng-click="ctrl.deleteRemapping($index)">Delete</button>
+            </td>
+        	</tr>
+        </tbody>
+
+
+      </table>
+
+    </div>
+    <h4>Parameters</h4>
+    <div class="well well-sm">
+      <button class="btn btn-default" ng-click="ctrl.addParameter()">Add</button>
+      <table class="table table-bordered" ng-if="ctrl.config.parameters.length > 0">
+        <thead>
+        	<tr>
+        		<th>key</th>
+        		<th>value</th>
+        		<th></th>
+        	</tr>
+        </thead>
+        <tbody>
+        	<tr ng-repeat="param in ctrl.config.parameters">
+            <td>
+              <input type="text" class="form-control" name="key" ng-model="param.key" id="" value="" />
+            </td>
+            <td>
+              <input type="text" class="form-control" name="value" ng-model="param.value" id="" value="" />
+            </td>
+            <td>
+              <button class="btn btn-default" ng-click="ctrl.deleteParameter($index)">Delete</button>
+            </td>
+        	</tr>
+        </tbody>
+
+
+      </table>
+
+    </div>
+
+  </form>
+  <pre>[[ctrl.config | json]]</pre>
+
 </div>
 <div class="modal-footer">
   <button class="btn btn-default" ng-click="$dismiss('cancel')">Cancel</button>

@@ -13,6 +13,18 @@ module.exports = function($scope, blocksStore, $http, $state, $rootScope) {
   $scope.services = [];
   $scope.state = $state;
 
+
+  console.log('00000000000000');
+
+  blocksStore.loadRapp().then(function(data){
+
+    console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXX', data);
+
+    $rootScope.rapps = data;
+  console.log('9999999999');
+
+  });
+
   blocksStore.getParam(ITEMS_PARAM_KEY).then(function(rows){
     console.log('loaded ', rows);
     if(!rows){
