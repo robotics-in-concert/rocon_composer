@@ -10,8 +10,15 @@ var _ = require('lodash')
   , JSONSelect = require('JSONSelect')
   , ServiceStore = require('./service_store');
 
+var _getMessageDetails = function(type, cb){
+  var url = URL.resolve(process.env.MSG_DATABASE, "/api/message_details");
+  request(url, {qs: {type: type}, json: true}, function(e, res, body){
+    cb(null, body);
+  });
+};
+
 var load_types = function(types_to_load, load_types_callback){
-  async.map(types_to_load, _.bind($engine.getMessageDetails, $engine), function(e, types){
+  async.map(types_to_load, _getMessageDetails, function(e, types){
     var z = _.zipObject(types_to_load, types)
     var types = _.mapValues(z, function(mv, k){
       return _.mapValues(_.groupBy(mv, 'type'), function(x){ return x[0]; });
@@ -82,7 +89,8 @@ module.exports = function(app, db){
 
   app.post('/api/publish', function(req, res){
     var topic = req.body.topic;
-    $engine.pub(topic);
+
+    global.engineProcess.send({action: 'publish', data: topic});
     res.send({result: true})
   });
 
@@ -117,9 +125,14 @@ module.exports = function(app, db){
   app.post('/api/engine/load', function(req, res){
 
     var items = req.body.blocks;
+    console.log(items);
+    res.send('ok');
+    return;
+
     $engine.runBlocksById(items)
     res.send({result: true});
   });
+
   app.post('/api/eval', function(req, res){
     var code = req.body.code;
     $engine.runCode(code);

@@ -70,6 +70,7 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
     });
 
     var child = spawn('node', ['./engine_runner.js', '--option', JSON.stringify(engine_opts)], {stdio: ['pipe', 'pipe', 'pipe', 'ipc']})
+    global.childEngine = child;
 
     console.log("spawn pid :", child.pid);
 
@@ -147,3 +148,78 @@ function checkEnvVars(){
     });
 
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$engine.ee.on(en, function(data){});
+
+$engine = global.engine = {
+  print: function(msg) {
+  },
+  publish: function(name, type, msg) {
+    
+  },
+  pub: function(name, type, msg) {
+    
+  },
+  subscribe: function(name, type) {
+    
+  },
+  allocateResource: function(rapp, uri, remappings, parameters, options) {
+    
+  },
+  releaseResource: function(ctx) {
+    
+  },
+  runService: function(name, type, message) {
+    
+  },
+  scheduledPublish: function(ctx, name, type, msg) {
+    
+  },
+  scheduledSubscribe: function(ctx, name, type, callback) {
+    
+  },
+  runAction: function(name, type, goal, cb1, cb2) {
+    
+  },
+  runScheduledAction: function(ctx, name, type, goal, cb1, cb2) {
+    
+  },
+  socketBroadcast: function(msg, data) {
+    
+  }
+
+}
+
+// blocks/index.js
+// 60:    return ["$engine.memory." + x, Blockly.JavaScript.ORDER_NONE];
+// 75:  return ["(!$engine.memory.dest || !$engine.memory.msg)", Blockly.JavaScript.ORDER_NONE];
+// 92:  return "$engine.memory = {dest: " + dest + ", msg: " + msg + "};";
+// 187:  return "$engine.cmdVel("+JSON.stringify(x)+");";196:  // return "$engine.ee.on('" + en + "', function(data){ " + body + " })";
+// 228:    return '$engine.print("Rocon Authoring :" + JSON.stringify(' + arg0 + '));';
+// 244:    return '$engine.publish("go_to");';
+// 261:    return '$engine.print("NAVIGATE TO:"+ ' + arg0 + ');';
+// 312:  return _.template('$engine.sleep(<%= ms %>);')({ms: arg0});
+
+
+
