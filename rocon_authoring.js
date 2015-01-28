@@ -11,6 +11,7 @@ var _ = require('lodash'),
   socketio = require('socket.io'),
   MongoClient = require('mongodb').MongoClient,
   winston = require('winston'),
+  spawn = require('child_process').spawn,
   Engine = require('./engine');
 
 setupLogger();
@@ -68,15 +69,40 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
       publish_delay: +process.env.ROCON_AUTHORING_PUBLISH_DELAY
     });
 
-    $engine = new Engine(db, io, engine_opts);
+    var child = spawn('node', ['./engine_runner.js', '--option', JSON.stringify(engine_opts)], {stdio: ['pipe', 'pipe', 'pipe', 'ipc']})
 
-    var args = argv.workflow
-    if(args && args.length){
-      $engine.once('started', function(){
-        $engine.runBlocks(args);
-      });
+    console.log("spawn pid :", child.pid);
 
-    }
+    child.stdout.on('data', function(data){
+      console.log("***", data.toString());
+
+
+    });
+
+
+    setInterval(function(){
+      console.log('.');
+      if(child.connected){
+        child.send({foo: new Date().toString()});
+        }
+    }, 3000);
+
+
+
+    // simulate kill
+    setTimeout(function(){
+      child.kill('SIGTERM');
+
+    }, 5000);
+    // $engine = new Engine(db, io,argv.engine_options);
+
+    // var args = argv.workflow
+    // if(args && args.length){
+      // $engine.once('started', function(){
+        // $engine.runBlocks(args);
+      // });
+
+    // }
 
   }
 

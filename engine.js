@@ -31,8 +31,8 @@ var Engine = function(db, io, opts){
     ros_retries: 0,
     ros_retry_interval: 1000
   }, opts);
-  this.io = io;
-  this.initSocket();
+  // this.io = io;
+  // this.initSocket();
 
   this.db = db;
   this.ee = new EventEmitter();
@@ -110,7 +110,6 @@ Engine.prototype.initSocket = function(){
 Engine.prototype.socketBroadcast = function(key, msg){
   this.io.emit(key, msg);
   this.log('socket#emit', key, msg);
-
 };
 
 
