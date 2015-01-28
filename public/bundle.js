@@ -2142,7 +2142,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/cento_authoring/public/js/config.json"}],"/Users/eskim/current/cento_authoring/public/js/config.json":[function(require,module,exports){
-module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100
@@ -2795,7 +2795,11 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
           var compat = 'rocon:/pc';
           var $ros = $tb.find('category[name=Rocon]');
 
+
           R.forEach(function(pair){
+            if(!pair[0]){
+              return;
+            }
             R.forEach(function(sub){
               var $b = pair[1](
                 rapp_name, compat,
@@ -3143,7 +3147,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/cento_authoring/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {

@@ -209,7 +209,11 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
           var compat = 'rocon:/pc';
           var $ros = $tb.find('category[name=Rocon]');
 
+
           R.forEach(function(pair){
+            if(!pair[0]){
+              return;
+            }
             R.forEach(function(sub){
               var $b = pair[1](
                 rapp_name, compat,
