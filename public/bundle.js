@@ -2142,7 +2142,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/cento_authoring/public/js/config.json"}],"/Users/eskim/current/cento_authoring/public/js/config.json":[function(require,module,exports){
-module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100
@@ -2184,7 +2184,21 @@ function ConfigCtrl($scope, $rootScope, blocksStore, $http, $modalInstance, rapp
     var rocon_app = rapp['rocon_apps'][pair[1]];
 
 
+    ctrl.config.parameters = [];
+    ctrl.config.remappings = [];
+    ctrl.config.timeout = 15000;
+    ctrl.config.uri = null;
+
     ctrl.config.uri = rocon_app.compatibility;
+
+
+    var names = JSONSelect.match('.public_interface .name', rocon_app)
+    names.forEach(function(nm){
+      var to = nm.match(/\/.+/) ? nm : "/"+nm;
+      ctrl.config.remappings.push({remap_from: nm, remap_to: to});
+    });
+
+
     if(rocon_app.public_parameters){
       ctrl.config.parameters = [];
       R.mapObj.idx(function(v, k){
@@ -3134,7 +3148,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/cento_authoring/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {
