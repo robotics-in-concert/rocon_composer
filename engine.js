@@ -552,56 +552,11 @@ Engine.prototype.itemsToCode = function(items){
 
 };
 
-Engine.prototype.runBlocksById = function(ids){
-  var that = this;
-  this.getItems(function(err, items){
-    var items_to_load = R.filter(function(i){
-      return R.contains(i.id, ids);
-    })(items);
-
-    var scripts = that.itemsToCode(items_to_load);
-
-    that.runCode(scripts);
-
-
-
-
-  });
-
-
+Engine.prototype.runItems = function(items) {
+  var scripts = this.itemsToCode(items);
+  this.runCode(scripts);
 };
 
-Engine.prototype.runBlocks = function(blocks){
-  var that = this;
-  this.getItems(function(err, items){
-
-
-    if(blocks && blocks.length > 0){
-      items = _.where(items, function(i){
-        return _.include(blocks, i.title);
-      });
-    }
-
-    var scripts = that.itemsToCode(items);
-
-    that.runCode(scripts);
-
-
-
-
-  });
-
-};
-
-Engine.prototype.getItems = function(cb){
-  var col = this.db.collection('settings');
-  col.findOne({key: 'cento_authoring_items'}, function(e, data){
-
-    var items = data ? data.value.data : [];
-    cb(e, items);
-  });
-
-};
 
 
 Engine.prototype.getParam = function(k, cb){

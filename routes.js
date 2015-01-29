@@ -17,6 +17,8 @@ var _getMessageDetails = function(type, cb){
   });
 };
 
+
+
 var load_types = function(types_to_load, load_types_callback){
   async.map(types_to_load, _getMessageDetails, function(e, types){
     var z = _.zipObject(types_to_load, types)
@@ -31,6 +33,15 @@ var load_types = function(types_to_load, load_types_callback){
 
 
 module.exports = function(app, db){
+
+  var _getItems = function(cb){
+    var col = db.collection('settings');
+    col.findOne({key: 'cento_authoring_items'}, function(e, data){
+      var items = data ? data.value.data : [];
+      cb(e, items);
+    });
+
+  };
 
   app.get('/', function(req, res){
     res.render('index', {msg_database: process.env.MSG_DATABASE});
@@ -124,23 +135,20 @@ module.exports = function(app, db){
   });
   app.post('/api/engine/load', function(req, res){
 
-    var items = req.body.blocks;
-    console.log(items);
-    res.send('ok');
-    return;
+    var itemIds = req.body.blocks;
 
-    $engine.runBlocksById(items)
-    res.send({result: true});
-  });
+    _getItems(function(err, items){
+      var items_to_load = R.filter(function(i){
+        return R.contains(i.id, itemIds);
+      })(items);
 
-  app.post('/api/eval', function(req, res){
-    var code = req.body.code;
-    $engine.runCode(code);
-    res.send({result: true});
+      global.childEngine.send({action: 'run', items: items_to_load});
+      res.send({result: true});
+
+    });
 
 
   });
-
 
   app.get('/api/packages', function(req, res){
     var ss = new ServiceStore({ros_root: process.env.ROS_PACKAGE_ROOT});

@@ -75,26 +75,27 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
     console.log("spawn pid :", child.pid);
 
     child.stdout.on('data', function(data){
-      console.log("***", data.toString());
-
-
+      console.log("* engine : ", data.toString().trim());
+    });
+    child.stderr.on('data', function(data){
+      console.error("* engine - error : ", data.toString().trim());
     });
 
 
-    setInterval(function(){
-      console.log('.');
-      if(child.connected){
-        child.send({foo: new Date().toString()});
-        }
-    }, 3000);
+    // setInterval(function(){
+      // console.log('.');
+      // if(child.connected){
+        // child.send({foo: new Date().toString()});
+        // }
+    // }, 3000);
 
 
 
-    // simulate kill
-    setTimeout(function(){
-      child.kill('SIGTERM');
+    // // simulate kill
+    // setTimeout(function(){
+      // child.kill('SIGTERM');
 
-    }, 5000);
+    // }, 5000);
     // $engine = new Engine(db, io,argv.engine_options);
 
     // var args = argv.workflow
@@ -170,8 +171,8 @@ function checkEnvVars(){
 
 
 
-$engine.ee.on(en, function(data){});
 
+// $engine.ee.on(en, function(data){});
 $engine = global.engine = {
   print: function(msg) {
   },
