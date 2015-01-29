@@ -68,7 +68,13 @@ ServiceStore.prototype.exportToROS = function(package_name, service_meta, packag
     var xml = fs.readFileSync(pack.path)
     var xmlDoc = libxml.parseXmlString(xml);
 
-    var node = xmlDoc.get('//export');
+    var package = xmlDoc.get('/package');
+
+    var node = package.get('//export');
+    if(!node){
+      node = package.node('export');
+    }
+
     node.node('concert_service', Path.join('services', name_key, name_key+'.service'));
 
     var resultXml = xmlDoc.toString(true);
