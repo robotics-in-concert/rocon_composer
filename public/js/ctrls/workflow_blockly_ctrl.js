@@ -257,7 +257,7 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
         R.map(R.bind(generator.generate_client_app_blocks, generator)),
         R.reject(R.isEmpty),
         R.flatten,
-        R.map(function(i){ return {interface: i.interface, client_app_id: i._id}; })
+        R.map(function(i){ return {interface: i.interface, client_app_name: i.name, client_app_id: i._id}; })
         // R.mapProp('interface'),
         // R.map(function(i){ i.interface = R.map(R.assoc('client_app_id', i._id))(i.interface); return i;})
       )(interactions.data);

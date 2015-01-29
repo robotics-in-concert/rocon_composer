@@ -121,14 +121,14 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
                return JSON.parse(extra);
              }).toArray();
 
-             client_app_ids = R.uniq(R.pluck('client_app_id', extras));
+             client_app_names = R.uniq(R.pluck('client_app_name', extras));
 
              var v = editor.getValue();
              console.log(v.interactions);
 
              var used_interactions = R.compose(
                R.reject(propIn(R.pluck('_id')(v.interactions), '_id')),
-               R.filter(propIn(client_app_ids, '_id'))
+               R.filter(propIn(client_app_names, 'name'))
              )(interactions);
              console.log("used interactions :", used_interactions);
 

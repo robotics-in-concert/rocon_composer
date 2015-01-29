@@ -405,19 +405,20 @@ BlockGenerator.prototype.scheduled_publish_block_dom = function(rapp_name, uri, 
 BlockGenerator.prototype.generate_client_app_blocks = function(data){
   var interface = data.interface;
   var client_app_id = data.client_app_id;
+  var client_app_name = data.client_app_name;
   console.log("=========", interface, client_app_id);
   var that = this;
 
   var pubs = R.map(
     R.compose(
       R.bind(that.publish_block_dom, that),
-      R.assoc('client_app_id', client_app_id)
+      R.assoc('client_app_name', client_app_name)
     )
   )(interface.subscribers);
   var subs = R.map(
     R.compose(
       R.bind(that.subscribe_block_dom, that),
-      R.assoc('client_app_id', client_app_id)
+      R.assoc('client_app_name', client_app_name)
     )
   )(interface.publishers);
   // var subs = R.map(R.bind(that.subscribe_block_dom, that))(interface.publishers);
@@ -447,7 +448,7 @@ BlockGenerator.prototype.publish_block_dom = function(opts){
 
 
   this.publish_blocks.push(name);
-  Blockly.register_publish_block(name, opts.type, {client_app_id: opts.client_app_id});
+  Blockly.register_publish_block(name, opts.type, {client_app_name: opts.client_app_name});
   var $block = $('<block type="ros_publish_'+name+'"></block>');
   $block.append($valueBlock);
   return $block;
@@ -462,7 +463,7 @@ BlockGenerator.prototype.subscribe_block_dom = function(opts){
     return false;
   }
   this.subscribe_blocks.push(name);
-  Blockly.register_subscribe_block(name, opts.type, {client_app_id: opts.client_app_id});
+  Blockly.register_subscribe_block(name, opts.type, {client_app_name: opts.client_app_name});
   var $block = $('<block type="ros_subscribe_'+name+'"></block>');
   return $block;
 
@@ -2142,7 +2143,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/cento_authoring/public/js/config.json"}],"/Users/eskim/current/cento_authoring/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100
@@ -2473,14 +2474,14 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
                return JSON.parse(extra);
              }).toArray();
 
-             client_app_ids = R.uniq(R.pluck('client_app_id', extras));
+             client_app_names = R.uniq(R.pluck('client_app_name', extras));
 
              var v = editor.getValue();
              console.log(v.interactions);
 
              var used_interactions = R.compose(
                R.reject(propIn(R.pluck('_id')(v.interactions), '_id')),
-               R.filter(propIn(client_app_ids, '_id'))
+               R.filter(propIn(client_app_names, 'name'))
              )(interactions);
              console.log("used interactions :", used_interactions);
 
@@ -2859,7 +2860,7 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
         R.map(R.bind(generator.generate_client_app_blocks, generator)),
         R.reject(R.isEmpty),
         R.flatten,
-        R.map(function(i){ return {interface: i.interface, client_app_id: i._id}; })
+        R.map(function(i){ return {interface: i.interface, client_app_name: i.name, client_app_id: i._id}; })
         // R.mapProp('interface'),
         // R.map(function(i){ i.interface = R.map(R.assoc('client_app_id', i._id))(i.interface); return i;})
       )(interactions.data);
@@ -3169,7 +3170,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/cento_authoring/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {

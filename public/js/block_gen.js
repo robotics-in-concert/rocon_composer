@@ -184,19 +184,20 @@ BlockGenerator.prototype.scheduled_publish_block_dom = function(rapp_name, uri, 
 BlockGenerator.prototype.generate_client_app_blocks = function(data){
   var interface = data.interface;
   var client_app_id = data.client_app_id;
+  var client_app_name = data.client_app_name;
   console.log("=========", interface, client_app_id);
   var that = this;
 
   var pubs = R.map(
     R.compose(
       R.bind(that.publish_block_dom, that),
-      R.assoc('client_app_id', client_app_id)
+      R.assoc('client_app_name', client_app_name)
     )
   )(interface.subscribers);
   var subs = R.map(
     R.compose(
       R.bind(that.subscribe_block_dom, that),
-      R.assoc('client_app_id', client_app_id)
+      R.assoc('client_app_name', client_app_name)
     )
   )(interface.publishers);
   // var subs = R.map(R.bind(that.subscribe_block_dom, that))(interface.publishers);
@@ -226,7 +227,7 @@ BlockGenerator.prototype.publish_block_dom = function(opts){
 
 
   this.publish_blocks.push(name);
-  Blockly.register_publish_block(name, opts.type, {client_app_id: opts.client_app_id});
+  Blockly.register_publish_block(name, opts.type, {client_app_name: opts.client_app_name});
   var $block = $('<block type="ros_publish_'+name+'"></block>');
   $block.append($valueBlock);
   return $block;
@@ -241,7 +242,7 @@ BlockGenerator.prototype.subscribe_block_dom = function(opts){
     return false;
   }
   this.subscribe_blocks.push(name);
-  Blockly.register_subscribe_block(name, opts.type, {client_app_id: opts.client_app_id});
+  Blockly.register_subscribe_block(name, opts.type, {client_app_name: opts.client_app_name});
   var $block = $('<block type="ros_subscribe_'+name+'"></block>');
   return $block;
 
