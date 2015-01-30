@@ -47,7 +47,7 @@ module.exports = function(app, db){
     res.render('index', {msg_database: process.env.MSG_DATABASE});
   });
   app.get('/prezi', function(req, res){
-    res.render('prezi', {query: req.query});
+    res.render('prezi', {socketio_port: $socketio_port});
   });
   app.get('/ping', function(req, res){
     res.send('pong')
@@ -140,9 +140,9 @@ module.exports = function(app, db){
     var itemIds = req.body.blocks;
 
     _getItems(function(err, items){
-      var items_to_load = R.filter(function(i){
-        return R.contains(i.id, itemIds);
-      })(items);
+      var items_to_load = _.filter(items, function(i){
+        return _.contains(itemIds, i.id);
+      });
 
       global.childEngine.send({action: 'run', items: items_to_load});
       res.send({result: true});

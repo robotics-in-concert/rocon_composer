@@ -5,7 +5,23 @@ angular.module('prezi-demo', [
 ])
   .config(PreziConfig)
   .factory('preziSocket', ['socketFactory', function(socketFactory){
-    var sock = socketFactory({prefix: 'prezi:'});
+    var host = location.host;
+    var sock_port = SOCKETIO_PORT;
+    
+    if(host.match(/:\d+/)){
+      host = host.replace(location.port, sock_port);
+    }else{
+      host = host + ":" + sock_port;
+    }
+    var url = location.protocol + '//' + host + "/";
+    console.log('socket host', url);
+
+    var myIoSocket = io.connect(url);
+
+    var sock = socketFactory({
+      ioSocket: myIoSocket,
+      prefix: 'prezi:'
+    });
     sock.forward('error');
     return sock;
   }])

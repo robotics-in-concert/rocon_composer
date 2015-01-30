@@ -18,13 +18,19 @@ setupLogger();
 checkEnvVars();
 
 
+var socketio_port = (process.env.ROCON_AUTHORING_SOCKETIO_PORT || 100 + +process.env.ROCON_AUTHORING_SERVER_PORT)
+$socketio_port = socketio_port;
 
 global.childEngine = null;
 
 global.startEngine = function(){
     var engine_opts = _.merge(argv.engine_options || {}, {
-      publish_delay: +process.env.ROCON_AUTHORING_PUBLISH_DELAY
+      publish_delay: +process.env.ROCON_AUTHORING_PUBLISH_DELAY,
+      socketio_port: socketio_port
     });
+    console.log(engine_opts);
+
+
 
     var child = spawn('node', ['./engine_runner.js', '--option', JSON.stringify(engine_opts)], {stdio: ['pipe', 'pipe', 'pipe', 'ipc']})
     global.childEngine = child;
@@ -66,7 +72,9 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
 
     var app = express(); 
     var server = http.createServer(app);
+    var server2 = http.createServer(app);
     var io = socketio.listen(server);
+    $io = io;
 
 
     app.use(express.static('public'));
@@ -92,6 +100,9 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
 
 
 
+
+
+
   }
 
 
@@ -101,47 +112,7 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
 
 
   if(argv.engine){
-    var engine_opts = _.merge(argv.engine_options || {}, {
-      publish_delay: +process.env.ROCON_AUTHORING_PUBLISH_DELAY
-    });
-
-    var child = spawn('node', ['./engine_runner.js', '--option', JSON.stringify(engine_opts)], {stdio: ['pipe', 'pipe', 'pipe', 'ipc']})
-    global.childEngine = child;
-
-    console.log("spawn pid :", child.pid);
-
-    child.stdout.on('data', function(data){
-      console.log("* engine : ", data.toString().trim());
-    });
-    child.stderr.on('data', function(data){
-      console.error("* engine - error : ", data.toString().trim());
-    });
-
-
-    // setInterval(function(){
-      // console.log('.');
-      // if(child.connected){
-        // child.send({foo: new Date().toString()});
-        // }
-    // }, 3000);
-
-
-
-    // // simulate kill
-    // setTimeout(function(){
-      // child.kill('SIGTERM');
-
-    // }, 5000);
-    // $engine = new Engine(db, io,argv.engine_options);
-
-    // var args = argv.workflow
-    // if(args && args.length){
-      // $engine.once('started', function(){
-        // $engine.runBlocks(args);
-      // });
-
-    // }
-
+    startEngine();
   }
 
 

@@ -26,15 +26,20 @@ DEBUG = process.env.DEBUG || false
  * Engine class
  */
 
-var Engine = function(db, io, opts){
-  this.options = R.mixin({
+var Engine = function(opts){
+  this.options = _.assign({
     ros_retries: 0,
-    ros_retry_interval: 1000
+    ros_retry_interval: 1000,
   }, opts);
-  // this.io = io;
-  // this.initSocket();
 
-  this.db = db;
+  this.io = require('socket.io').listen(this.options.socketio_port);
+  this.log('socketio listen on '+this.options.socketio_port);
+
+
+  this.io.on('connection', function(socket){
+    console.log('socket conntected');
+  });
+
   this.ee = new EventEmitter();
   this.executions = [];
   this.memory = {};
@@ -99,6 +104,9 @@ var Engine = function(db, io, opts){
 };
 util.inherits(Engine, EventEmitter);
 
+Engine.prototype.socketBroadcast = function(key, msg){
+  this.io.emit(key, msg);
+  console.log('socket#emit', key, msg);
 
 Engine.prototype.initSocket = function(){
   var engine = this;
@@ -120,7 +128,6 @@ Engine.prototype.getMessageDetails = function(type, cb){
 
     
     cb(null, body);
-
   });
 };
 
