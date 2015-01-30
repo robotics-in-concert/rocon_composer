@@ -1,18 +1,14 @@
-var _ = require('lodash');
-var Promise = require('bluebird');
-var Utils = require('./utils');
-var util = require('util');
-var R = require('ramda');
-var async = require('async');
-var request = require('request');
-var requestP = Promise.promisify(request);
-var path = require('path');
-var URL = require('url');
-var JSONSelect = require('JSONSelect');
-var ServiceStore = require('./service_store');
-
-R.mapProp = R.compose(R.map, R.prop);
-
+var _ = require('lodash')
+  , Promise = require('bluebird')
+  , Utils = require('./utils')
+  , util = require('util')
+  , async = require('async')
+  , request = require('request')
+  , requestP = Promise.promisify(request)
+  , path = require('path')
+  , URL = require('url')
+  , JSONSelect = require('JSONSelect')
+  , ServiceStore = require('./service_store');
 
 var load_types = function(types_to_load, load_types_callback){
   async.map(types_to_load, _.bind($engine.getMessageDetails, $engine), function(e, types){
