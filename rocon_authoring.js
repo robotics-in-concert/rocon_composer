@@ -18,6 +18,42 @@ setupLogger();
 checkEnvVars();
 
 
+
+global.childEngine = null;
+
+global.startEngine = function(){
+    var engine_opts = _.merge(argv.engine_options || {}, {
+      publish_delay: +process.env.ROCON_AUTHORING_PUBLISH_DELAY
+    });
+
+    var child = spawn('node', ['./engine_runner.js', '--option', JSON.stringify(engine_opts)], {stdio: ['pipe', 'pipe', 'pipe', 'ipc']})
+    global.childEngine = child;
+
+    console.log("spawn pid :", child.pid);
+
+    child.stdout.on('data', function(data){
+      console.log("* engine : ", data.toString().trim());
+    });
+    child.stderr.on('data', function(data){
+      console.error("* engine - error : ", data.toString().trim());
+    });
+
+
+    // $engine = new Engine(db, io,argv.engine_options);
+
+    // var args = argv.workflow
+    // if(args && args.length){
+      // $engine.once('started', function(){
+        // $engine.runBlocks(args);
+      // });
+
+    // }
+}
+
+global.stopEngine = function(){
+  global.childEngine.kill('SIGTERM');
+};
+
 MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
   if(e) throw e;
 

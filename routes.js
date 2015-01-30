@@ -128,7 +128,9 @@ module.exports = function(app, db){
 
 
   app.post('/api/engine/reset', function(req, res){
-    $engine.clear()
+    global.stopEngine();
+    global.startEngine();
+    // $engine.clear()
     res.send({result: true});
 
 
