@@ -102,6 +102,11 @@ function ConfigCtrl($scope, $rootScope, blocksStore, $http, $modalInstance, rapp
 
   this.ok = function(){
     if(Blockly.selected){
+      if(ctrl.config.remappings)
+        delete ctrl.config.remappings['$$hashkey'];
+      if(ctrl.config.parameters)
+        delete ctrl.config.parameters['$$hashkey'];
+
       Blockly.selected.extra_config = ctrl.config;
     };
     $modalInstance.dismiss();
