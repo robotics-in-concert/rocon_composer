@@ -8,6 +8,7 @@ var request = require('request');
 var requestP = Promise.promisify(request);
 var path = require('path');
 var URL = require('url');
+var JSONSelect = require('JSONSelect');
 var ServiceStore = require('./service_store');
 
 R.mapProp = R.compose(R.map, R.prop);
@@ -49,16 +50,7 @@ module.exports = function(app, db){
     var apiPath = URL.resolve(process.env.MSG_DATABASE, "api/hic_app");
 
     requestP(apiPath, {json: true}).spread(function(res0, data){
-      console.log("ZZZZZZZ", data);
-
-
-
-      var types_to_load = R.compose(R.uniq,
-                                    R.mapProp('type'), 
-                                    R.flatten,
-                                    R.map(R.values),
-                                    R.flatten,  
-                                    R.mapProp('interface'))(data);
+      var types_to_load = _.unique(JSONSelect.match('.interface .type', data))
       load_types(types_to_load, function(types){
         res.send({data: data, types: types});
       });
@@ -74,46 +66,19 @@ module.exports = function(app, db){
 
 
     var apiPath = URL.resolve(process.env.MSG_DATABASE, "api/rocon_app");
-    console.log(apiPath);
 
     request.get(apiPath, function(e, res0, body){
       if(e){
         res.status(500).send('cannot load msg_database');
         return;
-
       }
       var data = JSON.parse(body)
+      var ifs =  JSONSelect.match('.public_interface', data);
+      var types_to_load =  _.unique(JSONSelect.match('.public_interface .type', data));
 
-      var ifs = R.pipe(
-          R.map(R.prop('rocon_apps')),
-          R.map(R.mapObj(R.prop('public_interface'))),
-          R.map(R.values),
-          R.flatten
-        )(data);
-
-
-      console.log(util.inspect(ifs, false, 10, true));
-      console.log(ifs);
-
-
-      types_to_load = _.map(ifs, function(interface){
-        return _.map(interface, function(v, k){
-          return _.pluck(v, 'type');
-
-        });
-
-      });
-      console.log(types_to_load);
-
-      types_to_load = _.compact(_.flatten(types_to_load));
       load_types(types_to_load, function(types){
         res.send({rapps: data, types: types});
       });
-
-
-      
-      
-      // res.send({interfaces: data, types: _.flatten(types_to_load)});
     });
 
   });
