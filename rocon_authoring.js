@@ -10,9 +10,12 @@ var _ = require('lodash'),
   express = require('express'),
   socketio = require('socket.io'),
   MongoClient = require('mongodb').MongoClient,
+  winston = require('winston'),
   Engine = require('./engine');
 
+setupLogger();
 checkEnvVars();
+
 
 MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
   if(e) throw e;
@@ -84,6 +87,23 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
 
 });
 
+function setupLogger(){
+  winston.loggers.add('main', {
+    console: {
+      colorize: true,
+      level: process.env.LOG_LEVEL,
+      prettyPrint: true
+    }
+
+  });
+  var logger = winston.loggers.get('main')
+  // logger.cli()
+
+  global.logger = logger;
+
+  logger.info('logger initialized');
+
+};
 
 function checkEnvVars(){
 
