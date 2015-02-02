@@ -37,7 +37,7 @@ var Engine = function(opts){
 
 
   this.io.on('connection', function(socket){
-    console.log('socket conntected');
+    console.log('socket conntected ', socket.id);
   });
 
   this.ee = new EventEmitter();
