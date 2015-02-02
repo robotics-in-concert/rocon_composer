@@ -20,15 +20,25 @@ function PreziConfig($interpolateProvider){
 }
 
 /* @ngInject */
-function PreziDemoController($scope, preziSocket){
+function PreziDemoController($scope, preziSocket, $location){
+
+  var search = $location.search()
+  console.log(search);
+
+  // var preziId = $location.search('prezi_id')
+  // console.log('--', preziId);
 
 
   // sample id : vq59j-nslium
   $scope.prezi = {id: '32iuijp9zylz'};
+  if(search.prezi_id && search.channel){
+    $scope.prezi.id = search.prezi_id;
+    $scope.prezi.channel = search.channel;
+  }
   $scope.player = null;
   $scope.loadPrezi = function(){
-    if($scope.preziForm.$invalid)
-      return;
+    // if($scope.preziForm.$invalid)
+      // return;
 
     $scope.player = new PreziPlayer('prezi-div', {
       preziId: $scope.prezi.id,
@@ -55,6 +65,7 @@ function PreziDemoController($scope, preziSocket){
 
 
   }
+  $scope.loadPrezi()
   $scope.enterFullScreen = function(){
     // var div = $('#prezi-div iframe').get(0);
     // $('#prezi-div iframe').on('webkitfullscreenchange', function(){
