@@ -29,7 +29,7 @@ module.exports = function(app, db){
     res.render('index', {msg_database: process.env.MSG_DATABASE});
   });
   app.get('/prezi', function(req, res){
-    res.render('prezi');
+    res.render('prezi', {query: req.query});
   });
   app.get('/ping', function(req, res){
     res.send('pong')
