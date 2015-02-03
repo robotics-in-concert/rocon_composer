@@ -91,7 +91,7 @@ function setupLogger(){
   winston.loggers.add('main', {
     console: {
       colorize: true,
-      level: process.env.LOG_LEVEL,
+      level: process.env.ROCON_AUTHORING_LOG_LEVEL,
       prettyPrint: true
     }
 
