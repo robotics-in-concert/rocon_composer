@@ -31,6 +31,7 @@ rocon_authoring
   - `MSG_DATABASE` : message database server address (eg. http://localhost:10000)
   - `ROCON_AUTHORING_DELAY_AFTER_TOPICS` : delay in milliseconds after required topics are ready (default: 2000)
   - `ROCON_AUTHORING_PUBLISH_DELAY` : delay in milliseconds betweeb publishs
+  - `ROCON_AUTHORING_LOG_LEVEL` : log level (default, `info`)
 
 ## Run
 

@@ -84,7 +84,7 @@ var Engine = function(db, io, opts){
     ros.connect(process.env.ROCON_AUTHORING_ROSBRIDGE_URL);
 
   }, function(e){
-    console.log('ros connection failed', e);
+    logger.error('ros connection failed', e);
 
     
   }, this.options.ros_retries, this.options.ros_retry_interval);
@@ -101,14 +101,15 @@ util.inherits(Engine, EventEmitter);
 
 
 Engine.prototype.initSocket = function(){
+  var engine = this;
   this.io.on('connection', function(socket){
-    console.log('connected');
+    engine.log('websocket connected');
   });
 
 };
 Engine.prototype.socketBroadcast = function(key, msg){
   this.io.emit(key, msg);
-  console.log('socket#emit', key, msg);
+  this.log('socket#emit', key, msg);
 
 };
 
@@ -117,7 +118,6 @@ Engine.prototype.getMessageDetails = function(type, cb){
   var engine = this;
   var url = URL.resolve(process.env.MSG_DATABASE, "/api/message_details");
   request(url, {qs: {type: type}, json: true}, function(e, res, body){
-    engine.log("BODY", body, typeof body);
 
     
     cb(null, body);
@@ -340,7 +340,7 @@ Engine.prototype._scheduled = function(rapp, uri, remappings, parameters, topics
   var r = new Requester(this);
 
   this.ros.getTopics(function(topics){
-    console.log("topics : ", topics);
+    engine.log("topics : ", topics);
 
     var res = new Resource();
     res.rapp = rapp;
@@ -392,7 +392,7 @@ Engine.prototype.runScheduledAction = function(ctx, name, type, goal, onResult, 
   var engine = this;
 
   var required_topics = R.map(R.concat(name+"/"))(["feedback", "result", "status"]);
-  console.log('action : ', ctx, required_topics, name);
+  engine.log('action : ', ctx, required_topics, name);
 
 
   engine._waitForTopicsReadyF(required_topics);
@@ -534,13 +534,11 @@ Engine.prototype.print = function(msg){
 };
 
 Engine.prototype.log = function(args){
-  console.log(new Date().toString(), "-", args);
+  global.logger.info(args)
 };
 
 Engine.prototype.debug = function(args){
-  if(DEBUG){
-    console.log(new Date().toString(), "-", args);
-  }
+  global.logger.debug(args);
 };
 
 Engine.prototype.itemsToCode = function(items){
