@@ -48,7 +48,7 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
     require('./routes')(app, db);
 
     server = server.listen(process.env.ROCON_AUTHORING_SERVER_PORT, function(){
-      console.log('Listening on port %d (%s)', server.address().port, process.env.NODE_ENV);
+      logger.info('Listening on port %d (%s)', server.address().port, process.env.NODE_ENV);
     });
 
 
@@ -101,7 +101,7 @@ function setupLogger(){
 
   global.logger = logger;
 
-  logger.info('logger initialized');
+  logger.debug('logger initialized');
 
 };
 
@@ -114,9 +114,9 @@ function checkEnvVars(){
     'MSG_DATABASE'].forEach(function(e){
       var v = process.env[e]
       if(v){
-        console.log(e, process.env[e].green);
+        logger.info(e, process.env[e].green);
       }else{
-        console.log(e, 'null'.red);
+        logger.info(e, 'null'.red);
       }
     });
 
