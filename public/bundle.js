@@ -544,6 +544,59 @@ var ros_block_override = function(){
 module.exports = ros_block_override;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],"/Users/eskim/current/cento_authoring/public/js/blocks/engine_global.js":[function(require,module,exports){
+(function (global){
+var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
+var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
+
+Blockly.Blocks['engine_global_set'] = {
+  init: function() {
+    this.setColour(260);
+    this.appendDummyInput()
+      .appendField('Engine global set')
+    this.appendDummyInput().appendField(new Blockly.FieldTextInput('key', null), 'CHANNEL')
+    this.appendValueInput('VALUE')
+      .appendField('value : ');
+
+    this.setInputsInline(true);
+    this.setOutput(false);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+  }
+};
+
+Blockly.Blocks['engine_global_get'] = {
+  init: function() {
+    this.setColour(260);
+    this.appendDummyInput()
+      .appendField('Engine global get')
+    this.appendDummyInput().appendField(new Blockly.FieldTextInput('key', null), 'CHANNEL')
+
+    this.setInputsInline(true);
+    this.setOutput(true);
+    this.setPreviousStatement(false);
+    this.setNextStatement(false);
+  }
+};
+
+
+Blockly.JavaScript['engine_global_set'] = function(block){
+  var key = block.getFieldValue('CHANNEL');
+  var value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_NONE) || "null";
+  var code = _.template('$engine.globalSet("<%= key %>", <%= value %>)')({key: key, value: value});
+  return code;
+
+};
+
+
+Blockly.JavaScript['engine_global_get'] = function(block){
+  var key = block.getFieldValue('CHANNEL');
+  var code = _.template('$engine.globalGet("<%= key %>")')({key: key});
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+
+};
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/cento_authoring/public/js/blocks/index.js":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
@@ -869,9 +922,10 @@ require('./ros_requester');
 require('./ros_service');
 require('./utils.js');
 require('./prezi.js');
+require('./engine_global');
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../config":"/Users/eskim/current/cento_authoring/public/js/config.json","./lodash":"/Users/eskim/current/cento_authoring/public/js/blocks/lodash.js","./object":"/Users/eskim/current/cento_authoring/public/js/blocks/object.js","./prezi.js":"/Users/eskim/current/cento_authoring/public/js/blocks/prezi.js","./ros_action":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_action.js","./ros_msg":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_msg.js","./ros_pubsub":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_pubsub.js","./ros_requester":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_requester.js","./ros_service":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_service.js","./utils.js":"/Users/eskim/current/cento_authoring/public/js/blocks/utils.js"}],"/Users/eskim/current/cento_authoring/public/js/blocks/lodash.js":[function(require,module,exports){
+},{"../config":"/Users/eskim/current/cento_authoring/public/js/config.json","./engine_global":"/Users/eskim/current/cento_authoring/public/js/blocks/engine_global.js","./lodash":"/Users/eskim/current/cento_authoring/public/js/blocks/lodash.js","./object":"/Users/eskim/current/cento_authoring/public/js/blocks/object.js","./prezi.js":"/Users/eskim/current/cento_authoring/public/js/blocks/prezi.js","./ros_action":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_action.js","./ros_msg":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_msg.js","./ros_pubsub":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_pubsub.js","./ros_requester":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_requester.js","./ros_service":"/Users/eskim/current/cento_authoring/public/js/blocks/ros_service.js","./utils.js":"/Users/eskim/current/cento_authoring/public/js/blocks/utils.js"}],"/Users/eskim/current/cento_authoring/public/js/blocks/lodash.js":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
@@ -2143,7 +2197,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/cento_authoring/public/js/config.json"}],"/Users/eskim/current/cento_authoring/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100
@@ -3180,7 +3234,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/cento_authoring/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {
