@@ -1,4 +1,5 @@
 var  R = require('ramda'),
+  _ = require('lodash'),
   Promise = require('bluebird'),
   glob = Promise.promisify(require('glob')),
   fs = Promise.promisifyAll(require('fs')),
@@ -27,6 +28,7 @@ var _to_colon_sep = function(obj){
   )(obj);
 };
 
+
 ServiceStore.prototype.allPackageInfos = function(){
   return exec("rospack list").spread(function(stdout, stderr){
     var lines = R.reject(R.isEmpty, stdout.split(/\n/));
@@ -54,16 +56,90 @@ ServiceStore.prototype.allPackageInfos = function(){
 
 };
 
+
+ServiceStore.prototype.orderedWorkflows = function(workflow_titles){
+  console.log('ORDER');
+
+  console.log(workflow_titles);
+
+
+  var that = this;
+
+  var workflows = _(this.options.workflow_items)
+    .filter(function(item){ return _.contains(workflow_titles, item.title); })
+    .sortBy(function(item){
+      var x = that._getWorkflowOrder(item);
+      // console.log(item.title);
+      // console.log(x);
+
+
+      // item.xml
+      // retur
+      return 0;
+
+    })
+    .value();
+
+  
+  // console.log(this.options.workflow_items);
+  // console.log(workflow_titles);
+
+
+
+};
+
+
+ServiceStore.prototype._getWorkflowOrder = function(workflow){
+  var r = null;
+  xml2js.parseString(workflow.xml, {async: false}, function(err, result){
+    r = result;
+
+    var top_block_types = _(r.xml.block)
+      .map(function(b){ return b.$.type; })
+      .uniq()
+      .value();
+
+
+    if(_.contains(top_block_types, 'engine_global_set')){
+      r = 1;
+    }else{
+      var other = _(top_block_types).without('procedures_defnoreturn', 'procedures_defreturn').value();
+      if(other.length == 0){
+        r = 2;
+      }else{
+        r = 3;
+      }
+    }
+    
+
+    console.log(top_block_types, r);
+
+
+  });
+  return r;
+
+};
+
+
 ServiceStore.prototype.exportToROS = function(package_name, service_meta, package_name){
+  var that = this;
   return this.allPackageInfos().then(function(packages){ 
     console.log(service_meta);
     console.log(package_name);
     var pack =  R.find(R.propEq('name', package_name))(packages);
 
 
+
+
     var name_key = service_meta.name.replace(/\s+/g, "_").toLowerCase();
     var service_base = Path.join( Path.dirname(pack.path), "services", name_key);
 
+    if(!_.isEmpty(service_meta.workflows)){
+      var workflow_base = Path.join( Path.dirname(pack.path), "workflows" );
+      that.orderedWorkflows(service_meta.workflows);
+      
+
+    }
 
     var xml = fs.readFileSync(pack.path)
     var xmlDoc = libxml.parseXmlString(xml);

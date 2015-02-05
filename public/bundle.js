@@ -2197,7 +2197,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/cento_authoring/public/js/config.json"}],"/Users/eskim/current/cento_authoring/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100
@@ -2415,7 +2415,8 @@ module.exports = function($scope, blocksStore, $http, $state, $rootScope) {
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/cento_authoring/public/js/ctrls/services_form_ctrl.js":[function(require,module,exports){
 (function (global){
-var R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null)
+var R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null),
+  _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null)
   $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
   Utils = require('../utils'),
   schema = require('../schema/service_form');
@@ -2585,6 +2586,7 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 
 
     var v = editor.getValue();
+
 
     serviceAuthoring.saveService(v, destPackage).then(function(){
       alert('saved');
@@ -3234,7 +3236,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/cento_authoring/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {

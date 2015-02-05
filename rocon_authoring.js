@@ -13,6 +13,9 @@ var _ = require('lodash'),
   winston = require('winston'),
   Engine = require('./engine');
 
+
+ROCON_AUTHORING_ITEMS_KEY = 'cento_authoring_items';
+
 setupLogger();
 checkEnvVars();
 
