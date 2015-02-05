@@ -33,7 +33,7 @@ ServiceStore.prototype.allPackageInfos = function(){
   return exec("rospack list").spread(function(stdout, stderr){
     var lines = R.reject(R.isEmpty, stdout.split(/\n/));
     var packs = R.map(function(l){ return l.split(/\s/)[1] + "/package.xml"; })(lines);
-    console.log(packs);
+    logger.log(packs);
 
 
     return Promise.resolve(packs)
@@ -112,7 +112,7 @@ ServiceStore.prototype._getWorkflowOrder = function(workflow){
     }
     
 
-    console.log(top_block_types, r);
+    logger.debug(top_block_types, r);
 
 
   });
@@ -124,8 +124,8 @@ ServiceStore.prototype._getWorkflowOrder = function(workflow){
 ServiceStore.prototype.exportToROS = function(package_name, service_meta, package_name){
   var that = this;
   return this.allPackageInfos().then(function(packages){ 
-    console.log(service_meta);
-    console.log(package_name);
+    logger.debug(service_meta);
+    logger.debug(package_name);
     var pack =  R.find(R.propEq('name', package_name))(packages);
 
 
@@ -160,34 +160,37 @@ ServiceStore.prototype.exportToROS = function(package_name, service_meta, packag
 
 
 
-    console.log(service_base);
+    logger.debug(service_base);
 
 
     mkdirp.sync(service_base);
 
-    console.log(name_key);
+    logger.debug(name_key);
 
 
     // .parameters
-    var params = R.compose(
-      R.tap(console.log),
-      R.fromPairs,
-      R.map(R.props(['key', 'value']))
-    )(service_meta.parameters);
+    //
+    //
+    
+    var params = _(service_meta.parameters)
+      .map(function(param){ return _.values(_.pick(param, ['key', 'value'])); })
+      .object()
+      .value();
+
     var param_file_content = _to_colon_sep(params);
-    console.log('---------------- .interactions --------------------');
+    logger.debug('.interactions');
     R.forEach(function(i){
       i.parameters = R.fromPairs(R.map(R.values)(i.parameters));
     })(service_meta.interactions);
 
 
-    console.log(yaml.dump(service_meta.interactions));
+    logger.debug(yaml.dump(service_meta.interactions));
 
-    console.log('---------------- .parameters --------------------');
-    console.log(param_file_content);
+    logger.debug('---------------- .parameters --------------------');
+    logger.debug(param_file_content);
 
-    console.log('---------------- .launcher --------------------');
-    console.log(service_meta.launcher.launcher_body);
+    logger.debug('---------------- .launcher --------------------');
+    logger.debug(service_meta.launcher.launcher_body);
 
     // .service
     var service_kv = R.pickAll("name description author priority interactions parameters".split(/\s+/), service_meta);
@@ -197,8 +200,8 @@ ServiceStore.prototype.exportToROS = function(package_name, service_meta, packag
     service_kv.interactions = name_key + ".interactions";
     service_kv.parameters = name_key + ".parameters";
     var service_file_content = _to_colon_sep(service_kv);
-    console.log('---------------- .service --------------------');
-    console.log(service_file_content);
+    logger.debug('---------------- .service --------------------');
+    logger.debug(service_file_content);
 
 
     // save icon
