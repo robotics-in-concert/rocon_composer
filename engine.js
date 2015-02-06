@@ -107,6 +107,7 @@ util.inherits(Engine, EventEmitter);
 Engine.prototype.socketBroadcast = function(key, msg){
   this.io.emit(key, msg);
   console.log('socket#emit', key, msg);
+};
 
 Engine.prototype.initSocket = function(){
   var engine = this;
@@ -115,6 +116,7 @@ Engine.prototype.initSocket = function(){
   });
 
 };
+
 Engine.prototype.socketBroadcast = function(key, msg){
   this.io.emit(key, msg);
   this.log('socket#emit', key, msg);
@@ -125,8 +127,6 @@ Engine.prototype.getMessageDetails = function(type, cb){
   var engine = this;
   var url = URL.resolve(process.env.MSG_DATABASE, "/api/message_details");
   request(url, {qs: {type: type}, json: true}, function(e, res, body){
-
-    
     cb(null, body);
   });
 };
