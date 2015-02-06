@@ -476,7 +476,8 @@ module.exports = BlockGenerator;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/cento_authoring/public/js/blocks/blocks_defaults.js":[function(require,module,exports){
 (function (global){
-var R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null);
+var R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null),
+  angular = (typeof window !== "undefined" ? window.angular : typeof global !== "undefined" ? global.angular : null);
 
 var ros_block_override = function(){
   var ros_block_keys = R.pipe(
@@ -506,7 +507,7 @@ var ros_block_override = function(){
       var container = re = document.createElement('mutation');
       ['extra_config', 'extra'].forEach(function(attr){
         if(this[attr]){
-          container.setAttribute(attr, JSON.stringify(this[attr]));
+          container.setAttribute(attr, angular.toJson(this[attr]));
         }
       }.bind(this));
 
@@ -2143,7 +2144,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/cento_authoring/public/js/config.json"}],"/Users/eskim/current/cento_authoring/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports=module.exports={
+module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100
@@ -3180,7 +3181,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/cento_authoring/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports=module.exports=module.exports={
+module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {

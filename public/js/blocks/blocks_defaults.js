@@ -1,4 +1,5 @@
-var R = require('ramda');
+var R = require('ramda'),
+  angular = require('angular');
 
 var ros_block_override = function(){
   var ros_block_keys = R.pipe(
@@ -28,7 +29,7 @@ var ros_block_override = function(){
       var container = re = document.createElement('mutation');
       ['extra_config', 'extra'].forEach(function(attr){
         if(this[attr]){
-          container.setAttribute(attr, JSON.stringify(this[attr]));
+          container.setAttribute(attr, angular.toJson(this[attr]));
         }
       }.bind(this));
 
