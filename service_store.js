@@ -194,8 +194,14 @@ ServiceStore.prototype.exportToROS = function(package_name, service_meta, packag
 
     if(!_.isEmpty(service_meta.workflows)){
       var workflow_base = Path.join( Path.dirname(pack.path), "workflows" );
+      mkdirp.sync(workflow_base);
       var list = that.orderedWorkflows(service_meta.workflows);
 
+
+      _.each(list, function(item){
+        var workflow_path = Path.join(workflow_base, item.title + ".wf");
+        promises.push(fs.writeFileAsync(workflow_path, JSON.stringify(item)));
+      });
 
       list = _(list)
         .map(function(item, idx){
@@ -205,11 +211,10 @@ ServiceStore.prototype.exportToROS = function(package_name, service_meta, packag
         .value()
       var workflows_content = yaml.dump({workflows: list});
       logger.debug('.workflows', workflows_content);
+      promises.push(fs.writeFileAsync(service_base + "/" + name_key + ".workflows", workflows_content));
 
 
 
-
-      
 
     }
 
