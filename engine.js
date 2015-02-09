@@ -100,6 +100,7 @@ var Engine = function(opts){
     // engine.emit('started');
 
   });
+  this.initSocket();
 
 };
 util.inherits(Engine, EventEmitter);
@@ -111,9 +112,21 @@ Engine.prototype.socketBroadcast = function(key, msg){
 
 Engine.prototype.initSocket = function(){
   var engine = this;
-  this.io.on('connection', function(socket){
+  this.io.of('/engine').on('connection', function(socket){
     engine.log('websocket connected');
   });
+
+
+  engine.ee.on('engine:publish', function(data){
+    console.log('x', data);
+
+    engine.io.of('/engine').emit('publish', data);
+
+
+  });
+
+
+
 
 };
 
@@ -187,6 +200,7 @@ Engine.prototype.startPublishLoop = function(){
     // And finally, publish.
     topic.publish(msg);
     engine.debug("published "+topic.name);
+    engine.ee.emit('engine:publish', {name: data.name, type: data.type, payload: data.msg});
 
   }, this.options.publish_delay);
   engine.log('publish loop started');

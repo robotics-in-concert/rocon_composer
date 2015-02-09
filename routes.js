@@ -49,6 +49,9 @@ module.exports = function(app, db){
   app.get('/prezi', function(req, res){
     res.render('prezi', {socketio_port: $socketio_port});
   });
+  app.get('/engine', function(req, res){
+    res.render('engine', {socketio_port: $socketio_port});
+  });
   app.get('/ping', function(req, res){
     res.send('pong')
   });
