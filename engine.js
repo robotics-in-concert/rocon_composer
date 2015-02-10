@@ -90,6 +90,7 @@ var Engine = function(opts){
 
   }, function(e){
     logger.error('ros connection failed', e);
+    engine.emit('start_failed');
 
     
   }, this.options.ros_retries, this.options.ros_retry_interval);

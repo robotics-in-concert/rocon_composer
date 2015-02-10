@@ -47,8 +47,16 @@ $engine = new Engine(engine_options);
 $engine.once('started', function(){
   // started
   console.log('engine started');
+  process.send('engine_started');
 
 });
+$engine.once('start_failed', function(){
+  process.send('engine_start_failed');
+
+});
+
+
+
 
 
 
