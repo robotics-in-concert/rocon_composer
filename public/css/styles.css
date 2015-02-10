@@ -342,6 +342,18 @@ button {
 #service-editor .select2-container.form-control {
   border: none;
 }
+/* engine dashboard */
+.engine-dashboard {
+  display: flex;
+  height: 100vh;
+}
+.engine-dashboard .sidebar {
+  width: 15%;
+  background-color: #f5f5f5;
+}
+.engine-dashboard .main {
+  padding: 20px 40px;
+}
 /* FIXES */
 /* 1. angular ui modal backdrop */
 .modal-backdrop {
