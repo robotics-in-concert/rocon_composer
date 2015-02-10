@@ -107,7 +107,7 @@ util.inherits(Engine, EventEmitter);
 
 Engine.prototype.socketBroadcast = function(key, msg){
   this.io.emit(key, msg);
-  console.log('socket#emit', key, msg);
+  this.debug('socket#emit', key, msg);
 };
 
 Engine.prototype.initSocket = function(){
@@ -118,8 +118,6 @@ Engine.prototype.initSocket = function(){
 
 
   engine.ee.on('engine:publish', function(data){
-    console.log('x', data);
-
     engine.io.of('/engine').emit('publish', data);
 
 
