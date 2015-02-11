@@ -356,6 +356,7 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, 
   var engine = this;
   
   var r = new Requester(this);
+  var rid = r.id.toString();
 
   R.forEach(function(remap){
     if(R.isEmpty(remap.remap_to)){
@@ -371,10 +372,10 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, 
   res.parameters = parameters;
 
   var future = new Future();
+  engine.schedule_requests[rid] = r;
   r.send_allocation_request(res, options.timeout).then(function(reqId){
-    engine.schedule_requests[reqId] = r;
-    engine.schedule_requests_ref_counts[reqId] = 0;
-    future.return({req_id: reqId, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type});
+    engine.schedule_requests_ref_counts[rid] = 0;
+    future.return({req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type});
   }).catch(function(e){
     future.return(null);
   });
