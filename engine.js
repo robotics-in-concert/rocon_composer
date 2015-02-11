@@ -475,13 +475,13 @@ Engine.prototype.scheduledSubscribe = function(ctx, topic, type, callback){
     R.fromPairs,
     R.map(R.values)
   )(ctx.remappings);
-  var name = remapping_kv[name];
+  var name = remapping_kv[topic];
 
   // engine._waitForTopicsReadyF([name]);
   
   var listener = new ROSLIB.Topic({
     ros : this.ros,
-    name : topic,
+    name : name,
     messageType : type
   });
 
@@ -491,7 +491,7 @@ Engine.prototype.scheduledSubscribe = function(ctx, topic, type, callback){
   });
   this.schedule_requests_ref_counts[ctx.req_id] = this.schedule_requests_ref_counts[ctx.req_id] + 1;
 
-  this.topics.push({name: topic, listener: listener});
+  this.topics.push({name: name, listener: listener});
   
 };
 
