@@ -308,35 +308,36 @@ Engine.prototype.waitForTopicsReady = function(required_topics){
 
 
 // private - fiber version
+
 Engine.prototype._waitForTopicsReadyF = function(required_topics){
   var engine = this;
-  var delay = process.env.rocon_authoring_delay_after_topics || 2000;
+  var delay = process.env.ROCON_AUTHORING_DELAY_AFTER_TOPICS || 2000;
 
 
 
-  var fiber = fiber.current;
+  var fiber = Fiber.current;
 
-  var timer = setinterval(function(){
+  var timer = setInterval(function(){
     if(!fiber.stopped){
-      engine.ros.gettopics(function(topics){
-        var remapped_topics = r.filter(function(t){ return r.contains(t, required_topics); })(topics);
+      engine.ros.getTopics(function(topics){
+        var remapped_topics = R.filter(function(t){ return R.contains(t, required_topics); })(topics);
         console.log('topic count check : ', [remapped_topics.length, required_topics.length].join("/"), remapped_topics, required_topics);
 
         if(remapped_topics.length >= required_topics.length){
-          clearinterval(timer);
-          settimeout(function(){ 
+          clearInterval(timer);
+          setTimeout(function(){ 
             if(!fiber.stopped){
               fiber.run(); 
             }else{
-              fiber.throwinto('stopped');
+              fiber.throwInto('stopped');
             }
           }, delay);
         }
       });
     }else{
-      clearinterval(timer);
+      clearInterval(timer);
       console.log('running fiber will stop');
-      fiber.throwinto('stopped');
+      fiber.throwInto('stopped');
 
     }
 
@@ -344,9 +345,11 @@ Engine.prototype._waitForTopicsReadyF = function(required_topics){
 
 
 
-  fiber.yield();
+  Fiber.yield();
 
 };
+
+
 
 Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, options){
 
