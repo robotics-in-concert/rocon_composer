@@ -574,7 +574,7 @@ Engine.prototype.clear = function(){
     }catch(e){ return null; }
   })(R.values(this.schedule_requests));
 
-  Promise.all(q_cancels).then(function(){
+  return Promise.all(q_cancels).then(function(){
     that.ee.removeAllListeners();
     that.memory = {};
     that.unsubscribeAll();

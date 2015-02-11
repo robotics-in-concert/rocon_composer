@@ -39,6 +39,11 @@ process.on('message', function(data){
     var items = data.items;
     $engine.runItems(items);
   }
+  if(action == 'stop'){
+    $engine.clear().then(function(){
+      process.send('engine_stopped');
+    });
+  }
 
 });
 

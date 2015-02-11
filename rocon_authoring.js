@@ -58,8 +58,23 @@ global.startEngine = function(extras){
     // }
 }
 
+
+
 global.stopEngine = function(){
-  global.childEngine.kill('SIGTERM');
+  childEngine.on('message', function(msg){
+    if(msg == 'engine_stopped'){
+      global.childEngine.kill('SIGTERM');
+    }
+  });
+};
+global.restartEngine = function(){
+  childEngine.on('message', function(msg){
+    if(msg == 'engine_stopped'){
+      childEngine.kill('SIGTERM');
+      startEngine();
+    }
+  });
+  childEngine.send({action: 'stop'});
 };
 
 MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
