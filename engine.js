@@ -67,6 +67,10 @@ var Engine = function(opts){
     ros.on('connection', function(){
       engine.log('ros connected');
       engine.emit('started');
+
+      engine.waitForTopicsReady(['/concert/scheduler/requests']).then(function(){
+        engine.emit('ready');
+      });
       connected = true;
       // ros.getMessageDetails('simple_delivery_msgs/DeliveryStatus', function(detail){
         // console.log('detail', detail);
@@ -269,35 +273,70 @@ Engine.prototype.runCode = function(code){
 
 };
 
+
+
+// public - promise version
+Engine.prototype.waitForTopicsReady = function(required_topics){
+  var engine = this;
+  var delay = process.env.rocon_authoring_delay_after_topics || 2000;
+
+
+
+  return new Promise(function(resolve, reject){
+    var timer = setInterval(function(){
+      engine.ros.getTopics(function(topics){
+        var open_topics = _(topics).filter(function(t){ return _.contains(required_topics, t); }).value();
+        console.log('topic count check : ', [open_topics.length, required_topics.length].join("/"), open_topics, required_topics);
+
+        if(open_topics.length >= required_topics.length){
+          clearInterval(timer);
+          setTimeout(function(){ resolve(); }, delay);
+        }
+      });
+
+    }, 1000);
+
+  });
+
+
+
+
+
+
+
+};
+
+
+// private - fiber version
 Engine.prototype._waitForTopicsReadyF = function(required_topics){
   var engine = this;
-  var delay = process.env.ROCON_AUTHORING_DELAY_AFTER_TOPICS || 2000;
+  var delay = process.env.rocon_authoring_delay_after_topics || 2000;
 
 
 
-  var fiber = Fiber.current;
+  var fiber = fiber.current;
 
-  var timer = setInterval(function(){
+  var timer = setinterval(function(){
     if(!fiber.stopped){
-      engine.ros.getTopics(function(topics){
-        var remapped_topics = R.filter(function(t){ return R.contains(t, required_topics); })(topics);
+      engine.ros.gettopics(function(topics){
+        var remapped_topics = r.filter(function(t){ return r.contains(t, required_topics); })(topics);
         console.log('topic count check : ', [remapped_topics.length, required_topics.length].join("/"), remapped_topics, required_topics);
 
         if(remapped_topics.length >= required_topics.length){
-          clearInterval(timer);
-          setTimeout(function(){ 
+          clearinterval(timer);
+          settimeout(function(){ 
             if(!fiber.stopped){
               fiber.run(); 
             }else{
-              fiber.throwInto('stopped');
+              fiber.throwinto('stopped');
             }
           }, delay);
         }
       });
     }else{
-      clearInterval(timer);
+      clearinterval(timer);
       console.log('running fiber will stop');
-      fiber.throwInto('stopped');
+      fiber.throwinto('stopped');
 
     }
 
@@ -305,7 +344,7 @@ Engine.prototype._waitForTopicsReadyF = function(required_topics){
 
 
 
-  Fiber.yield();
+  fiber.yield();
 
 };
 

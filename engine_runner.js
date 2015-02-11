@@ -45,9 +45,11 @@ process.on('message', function(data){
 $engine = new Engine(engine_options);
 
 $engine.once('started', function(){
-  // started
-  console.log('engine started');
   process.send('engine_started');
+
+});
+$engine.once('ready', function(){
+  process.send('engine_ready');
 
 });
 $engine.once('start_failed', function(){

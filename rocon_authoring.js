@@ -119,8 +119,10 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
 
       if(msg == 'engine_start_failed'){
         logger.error('engine start failed');
-
       }else if(msg == 'engine_started'){
+        logger.info('engine started');
+      }else if(msg == 'engine_ready'){
+        logger.info('engine ready')
         var workflows = argv.workflow;
         if(!_.isEmpty(workflows)){
           var col = db.collection('settings');
