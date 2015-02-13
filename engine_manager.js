@@ -1,15 +1,13 @@
+var spawn = require('child_process').spawn;
 
-
-var EngineManager = function(){
+var EngineManager = function(options){
   this.engine_processes = {};
+  this.options = options;
 };
 
 
 EngineManager.prototype.startEngine = function(extras){
-  var engine_opts = _.defaults(argv.engine_options || {}, extras, {
-    publish_delay: +process.env.ROCON_AUTHORING_PUBLISH_DELAY,
-    socketio_port: socketio_port
-  });
+  var engine_opts = this.options.engine_options;
 
   logger.info('engine options', engine_opts);
 
@@ -38,7 +36,7 @@ EngineManager.prototype.stopEngine = function(pid){
 
   child.on('message', function(msg){
     if(msg == 'engine_stopped'){
-      child..kill('SIGTERM');
+      child.kill('SIGTERM');
     }
   });
 
