@@ -5,6 +5,14 @@ var _ = require('lodash'),
   winston = require('winston'),
   Engine = require('./engine');
 
+
+
+$pid = process.pid;
+
+console.log('my pid', $pid);
+
+
+
 function setupLogger(){
   winston.loggers.add('main', {
     console: {
@@ -27,6 +35,8 @@ function setupLogger(){
 setupLogger();
 
 var engine_options = JSON.parse(argv.option);
+var socket = require('socket.io-client')('ws://localhost:'+engine_options.service_port + '/engine');
+socket.emit('intro', {pid: $pid})
 
 process.on('message', function(data){
   console.log(data);

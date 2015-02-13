@@ -1,12 +1,13 @@
 var spawn = require('child_process').spawn;
 
-var EngineManager = function(options){
+var EngineManager = function(io, options){
+  this.io = io;
   this.engine_processes = {};
   this.options = options;
 };
 
 
-EngineManager.prototype.startEngine = function(extras){
+EngineManager.prototype.startEngine = function(io, extras){
   var engine_opts = this.options.engine_options;
 
   logger.info('engine options', engine_opts);
@@ -17,16 +18,16 @@ EngineManager.prototype.startEngine = function(extras){
   logger.info("engine spawn pid :", child.pid);
 
   child.stdout.on('data', function(data){
-    console.log("engine", data.toString().trim());
+    logger.info("engine-" + child.pid, data.toString().trim());
   });
   child.stderr.on('data', function(data){
-    console.error("engine", data.toString().trim());
+    logger.info("engine-" + child.pid, data.toString().trim());
   });
 
 
   this.engine_processes[child.pid] = child;
 
-
+  return child.pid;
 }
 
 

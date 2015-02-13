@@ -21,11 +21,6 @@ checkEnvVars();
 
 
 
-var engine_opts = _.defaults(argv.engine_options || {}, {
-  publish_delay: +process.env.ROCON_AUTHORING_PUBLISH_DELAY,
-  service_port: +process.env.ROCON_AUTHORING_SERVER_PORT
-});
-global.engineManager = new EngineManager({engine_options: engine_opts});
 
 MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
   if(e) throw e;
@@ -43,8 +38,12 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
     var io = socketio.listen(server);
     $io = io;
 
-    io.on('connection', function(sock){
-      logger.info('socket.io connected', sock.id);
+    io.of('/engine').on('connection', function(sock){
+      logger.info('engine socket connected', sock.id);
+      sock.on('intro', function(payload){
+        logger.debug(payload);
+        sock.my = payload;
+      });
     });
 
 
@@ -76,6 +75,12 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
 
   }
 
+  var engine_opts = _.defaults(argv.engine_options || {}, {
+    publish_delay: +process.env.ROCON_AUTHORING_PUBLISH_DELAY,
+    service_port: +process.env.ROCON_AUTHORING_SERVER_PORT
+  });
+  global.engineManager = new EngineManager(io.of('/engine'), {engine_options: engine_opts});
+
 
   if(argv.workflow){
     argv.engine = true;
@@ -84,6 +89,8 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
 
   if(argv.engine){
     var pid = engineManager.startEngine();
+    var pid2 = engineManager.startEngine();
+    
 
 
 
