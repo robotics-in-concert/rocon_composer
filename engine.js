@@ -15,7 +15,7 @@ var _ = require('lodash'),
   Requester = require('./requester').Requester,
   Resource = require('./requester').Resource,
   UUID = require('node-uuid'),
-  URL = require('url');
+   URL = require('url');
 
 
 DEBUG = process.env.DEBUG || false
@@ -32,13 +32,15 @@ var Engine = function(opts){
     ros_retry_interval: 1000,
   }, opts);
 
-  this.io = require('socket.io').listen(this.options.socketio_port);
-  this.log('socketio listen on '+this.options.socketio_port);
+
+  this.socket = require('socket.io-client')('ws://localhost:'+this.options.service_port + '/engine');
 
 
-  this.io.on('connection', function(socket){
-    console.log('socket conntected ', socket.id);
-  });
+
+  // this.io = require('socket.io').listen(this.options.socketio_port);
+  // this.log('socketio listen on '+this.options.socketio_port);
+
+
 
   this.ee = new EventEmitter();
   this.executions = [];
@@ -111,22 +113,22 @@ var Engine = function(opts){
 util.inherits(Engine, EventEmitter);
 
 Engine.prototype.socketBroadcast = function(key, msg){
-  this.io.emit(key, msg);
+  this.socket.emit(key, msg);
   this.debug('socket#emit', key, msg);
 };
 
 Engine.prototype.initSocket = function(){
-  var engine = this;
-  this.io.of('/engine').on('connection', function(socket){
-    engine.log('websocket connected');
-  });
+  // var engine = this;
+  // this.io.of('/engine').on('connection', function(socket){
+    // engine.log('websocket connected');
+  // });
 
 
-  engine.ee.on('engine:publish', function(data){
-    engine.io.of('/engine').emit('publish', data);
+  // engine.ee.on('engine:publish', function(data){
+    // engine.io.of('/engine').emit('publish', data);
 
 
-  });
+  // });
 
 
 
@@ -134,7 +136,7 @@ Engine.prototype.initSocket = function(){
 };
 
 Engine.prototype.socketBroadcast = function(key, msg){
-  this.io.emit(key, msg);
+  this.socket.emit(key, msg);
   this.log('socket#emit', key, msg);
 };
 

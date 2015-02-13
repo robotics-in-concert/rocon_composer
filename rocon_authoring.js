@@ -43,6 +43,10 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
     var io = socketio.listen(server);
     $io = io;
 
+    io.on('connection', function(sock){
+      logger.info('socket.io connected', sock.id);
+    });
+
 
     app.use(express.static('public'));
     app.use(bodyParser.json({limit: '50mb'}));
