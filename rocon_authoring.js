@@ -42,13 +42,6 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
 
 
     });
-    io.of('/engine').on('connection', function(sock){
-      logger.info('engine socket connected', sock.id);
-      sock.on('intro', function(payload){
-        logger.debug(payload);
-        sock.my = payload;
-      });
-    });
 
 
     app.use(express.static('public'));

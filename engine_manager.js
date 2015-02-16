@@ -3,6 +3,8 @@ var spawn = require('child_process').spawn,
   util = require('util'),
   EventEmitter2 = require('eventemitter2').EventEmitter2;
 
+
+
 var EngineManager = function(io, options){
   var that = this;
   EventEmitter2.call(this, {wildcard: true});
@@ -27,27 +29,31 @@ var EngineManager = function(io, options){
     io.emit('data', {event: this.event, payload: payload});
   });
 
-
   this.io.of('/engine/client').on('connection', function(socket){
     console.log('client connected');
-
-
-    socket.on('get_processes', function(){
-      console.log('-------------');
-
-      that.broadcastEnginesInfo();
-    });
-    socket.on('kill', function(pid){
-       console.log('KILL', pid);
-
-      that.killEngine(pid.pid);
-    });
-
+    that._bindClientSocketHandlers(socket);
   });
 
 };
 util.inherits(EngineManager, EventEmitter2);
 
+EngineManager.prototype._bindClientSocketHandlers = function(socket){
+  var that = this;
+  socket.on('get_processes', function(){
+    console.log('-------------');
+
+    that.broadcastEnginesInfo();
+  });
+  socket.on('start', function(){
+    that.startEngine();
+  });
+  socket.on('kill', function(pid){
+     console.log('KILL', pid);
+
+    that.killEngine(pid.pid);
+  });
+
+};
 
 EngineManager.prototype.startEngine = function(io, extras){
   var engine_opts = this.options.engine_options;
@@ -78,8 +84,8 @@ EngineManager.prototype.startEngine = function(io, extras){
 
 
 EngineManager.prototype.callOnReady = function(pid, cb) {
-  var c = this.engine_processes[pid].process;
-  if(c.ready){
+  var c = this.engine_processes[pid];
+  if(c.status == 'ready'){
     cb.call(this);
   }else{
     this.once(['child', c.pid, 'ready'].join('.'), cb.bind(this));
@@ -88,8 +94,10 @@ EngineManager.prototype.callOnReady = function(pid, cb) {
 }
 
 EngineManager.prototype.run = function(pid, items){
-  var c = this.engine_processes[pid].process;
-  c.send({action: 'run', items: items});
+  this.callOnReady(pid, function(){
+    var c = this.engine_processes[pid].process;
+    c.send({action: 'run', items: items});
+  });
 
 };
 
@@ -109,35 +117,16 @@ EngineManager.prototype._bindEvents = function(child){
 
   var that = this;
   child.on('message', function(msg){
-    if(msg == 'engine_start_failed'){
-      proc.status = 'failed';
-      logger.error('engine start failed');
-    }else if(msg == 'engine_started'){
-      logger.info('engine-'+child.pid+' started');
-      proc.status = 'started'
-    }else if(msg == 'engine_ready'){
-      logger.info('engine-'+child.pid+' ready')
-      that.emit(['child', child.pid, 'ready'].join('.'));
-      proc.status = 'ready'
 
-      child.ready = true
-      // var workflows = argv.workflow;
-      // if(!_.isEmpty(workflows)){
-        // var col = db.collection('settings');
-        // col.findOne({key: 'cento_authoring_items'}, function(e, data){
-          // var items = data ? data.value.data : [];
-          // var items_to_load = _(items)
-            // .filter(function(i) { return _.contains(workflows, i.title); })
-            // .sortBy(function(i) { return _.indexOf(workflows, i.title); })
-            // .value();
-      
-          // global.childEngine.send({action: 'run', items: items_to_load});
-        // });
-
-      // }
+    var action = msg.action;
+    if(action == 'status'){
+      var status = msg.status;
+      logger.info('engine status to '+status);
+      proc.status = status;
+      that.emit(['child', child.pic, status]);
+      that.broadcastEnginesInfo();
 
     }
-    that.broadcastEnginesInfo();
 
   });
 

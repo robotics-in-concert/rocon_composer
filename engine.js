@@ -33,7 +33,8 @@ var Engine = function(opts){
   }, opts);
 
 
-  this.socket = require('socket.io-client')('ws://localhost:'+this.options.service_port + '/engine');
+  // this.socket = require('socket.io-client')('ws://localhost:'+this.options.service_port + '/engine');
+  this.socket = null;
 
 
 

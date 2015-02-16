@@ -55,11 +55,6 @@ module.exports = function(app, db){
   app.get('/ping', function(req, res){
     res.send('pong')
   });
-  app.get('/engine/new', function(req, res){
-    engineManager.startEngine();
-    res.send('ok');
-  });
-
 
   app.get('/api/load_interactions', function(req, res){
     if(!process.env.MSG_DATABASE){
