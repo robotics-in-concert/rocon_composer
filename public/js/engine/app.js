@@ -9,7 +9,7 @@ angular.module('engine-dashboard', [
   .config(Config)
   .factory('socket', ['socketFactory', function(socketFactory){
     // var myIoSocket = io.connect('localhost:9999/engine');
-    var myIoSocket = io(location.host + '/engine');
+    var myIoSocket = io(location.host + '/engine/client');
     myIoSocket.on('connect', function(){
       console.log('connected');
       myIoSocket.emit('get_processes');
@@ -48,11 +48,8 @@ function EngineDashboardController($scope, socket, $location){
 
 
 
-    if(data.event == 'get_processes'){
-      $scope.processes = _.map(data.payload, function(pid){
-        return {pid: pid};
-      });
-
+    if(data.event == 'processes'){
+      $scope.processes = data.payload;
     }
 
 

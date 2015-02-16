@@ -83,7 +83,7 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
     publish_delay: +process.env.ROCON_AUTHORING_PUBLISH_DELAY,
     service_port: +process.env.ROCON_AUTHORING_SERVER_PORT
   });
-  global.engineManager = new EngineManager(io.of('/engine'), {engine_options: engine_opts});
+  global.engineManager = new EngineManager(io, {engine_options: engine_opts});
 
   if(argv.workflow){
     argv.engine = true;

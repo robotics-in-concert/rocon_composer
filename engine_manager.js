@@ -28,10 +28,14 @@ var EngineManager = function(io, options){
   });
 
 
-  this.io.on('connection', function(socket){
+  this.io.of('/engine/client').on('connection', function(socket){
+    console.log('client connected');
+
 
     socket.on('get_processes', function(){
-      socket.emit('data', {event: 'get_processes', payload: _.keys(that.engine_processes)});
+      console.log('-------------');
+
+      that.broadcastEnginesInfo();
     });
 
   });
@@ -58,8 +62,9 @@ EngineManager.prototype.startEngine = function(io, extras){
   });
 
 
+  this.engine_processes[child.pid] = {process: child};
   this._bindEvents(child);
-  this.engine_processes[child.pid] = child;
+
 
   return child.pid;
 }
@@ -68,7 +73,7 @@ EngineManager.prototype.startEngine = function(io, extras){
 
 
 EngineManager.prototype.callOnReady = function(pid, cb) {
-  var c = this.engine_processes[pid];
+  var c = this.engine_processes[pid].process;
   if(c.ready){
     cb.call(this);
   }else{
@@ -78,23 +83,37 @@ EngineManager.prototype.callOnReady = function(pid, cb) {
 }
 
 EngineManager.prototype.run = function(pid, items){
-  var c = this.engine_processes[pid];
+  var c = this.engine_processes[pid].process;
   c.send({action: 'run', items: items});
 
 };
 
 
+EngineManager.prototype.broadcastEnginesInfo = function(){
+  var payload = _.map(this.engine_processes, function(child, pid){
+    var data = _.omit(child, 'process');
+    return _.assign(data, {pid: pid});
+  });
+  this.io.of('/engine/client')
+    .emit('data', {event: 'processes', payload: payload});
+
+};
 
 EngineManager.prototype._bindEvents = function(child){
+  var proc = this.engine_processes[child.pid];
+
   var that = this;
   child.on('message', function(msg){
     if(msg == 'engine_start_failed'){
+      proc.status = 'failed';
       logger.error('engine start failed');
     }else if(msg == 'engine_started'){
       logger.info('engine-'+child.pid+' started');
+      proc.status = 'started'
     }else if(msg == 'engine_ready'){
       logger.info('engine-'+child.pid+' ready')
       that.emit(['child', child.pid, 'ready'].join('.'));
+      proc.status = 'ready'
 
       child.ready = true
       // var workflows = argv.workflow;
@@ -113,6 +132,7 @@ EngineManager.prototype._bindEvents = function(child){
       // }
 
     }
+    that.broadcastEnginesInfo();
 
   });
 
