@@ -93,33 +93,26 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
     
 
 
+    var workflows = argv.workflow;
+    if(!_.isEmpty(workflows)){
+      var col = db.collection('settings');
+      col.findOne({key: 'cento_authoring_items'}, function(e, data){
+        var items = data ? data.value.data : [];
+        var items_to_load = _(items)
+          .filter(function(i) { return _.contains(workflows, i.title); })
+          .sortBy(function(i) { return _.indexOf(workflows, i.title); })
+          .value();
+        engineManager.callOnReady(pid2, function(){
+          this.run(pid2, items_to_load);
 
-    // global.childEngine.on('message', function(msg){
+        });
 
-      // if(msg == 'engine_start_failed'){
-        // logger.error('engine start failed');
-      // }else if(msg == 'engine_started'){
-        // logger.info('engine started');
-      // }else if(msg == 'engine_ready'){
-        // logger.info('engine ready')
-        // var workflows = argv.workflow;
-        // if(!_.isEmpty(workflows)){
-          // var col = db.collection('settings');
-          // col.findOne({key: 'cento_authoring_items'}, function(e, data){
-            // var items = data ? data.value.data : [];
-            // var items_to_load = _(items)
-              // .filter(function(i) { return _.contains(workflows, i.title); })
-              // .sortBy(function(i) { return _.indexOf(workflows, i.title); })
-              // .value();
-        
-            // global.childEngine.send({action: 'run', items: items_to_load});
-          // });
+    
+        // global.childEngine.send({action: 'run', items: items_to_load});
+      });
 
-        // }
+    }
 
-      // }
-
-    // });
 
 
 

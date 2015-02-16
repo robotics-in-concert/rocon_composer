@@ -37,14 +37,37 @@ EngineManager.prototype.startEngine = function(io, extras){
 
 
 
+
+EngineManager.prototype.callOnReady = function(pid, cb) {
+  var c = this.engine_processes[pid];
+  if(c.ready){
+    cb.call(this);
+  }else{
+    this.once(['child', c.pid, 'ready'].join('.'), cb.bind(this));
+  }
+  
+}
+
+EngineManager.prototype.run = function(pid, items){
+  var c = this.engine_processes[pid];
+  c.send({action: 'run', items: items});
+
+};
+
+
+
 EngineManager.prototype._bindEvents = function(child){
+  var that = this;
   child.on('message', function(msg){
     if(msg == 'engine_start_failed'){
       logger.error('engine start failed');
     }else if(msg == 'engine_started'){
-      logger.info('engine started');
+      logger.info('engine-'+child.pid+' started');
     }else if(msg == 'engine_ready'){
-      logger.info('engine ready')
+      logger.info('engine-'+child.pid+' ready')
+      that.emit(['child', child.pid, 'ready'].join('.'));
+
+      child.ready = true
       // var workflows = argv.workflow;
       // if(!_.isEmpty(workflows)){
         // var col = db.collection('settings');
