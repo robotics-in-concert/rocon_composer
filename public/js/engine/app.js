@@ -1,3 +1,8 @@
+var _ = require('lodash');
+
+console.log(_);
+
+
 angular.module('engine-dashboard', [
   'btford.socket-io'
 ])
@@ -6,7 +11,8 @@ angular.module('engine-dashboard', [
     // var myIoSocket = io.connect('localhost:9999/engine');
     var myIoSocket = io(location.host + '/engine');
     myIoSocket.on('connect', function(){
-      console.log('connect@!!!!!');
+      console.log('connected');
+      myIoSocket.emit('get_processes');
 
 
     });
@@ -31,7 +37,6 @@ function Config($interpolateProvider){
 /* @ngInject */
 function EngineDashboardController($scope, socket, $location){
   console.log(socket);
-  socket.emit('xx');
 
   $scope.foo = 'bar';
 
@@ -40,6 +45,15 @@ function EngineDashboardController($scope, socket, $location){
 
   socket.on('data', function(data){
     console.log(data);
+
+
+
+    if(data.event == 'get_processes'){
+      $scope.processes = _.map(data.payload, function(pid){
+        return {pid: pid};
+      });
+
+    }
 
 
   });

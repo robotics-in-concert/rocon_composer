@@ -17,6 +17,12 @@
         </ul>
         <div class="main" ng-controller="engineDashboardController">
           <h1>Engine</h1>
+            <div class="panel panel-default" ng-repeat="proc in processes">
+              <div class="panel-heading">Engine#[[proc.pid]]</div>
+              <div class="panel-body">
+                Status : [[proc.status]]
+              </div>
+            </div>
           <ul>
             <li ng-repeat="topic in published">
               [[topic.name]] ([[topic.type]]) [[topic.payload | json]]
@@ -26,7 +32,7 @@
 
 
     </div>
-    <script src="http://cdn.jsdelivr.net/g/jquery,angularjs" type="text/javascript"></script>
+    <script src="http://cdn.jsdelivr.net/g/jquery,angularjs,lodash" type="text/javascript"></script>
     <script src="/socket.io/socket.io.js" type="text/javascript"></script>
     <script src="/js/vendor/socket.min.js" type="text/javascript"></script>
     <script src="/bundle-enginedash.js"></script>

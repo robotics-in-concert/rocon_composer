@@ -29,7 +29,7 @@ body {
 button {
   font-size: 14px;
 }
-.panel {
+#workflow-blockly .panel {
   margin: 0;
   padding: 0;
   border: none;
@@ -353,6 +353,7 @@ button {
 }
 .engine-dashboard .main {
   padding: 20px 40px;
+  flex: 1;
 }
 /* FIXES */
 /* 1. angular ui modal backdrop */

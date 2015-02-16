@@ -1,8 +1,10 @@
 var spawn = require('child_process').spawn,
+  _ = require('lodash'),
   util = require('util'),
   EventEmitter2 = require('eventemitter2').EventEmitter2;
 
 var EngineManager = function(io, options){
+  var that = this;
   EventEmitter2.call(this, {wildcard: true});
   console.log(this.options);
 
@@ -23,6 +25,15 @@ var EngineManager = function(io, options){
     console.log('ee', this.event, payload);
 
     io.emit('data', {event: this.event, payload: payload});
+  });
+
+
+  this.io.on('connection', function(socket){
+
+    socket.on('get_processes', function(){
+      socket.emit('data', {event: 'get_processes', payload: _.keys(that.engine_processes)});
+    });
+
   });
 
 };
