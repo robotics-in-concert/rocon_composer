@@ -50,7 +50,7 @@ module.exports = function(app, db){
     res.render('prezi', {socketio_port: $socketio_port});
   });
   app.get('/engine', function(req, res){
-    res.render('engine', {socketio_port: $socketio_port});
+    res.render('engine');
   });
   app.get('/ping', function(req, res){
     res.send('pong')

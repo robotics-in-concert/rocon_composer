@@ -4,9 +4,27 @@ var spawn = require('child_process').spawn,
 
 var EngineManager = function(io, options){
   EventEmitter2.call(this, {wildcard: true});
+  console.log(this.options);
+
+  
+
   this.io = io;
   this.engine_processes = {};
   this.options = options;
+  console.log(this.options);
+
+
+
+  console.log('CONF', this._conf);
+  console.log(this.wildcard);
+
+
+  this.onAny(function(payload){
+    console.log('ee', this.event, payload);
+
+    io.emit('data', {event: this.event, payload: payload});
+  });
+
 };
 util.inherits(EngineManager, EventEmitter2);
 

@@ -34,10 +34,14 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
 
     var app = express(); 
     var server = http.createServer(app);
-    var server2 = http.createServer(app);
-    var io = socketio.listen(server);
+    var io = socketio(server);
     $io = io;
 
+    io.on('connection', function(sock){
+      console.log('socket.io connected');
+
+
+    });
     io.of('/engine').on('connection', function(sock){
       logger.info('engine socket connected', sock.id);
       sock.on('intro', function(payload){
@@ -80,7 +84,6 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
     service_port: +process.env.ROCON_AUTHORING_SERVER_PORT
   });
   global.engineManager = new EngineManager(io.of('/engine'), {engine_options: engine_opts});
-
 
   if(argv.workflow){
     argv.engine = true;

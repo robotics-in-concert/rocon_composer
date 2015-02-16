@@ -4,22 +4,16 @@ angular.module('engine-dashboard', [
 ])
   .config(Config)
   .factory('socket', ['socketFactory', function(socketFactory){
-    var host = location.host;
-    var sock_port = SOCKETIO_PORT;
-    
-    if(host.match(/:\d+/)){
-      host = host.replace(location.port, sock_port);
-    }else{
-      host = host + ":" + sock_port;
-    }
-    var url = location.protocol + '//' + host + "/engine";
-    console.log('socket host', url);
+    // var myIoSocket = io.connect('localhost:9999/engine');
+    var myIoSocket = io(location.host + '/engine');
+    myIoSocket.on('connect', function(){
+      console.log('connect@!!!!!');
 
-    var myIoSocket = io.connect(url);
+
+    });
 
     var sock = socketFactory({
-      ioSocket: myIoSocket,
-      prefix: 'engine:'
+      ioSocket: myIoSocket
     });
     sock.forward('error');
     return sock;
@@ -37,11 +31,19 @@ function Config($interpolateProvider){
 
 /* @ngInject */
 function EngineDashboardController($scope, socket, $location){
+  console.log(socket);
+  socket.emit('xx');
+
   $scope.foo = 'bar';
 
 
   $scope.published = [];
 
+  socket.on('data', function(data){
+    console.log(data);
+
+
+  });
   socket.on('publish', function(data){
     console.log('1');
 
