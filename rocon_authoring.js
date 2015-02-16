@@ -12,6 +12,7 @@ var _ = require('lodash'),
   MongoClient = require('mongodb').MongoClient,
   winston = require('winston'),
   EngineManager = require('./engine_manager'),
+  mongoose = require('mongoose'),
   Engine = require('./engine');
 
 setupLogger();
@@ -19,7 +20,7 @@ checkEnvVars();
 
 
 
-
+mongoose.connect(process.env.ROCON_AUTHORING_MONGO_URL);
 
 
 MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){

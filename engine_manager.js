@@ -1,6 +1,7 @@
 var spawn = require('child_process').spawn,
   _ = require('lodash'),
   util = require('util'),
+  Settings = require('./model').Settings,
   EventEmitter2 = require('eventemitter2').EventEmitter2;
 
 
@@ -40,12 +41,14 @@ util.inherits(EngineManager, EventEmitter2);
 EngineManager.prototype._bindClientSocketHandlers = function(socket){
   var that = this;
   socket.on('get_processes', function(){
-    console.log('-------------');
 
     that.broadcastEnginesInfo();
   });
   socket.on('start', function(){
     that.startEngine();
+  });
+  socket.on('run', function(payload){
+    that.run(payload.pid, payload.items);
   });
   socket.on('kill', function(pid){
      console.log('KILL', pid);
@@ -93,10 +96,21 @@ EngineManager.prototype.callOnReady = function(pid, cb) {
   
 }
 
-EngineManager.prototype.run = function(pid, items){
+EngineManager.prototype.run = function(pid, workflows){
+  var that = this;
   this.callOnReady(pid, function(){
-    var c = this.engine_processes[pid].process;
-    c.send({action: 'run', items: items});
+
+    var items = Settings.getItems(function(e, items){
+      var items_to_load = _(items)
+        .filter(function(i) { return _.contains(workflows, i.title); })
+        .sortBy(function(i) { return _.indexOf(workflows, i.title); })
+        .value();
+      var c = that.engine_processes[pid].process;
+      c.send({action: 'run', items: items});
+
+
+    });
+
   });
 
 };

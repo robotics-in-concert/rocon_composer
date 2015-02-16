@@ -44,6 +44,7 @@ process.on('message', function(data){
   if(action == 'run'){
     var items = data.items;
     $engine.runItems(items);
+    _postStatus('running');
   }
   if(action == 'clear'){
     $engine.clear().then(function(){
