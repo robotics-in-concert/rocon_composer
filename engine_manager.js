@@ -37,6 +37,11 @@ var EngineManager = function(io, options){
 
       that.broadcastEnginesInfo();
     });
+    socket.on('kill', function(pid){
+       console.log('KILL', pid);
+
+      that.killEngine(pid.pid);
+    });
 
   });
 
@@ -140,6 +145,17 @@ EngineManager.prototype._bindEvents = function(child){
 
 
 
+EngineManager.prototype.killEngine = function(pid){
+  logger.info('will kill engine : ' + pid);
+
+  var child = this.engine_processes[pid].process;
+  child.kill('SIGTERM');
+  delete this.engine_processes[pid];
+
+
+  this.broadcastEnginesInfo();
+
+};
 
 
 EngineManager.prototype.stopEngine = function(pid){

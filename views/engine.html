@@ -21,6 +21,10 @@
               <div class="panel-heading">Engine#[[proc.pid]]</div>
               <div class="panel-body">
                 Status : [[proc.status]]
+
+                <div class="text-right">
+                  <button class="btn btn-sm btn-danger" ng-click="killEngine(proc.pid)">Kill</button>
+                </div>
               </div>
             </div>
           <ul>
@@ -28,6 +32,8 @@
               [[topic.name]] ([[topic.type]]) [[topic.payload | json]]
             </li>
           </ul>
+
+          <button class="btn btn-default" ng-click="run()">Run</button>
         </div>
 
 
