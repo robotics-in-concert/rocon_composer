@@ -44,8 +44,11 @@ EngineManager.prototype._bindClientSocketHandlers = function(socket){
 
     that.broadcastEnginesInfo();
   });
-  socket.on('start', function(){
-    that.startEngine();
+  socket.on('start', function(payload){
+    var pid = that.startEngine();
+    if(payload && payload.items){
+      that.run(pid, payload.items);
+    }
   });
   socket.on('run', function(payload){
     that.run(payload.pid, payload.items);
@@ -88,10 +91,10 @@ EngineManager.prototype.startEngine = function(io, extras){
 
 EngineManager.prototype.callOnReady = function(pid, cb) {
   var c = this.engine_processes[pid];
-  if(c.status == 'ready'){
+  if(c && c.status && c.status == 'ready'){
     cb.call(this);
   }else{
-    this.once(['child', c.pid, 'ready'].join('.'), cb.bind(this));
+    this.once(['child', pid, 'ready'].join('.'), cb.bind(this));
   }
   
 }
@@ -137,7 +140,7 @@ EngineManager.prototype._bindEvents = function(child){
       var status = msg.status;
       logger.info('engine status to '+status);
       proc.status = status;
-      that.emit(['child', child.pic, status]);
+      that.emit(['child', child.pid, status].join('.'));
       that.broadcastEnginesInfo();
 
     }

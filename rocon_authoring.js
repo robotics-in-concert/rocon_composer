@@ -85,29 +85,13 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
 
 
   if(argv.engine){
-    var pid = engineManager.startEngine();
-    var pid2 = engineManager.startEngine();
     
 
 
     var workflows = argv.workflow;
     if(!_.isEmpty(workflows)){
-      var col = db.collection('settings');
-      col.findOne({key: 'cento_authoring_items'}, function(e, data){
-        var items = data ? data.value.data : [];
-        var items_to_load = _(items)
-          .filter(function(i) { return _.contains(workflows, i.title); })
-          .sortBy(function(i) { return _.indexOf(workflows, i.title); })
-          .value();
-        engineManager.callOnReady(pid2, function(){
-          this.run(pid2, items_to_load);
-
-        });
-
-    
-        // global.childEngine.send({action: 'run', items: items_to_load});
-      });
-
+      var pid = engineManager.startEngine();
+      engineManager.run(pid, workflows);
     }
 
 

@@ -67,11 +67,20 @@ function EngineDashboardController($scope, socket, $location, $http){
 
   $scope.run = function(pid){
     var workflows = prompt('workflows?');
+    if(_.isEmpty(workflows)){
+      return;
+    }
     workflows = _(workflows.split(/,/))
       .invoke('trim')
       .value();
 
-    socket.emit('run', {pid: pid, items: workflows});
+    if(pid){
+      socket.emit('run', {pid: pid, items: workflows});
+    }else{
+      console.log('--------------', workflows);
+
+      socket.emit('start', {items: workflows});
+    }
   };
 
   $scope.killEngine = function(pid){
