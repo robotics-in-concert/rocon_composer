@@ -26,15 +26,20 @@ DEBUG = process.env.DEBUG || false
  * Engine class
  */
 
-var Engine = function(db, io, opts){
-  this.options = R.mixin({
+var Engine = function(opts){
+  this.options = _.assign({
     ros_retries: 0,
-    ros_retry_interval: 1000
+    ros_retry_interval: 1000,
   }, opts);
-  this.io = io;
-  this.initSocket();
 
-  this.db = db;
+  this.io = require('socket.io').listen(this.options.socketio_port);
+  this.log('socketio listen on '+this.options.socketio_port);
+
+
+  this.io.on('connection', function(socket){
+    console.log('socket conntected ', socket.id);
+  });
+
   this.ee = new EventEmitter();
   this.executions = [];
   this.memory = {};
@@ -62,6 +67,10 @@ var Engine = function(db, io, opts){
     ros.on('connection', function(){
       engine.log('ros connected');
       engine.emit('started');
+
+      engine.waitForTopicsReady(['/concert/scheduler/requests']).then(function(){
+        engine.emit('ready');
+      });
       connected = true;
       // ros.getMessageDetails('simple_delivery_msgs/DeliveryStatus', function(detail){
         // console.log('detail', detail);
@@ -85,6 +94,7 @@ var Engine = function(db, io, opts){
 
   }, function(e){
     logger.error('ros connection failed', e);
+    engine.emit('start_failed');
 
     
   }, this.options.ros_retries, this.options.ros_retry_interval);
@@ -95,22 +105,37 @@ var Engine = function(db, io, opts){
     // engine.emit('started');
 
   });
+  this.initSocket();
 
 };
 util.inherits(Engine, EventEmitter);
 
+Engine.prototype.socketBroadcast = function(key, msg){
+  this.io.emit(key, msg);
+  this.debug('socket#emit', key, msg);
+};
 
 Engine.prototype.initSocket = function(){
   var engine = this;
-  this.io.on('connection', function(socket){
+  this.io.of('/engine').on('connection', function(socket){
     engine.log('websocket connected');
   });
 
+
+  engine.ee.on('engine:publish', function(data){
+    engine.io.of('/engine').emit('publish', data);
+
+
+  });
+
+
+
+
 };
+
 Engine.prototype.socketBroadcast = function(key, msg){
   this.io.emit(key, msg);
   this.log('socket#emit', key, msg);
-
 };
 
 
@@ -118,10 +143,7 @@ Engine.prototype.getMessageDetails = function(type, cb){
   var engine = this;
   var url = URL.resolve(process.env.MSG_DATABASE, "/api/message_details");
   request(url, {qs: {type: type}, json: true}, function(e, res, body){
-
-    
     cb(null, body);
-
   });
 };
 
@@ -181,6 +203,7 @@ Engine.prototype.startPublishLoop = function(){
     // And finally, publish.
     topic.publish(msg);
     engine.debug("published "+topic.name);
+    engine.ee.emit('engine:publish', {name: data.name, type: data.type, payload: data.msg});
 
   }, this.options.publish_delay);
   engine.log('publish loop started');
@@ -250,6 +273,42 @@ Engine.prototype.runCode = function(code){
 
 };
 
+
+
+// public - promise version
+Engine.prototype.waitForTopicsReady = function(required_topics){
+  var engine = this;
+  var delay = process.env.rocon_authoring_delay_after_topics || 2000;
+
+
+
+  return new Promise(function(resolve, reject){
+    var timer = setInterval(function(){
+      engine.ros.getTopics(function(topics){
+        var open_topics = _(topics).filter(function(t){ return _.contains(required_topics, t); }).value();
+        console.log('topic count check : ', [open_topics.length, required_topics.length].join("/"), open_topics, required_topics);
+
+        if(open_topics.length >= required_topics.length){
+          clearInterval(timer);
+          setTimeout(function(){ resolve(); }, delay);
+        }
+      });
+
+    }, 1000);
+
+  });
+
+
+
+
+
+
+
+};
+
+
+// private - fiber version
+
 Engine.prototype._waitForTopicsReadyF = function(required_topics){
   var engine = this;
   var delay = process.env.ROCON_AUTHORING_DELAY_AFTER_TOPICS || 2000;
@@ -290,11 +349,14 @@ Engine.prototype._waitForTopicsReadyF = function(required_topics){
 
 };
 
+
+
 Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, options){
 
   var engine = this;
   
   var r = new Requester(this);
+  var rid = r.id.toString();
 
   R.forEach(function(remap){
     if(R.isEmpty(remap.remap_to)){
@@ -310,10 +372,10 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, 
   res.parameters = parameters;
 
   var future = new Future();
+  engine.schedule_requests[rid] = r;
   r.send_allocation_request(res, options.timeout).then(function(reqId){
-    engine.schedule_requests[reqId] = r;
-    engine.schedule_requests_ref_counts[reqId] = 0;
-    future.return({req_id: reqId, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type});
+    engine.schedule_requests_ref_counts[rid] = 0;
+    future.return({req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type});
   }).catch(function(e){
     future.return(null);
   });
@@ -414,13 +476,13 @@ Engine.prototype.scheduledSubscribe = function(ctx, topic, type, callback){
     R.fromPairs,
     R.map(R.values)
   )(ctx.remappings);
-  var name = remapping_kv[name];
+  var name = remapping_kv[topic];
 
   // engine._waitForTopicsReadyF([name]);
   
   var listener = new ROSLIB.Topic({
     ros : this.ros,
-    name : topic,
+    name : name,
     messageType : type
   });
 
@@ -430,7 +492,7 @@ Engine.prototype.scheduledSubscribe = function(ctx, topic, type, callback){
   });
   this.schedule_requests_ref_counts[ctx.req_id] = this.schedule_requests_ref_counts[ctx.req_id] + 1;
 
-  this.topics.push({name: topic, listener: listener});
+  this.topics.push({name: name, listener: listener});
   
 };
 
@@ -516,7 +578,7 @@ Engine.prototype.clear = function(){
     }catch(e){ return null; }
   })(R.values(this.schedule_requests));
 
-  Promise.all(q_cancels).then(function(){
+  return Promise.all(q_cancels).then(function(){
     that.ee.removeAllListeners();
     that.memory = {};
     that.unsubscribeAll();
@@ -553,56 +615,11 @@ Engine.prototype.itemsToCode = function(items){
 
 };
 
-Engine.prototype.runBlocksById = function(ids){
-  var that = this;
-  this.getItems(function(err, items){
-    var items_to_load = R.filter(function(i){
-      return R.contains(i.id, ids);
-    })(items);
-
-    var scripts = that.itemsToCode(items_to_load);
-
-    that.runCode(scripts);
-
-
-
-
-  });
-
-
+Engine.prototype.runItems = function(items) {
+  var scripts = this.itemsToCode(items);
+  this.runCode(scripts);
 };
 
-Engine.prototype.runBlocks = function(blocks){
-  var that = this;
-  this.getItems(function(err, items){
-
-
-    if(blocks && blocks.length > 0){
-      items = _.where(items, function(i){
-        return _.include(blocks, i.title);
-      });
-    }
-
-    var scripts = that.itemsToCode(items);
-
-    that.runCode(scripts);
-
-
-
-
-  });
-
-};
-
-Engine.prototype.getItems = function(cb){
-  var col = this.db.collection('settings');
-  col.findOne({key: 'cento_authoring_items'}, function(e, data){
-
-    var items = data ? data.value.data : [];
-    cb(e, items);
-  });
-
-};
 
 
 Engine.prototype.getParam = function(k, cb){

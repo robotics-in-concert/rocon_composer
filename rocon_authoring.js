@@ -11,11 +11,71 @@ var _ = require('lodash'),
   socketio = require('socket.io'),
   MongoClient = require('mongodb').MongoClient,
   winston = require('winston'),
+  spawn = require('child_process').spawn,
   Engine = require('./engine');
 
 setupLogger();
 checkEnvVars();
 
+
+var socketio_port = (process.env.ROCON_AUTHORING_SOCKETIO_PORT || 100 + +process.env.ROCON_AUTHORING_SERVER_PORT)
+$socketio_port = socketio_port;
+
+global.childEngine = null;
+
+global.startEngine = function(extras){
+    var engine_opts = _.defaults(argv.engine_options || {}, extras, {
+      publish_delay: +process.env.ROCON_AUTHORING_PUBLISH_DELAY,
+      socketio_port: socketio_port
+    });
+
+
+    logger.info('engine options', engine_opts);
+
+
+
+    var child = spawn('node', ['./engine_runner.js', '--option', JSON.stringify(engine_opts)], {stdio: ['pipe', 'pipe', 'pipe', 'ipc']})
+    global.childEngine = child;
+
+    logger.info("engine spawn pid :", child.pid);
+
+    child.stdout.on('data', function(data){
+      console.log("engine", data.toString().trim());
+    });
+    child.stderr.on('data', function(data){
+      console.error("engine", data.toString().trim());
+    });
+
+
+    // $engine = new Engine(db, io,argv.engine_options);
+
+    // var args = argv.workflow
+    // if(args && args.length){
+      // $engine.once('started', function(){
+        // $engine.runBlocks(args);
+      // });
+
+    // }
+}
+
+
+
+global.stopEngine = function(){
+  childEngine.on('message', function(msg){
+    if(msg == 'engine_stopped'){
+      global.childEngine.kill('SIGTERM');
+    }
+  });
+};
+global.restartEngine = function(){
+  childEngine.on('message', function(msg){
+    if(msg == 'engine_stopped'){
+      childEngine.kill('SIGTERM');
+      startEngine();
+    }
+  });
+  childEngine.send({action: 'stop'});
+};
 
 MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
   if(e) throw e;
@@ -29,7 +89,9 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
 
     var app = express(); 
     var server = http.createServer(app);
+    var server2 = http.createServer(app);
     var io = socketio.listen(server);
+    $io = io;
 
 
     app.use(express.static('public'));
@@ -55,6 +117,9 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
 
 
 
+
+
+
   }
 
 
@@ -64,19 +129,35 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
 
 
   if(argv.engine){
-    var engine_opts = _.merge(argv.engine_options || {}, {
-      publish_delay: +process.env.ROCON_AUTHORING_PUBLISH_DELAY
+    startEngine();
+    global.childEngine.on('message', function(msg){
+
+      if(msg == 'engine_start_failed'){
+        logger.error('engine start failed');
+      }else if(msg == 'engine_started'){
+        logger.info('engine started');
+      }else if(msg == 'engine_ready'){
+        logger.info('engine ready')
+        var workflows = argv.workflow;
+        if(!_.isEmpty(workflows)){
+          var col = db.collection('settings');
+          col.findOne({key: 'cento_authoring_items'}, function(e, data){
+            var items = data ? data.value.data : [];
+            var items_to_load = _(items)
+              .filter(function(i) { return _.contains(workflows, i.title); })
+              .sortBy(function(i) { return _.indexOf(workflows, i.title); })
+              .value();
+        
+            global.childEngine.send({action: 'run', items: items_to_load});
+          });
+
+        }
+
+      }
+
     });
 
-    $engine = new Engine(db, io, engine_opts);
 
-    var args = argv.workflow
-    if(args && args.length){
-      $engine.once('started', function(){
-        $engine.runBlocks(args);
-      });
-
-    }
 
   }
 
@@ -121,3 +202,24 @@ function checkEnvVars(){
     });
 
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
