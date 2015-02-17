@@ -8,6 +8,7 @@ var _ = require('lodash')
   , path = require('path')
   , URL = require('url')
   , JSONSelect = require('JSONSelect')
+  , Settings = require('./model').Settings
   , ServiceStore = require('./service_store');
 
 var _getMessageDetails = function(type, cb){
@@ -141,14 +142,17 @@ module.exports = function(app, db){
 
     var itemIds = req.body.blocks;
 
-    _getItems(function(err, items){
+    Settings.findOne({key: 'cento_authoring_items'}, function(e, row){
+      var items = row.value.data;
       var items_to_load = _.filter(items, function(i){
         return _.contains(itemIds, i.id);
       });
 
-      global.childEngine.send({action: 'run', items: items_to_load});
-      res.send({result: true});
+      var titles = _.map(items_to_load, 'title');
+      var pid = engineManager.startEngine();
+      engineManager.run(pid, titles);
 
+      res.send({result: true});
     });
 
 

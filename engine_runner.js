@@ -6,11 +6,13 @@ var _ = require('lodash'),
   Engine = require('./engine');
 
 
+process.name = 'rocon-workflow-engine'
 
 $pid = process.pid;
 setupLogger();
 
 console.log('my pid', $pid);
+
 
 
 
