@@ -22,19 +22,11 @@ var engine_options = JSON.parse(argv.option);
 
 $engine = new Engine(engine_options);
 
-$engine.once('started', function(){
-  _postStatus('started');
+$engine.on('status.*', function(){
+  var en = this.event.split(/\./)[1];
+  _postStatus(en);
 
 });
-$engine.once('ready', function(){
-  _postStatus('ready');
-});
-$engine.once('start_failed', function(){
-  _postStatus('start_failed');
-});
-
-
-
 
 process.on('message', function(data){
   console.log(data);
@@ -55,10 +47,6 @@ process.on('message', function(data){
   }
 
 });
-
-
-
-
 
 
 function setupLogger(){

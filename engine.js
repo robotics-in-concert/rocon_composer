@@ -2,6 +2,7 @@ var _ = require('lodash'),
   R = require('ramda'),
   Promise = require('bluebird'),
   EventEmitter = require('events').EventEmitter,
+  EventEmitter2 = require('eventemitter2').EventEmitter2,
   colors = require('colors'),
   bodyParser = require('body-parser'),
   express = require('express'),
@@ -27,6 +28,7 @@ DEBUG = process.env.DEBUG || false
  */
 
 var Engine = function(opts){
+  EventEmitter2.call(this, {wildcard: true});
   this.options = _.assign({
     ros_retries: 0,
     ros_retry_interval: 1000,
@@ -70,9 +72,11 @@ var Engine = function(opts){
     ros.on('connection', function(){
       engine.log('ros connected');
       engine.emit('started');
+      engine.emit('status.started')
 
       engine.waitForTopicsReady(['/concert/scheduler/requests']).then(function(){
         engine.emit('ready');
+        engine.emit('status.ready')
       });
       connected = true;
       // ros.getMessageDetails('simple_delivery_msgs/DeliveryStatus', function(detail){
@@ -98,6 +102,7 @@ var Engine = function(opts){
   }, function(e){
     logger.error('ros connection failed', e);
     engine.emit('start_failed');
+    engine.emit('status.start_failed');
 
     
   }, this.options.ros_retries, this.options.ros_retry_interval);
@@ -111,7 +116,7 @@ var Engine = function(opts){
   this.initSocket();
 
 };
-util.inherits(Engine, EventEmitter);
+util.inherits(Engine, EventEmitter2);
 
 Engine.prototype.socketBroadcast = function(key, msg){
   this.socket.emit(key, msg);
