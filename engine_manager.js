@@ -45,6 +45,7 @@ EngineManager.prototype._bindClientSocketHandlers = function(socket){
     that.broadcastEnginesInfo();
   });
   socket.on('start', function(payload){
+    
     var pid = that.startEngine();
     if(payload && payload.items){
       that.run(pid, payload.items);
@@ -101,6 +102,8 @@ EngineManager.prototype.callOnReady = function(pid, cb) {
 
 EngineManager.prototype.run = function(pid, workflows){
   var that = this;
+  console.log("*******", workflows);
+
   this.callOnReady(pid, function(){
 
     var items = Settings.getItems(function(e, items){
@@ -109,7 +112,7 @@ EngineManager.prototype.run = function(pid, workflows){
         .sortBy(function(i) { return _.indexOf(workflows, i.title); })
         .value();
       var c = that.engine_processes[pid].process;
-      c.send({action: 'run', items: items});
+      c.send({action: 'run', items: items_to_load});
 
 
     });
@@ -145,7 +148,7 @@ EngineManager.prototype._bindEvents = function(child){
 
     }else{
       var action = msg.action;
-      that.emit(['child', child.pid, publish].join('.'), msg);
+      that.emit(['child', child.pid, action].join('.'), msg);
 
 
     }

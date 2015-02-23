@@ -31,7 +31,7 @@ $engine.on('ros.**', function(payload){
   var tail = _.tail(this.event.split(/\./));
   var action = tail[0];
   var topic = tail[1];
-  prcoess.send({action: action, topic: topic, payload: payload});
+  process.send({action: action, topic: topic, payload: payload});
 });
 
 process.on('message', function(data){

@@ -74,12 +74,14 @@ function EngineDashboardController($scope, socket, $location, $http){
       .invoke('trim')
       .value();
 
-    if(pid){
-      socket.emit('run', {pid: pid, items: workflows});
-    }else{
-      console.log('--------------', workflows);
+
+    if(typeof pid == 'undefined'){
+      console.log('1', workflows);
 
       socket.emit('start', {items: workflows});
+    }else{
+      console.log('2', workflows);
+      socket.emit('run', {pid: pid, items: workflows});
     }
   };
 
