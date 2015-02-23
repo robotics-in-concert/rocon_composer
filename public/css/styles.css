@@ -355,6 +355,14 @@ button {
   padding: 20px 40px;
   flex: 1;
 }
+.engine-dashboard .main #engines {
+  display: flex;
+  flex-wrap: wrap;
+}
+.engine-dashboard .main #engines .panel {
+  width: 300px;
+  margin-right: 20px;
+}
 /* FIXES */
 /* 1. angular ui modal backdrop */
 .modal-backdrop {

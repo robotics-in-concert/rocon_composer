@@ -17,10 +17,11 @@
         </ul>
         <div class="main" ng-controller="engineDashboardController" ng-cloak>
           <h3>Engines</h3>
+          <div id="engines">
             <div class="panel panel-default" ng-repeat="proc in processes">
               <div class="panel-heading">Engine#[[proc.pid]]</div>
               <div class="panel-body">
-                Status : [[proc.status]]
+                Status : <span ng-class="{'label-default': true, 'label-success': proc.status=='running', label: true}">[[proc.status]]</span>
                 <div ng-if="proc.status == 'running'">
                   Running Items :
                   <ul>
@@ -30,13 +31,14 @@
                   </ul>
 
                 </div>
-
                 <div class="text-right">
                   <button class="btn btn-sm btn-default" ng-click="run(proc.pid)">Run</button>
                   <button class="btn btn-sm btn-danger" ng-click="killEngine(proc.pid)">Kill</button>
                 </div>
+
               </div>
             </div>
+          </div>
           <ul>
             <li ng-repeat="topic in published">
               [[topic.name]] ([[topic.type]]) [[topic.payload | json]]
