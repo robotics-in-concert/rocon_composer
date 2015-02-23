@@ -1,10 +1,12 @@
 var _ = require('lodash');
+var ItemsSelectCtrl = require('../ctrls/items_select_ctrl');
 
 console.log(_);
 
 
 angular.module('engine-dashboard', [
-  'btford.socket-io'
+  'btford.socket-io',
+  'ui.bootstrap'
 ])
   .config(Config)
   .factory('socket', ['socketFactory', function(socketFactory){
@@ -29,7 +31,7 @@ function Config($interpolateProvider){
 }
 
 /* @ngInject */
-function EngineDashboardController($scope, socket, $location, $http){
+function EngineDashboardController($scope, socket, $location, $http, $modal){
   console.log(socket);
 
   socket.on('connect', function(){
@@ -63,6 +65,10 @@ function EngineDashboardController($scope, socket, $location, $http){
 
   });
 
+
+
+
+
   $scope.start = function(pid){
     socket.emit('start', {items: null});
   };
@@ -71,23 +77,37 @@ function EngineDashboardController($scope, socket, $location, $http){
     socket.emit('kill', {pid: pid});
   };
   $scope.run = function(pid){
-    var workflows = prompt('workflows?');
-    if(_.isEmpty(workflows)){
-      return;
-    }
-    workflows = _(workflows.split(/,/))
-      .invoke('trim')
-      .value();
+
+    var $mi = $modal.open({
+      templateUrl: '/js/tpl/modal_items_select.html',
+      controller: ItemsSelectCtrl,
+      controllerAs: 'ctrl',
+      resolve: {
+        items: function(){
+          return $http.get('/api/param/cento_authoring_items').then(function(res){
+            if(res.data.data){
+              return _.map(res.data.data, 'title');
+            }
+            return null;
+          });
+
+        }
+      }
+
+    });
+    $mi.result.then(function(workflows){
+      if(typeof pid == 'undefined'){
+        console.log('1', workflows);
+
+        socket.emit('start', {items: workflows});
+      }else{
+        console.log('2', workflows);
+        socket.emit('run', {pid: pid, items: workflows});
+      }
+
+    });
 
 
-    if(typeof pid == 'undefined'){
-      console.log('1', workflows);
-
-      socket.emit('start', {items: workflows});
-    }else{
-      console.log('2', workflows);
-      socket.emit('run', {pid: pid, items: workflows});
-    }
   };
 
   $scope.killEngine = function(pid){
