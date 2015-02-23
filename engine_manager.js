@@ -47,7 +47,7 @@ EngineManager.prototype._bindClientSocketHandlers = function(socket){
   socket.on('start', function(payload){
     
     var pid = that.startEngine();
-    if(payload && payload.items){
+    if(payload && payload.items && payload.items.length){
       that.run(pid, payload.items);
     }
   });
@@ -111,8 +111,10 @@ EngineManager.prototype.run = function(pid, workflows){
         .filter(function(i) { return _.contains(workflows, i.title); })
         .sortBy(function(i) { return _.indexOf(workflows, i.title); })
         .value();
-      var c = that.engine_processes[pid].process;
-      c.send({action: 'run', items: items_to_load});
+      var child = that.engine_processes[pid];
+      var proc = child.process;
+      proc.send({action: 'run', items: items_to_load});
+      child.running_items = items_to_load;
 
 
     });
@@ -127,6 +129,8 @@ EngineManager.prototype.broadcastEnginesInfo = function(){
     var data = _.omit(child, 'process');
     return _.assign(data, {pid: pid});
   });
+  console.log(payload);
+
   this.io.of('/engine/client')
     .emit('data', {event: 'processes', payload: payload});
 

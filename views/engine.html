@@ -21,6 +21,15 @@
               <div class="panel-heading">Engine#[[proc.pid]]</div>
               <div class="panel-body">
                 Status : [[proc.status]]
+                <div ng-if="proc.status == 'running'">
+                  Running Items :
+                  <ul>
+                    <li ng-repeat="item in proc.running_items">
+                      <strong>[[item.title]]</strong>
+                    </li>
+                  </ul>
+
+                </div>
 
                 <div class="text-right">
                   <button class="btn btn-sm btn-default" ng-click="run(proc.pid)">Run</button>
