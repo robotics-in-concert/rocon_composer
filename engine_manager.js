@@ -143,6 +143,11 @@ EngineManager.prototype._bindEvents = function(child){
       that.emit(['child', child.pid, status].join('.'));
       that.broadcastEnginesInfo();
 
+    }else{
+      var action = msg.action;
+      that.emit(['child', child.pid, publish].join('.'), msg);
+
+
     }
 
   });
