@@ -75,6 +75,18 @@ module.exports = function(app, db){
     });
   });
 
+
+  app.post('/api/engine/start', function(req, res){
+
+    var payload = res.body;
+    var pid = engineManager.startEngine();
+    if(payload && payload.items && payload.items.length){
+      engineManager.run(pid, payload.items);
+    }
+    res.send('ok');
+  });
+
+
   app.post('/api/load_rapp', function(req, res){
     if(!process.env.MSG_DATABASE){
       res.send('no rocon protocols web', 500);
