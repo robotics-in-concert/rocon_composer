@@ -78,12 +78,19 @@ module.exports = function(app, db){
 
   app.post('/api/engine/start', function(req, res){
 
-    var payload = res.body;
+    var payload = req.body;
+
     var pid = engineManager.startEngine();
     if(payload && payload.items && payload.items.length){
       engineManager.run(pid, payload.items);
     }
-    res.send('ok');
+    res.send({status: 'ok', pid: pid});
+  });
+  app.post('/api/engine/stop', function(req, res){
+
+    var payload = req.body;
+    engineManager.killEngine(payload.pid);
+    res.send({status: 'ok'});
   });
 
 
