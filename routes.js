@@ -8,6 +8,7 @@ var _ = require('lodash')
   , path = require('path')
   , URL = require('url')
   , JSONSelect = require('JSONSelect')
+  , Settings = require('./model').Settings
   , ServiceStore = require('./service_store');
 
 var _getMessageDetails = function(type, cb){
@@ -50,12 +51,11 @@ module.exports = function(app, db){
     res.render('prezi', {socketio_port: $socketio_port});
   });
   app.get('/engine', function(req, res){
-    res.render('engine', {socketio_port: $socketio_port});
+    res.render('engine');
   });
   app.get('/ping', function(req, res){
     res.send('pong')
   });
-
 
   app.get('/api/load_interactions', function(req, res){
     if(!process.env.MSG_DATABASE){
@@ -74,6 +74,25 @@ module.exports = function(app, db){
 
     });
   });
+
+
+  app.post('/api/engine/start', function(req, res){
+
+    var payload = req.body;
+
+    var pid = engineManager.startEngine();
+    if(payload && payload.items && payload.items.length){
+      engineManager.run(pid, payload.items);
+    }
+    res.send({status: 'ok', pid: pid});
+  });
+  app.post('/api/engine/stop', function(req, res){
+
+    var payload = req.body;
+    engineManager.killEngine(payload.pid);
+    res.send({status: 'ok'});
+  });
+
 
   app.post('/api/load_rapp', function(req, res){
     if(!process.env.MSG_DATABASE){
@@ -142,14 +161,17 @@ module.exports = function(app, db){
 
     var itemIds = req.body.blocks;
 
-    _getItems(function(err, items){
+    Settings.findOne({key: 'cento_authoring_items'}, function(e, row){
+      var items = row.value.data;
       var items_to_load = _.filter(items, function(i){
         return _.contains(itemIds, i.id);
       });
 
-      global.childEngine.send({action: 'run', items: items_to_load});
-      res.send({result: true});
+      var titles = _.map(items_to_load, 'title');
+      var pid = engineManager.startEngine();
+      engineManager.run(pid, titles);
 
+      res.send({result: true});
     });
 
 

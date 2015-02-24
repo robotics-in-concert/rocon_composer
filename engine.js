@@ -1,10 +1,7 @@
 var _ = require('lodash'),
   R = require('ramda'),
   Promise = require('bluebird'),
-  EventEmitter = require('events').EventEmitter,
-  colors = require('colors'),
-  bodyParser = require('body-parser'),
-  express = require('express'),
+  EventEmitter2 = require('eventemitter2').EventEmitter2,
   ROSLIB = require('roslib'),
   Fiber = require('fibers')
   Future = require('fibers/future'),
@@ -27,20 +24,24 @@ DEBUG = process.env.DEBUG || false
  */
 
 var Engine = function(opts){
+  EventEmitter2.call(this, {wildcard: true});
   this.options = _.assign({
     ros_retries: 0,
     ros_retry_interval: 1000,
   }, opts);
 
-  this.io = require('socket.io').listen(this.options.socketio_port);
-  this.log('socketio listen on '+this.options.socketio_port);
+
+  // this.socket = require('socket.io-client')('ws://localhost:'+this.options.service_port + '/engine');
+  this.socket = null;
 
 
-  this.io.on('connection', function(socket){
-    console.log('socket conntected ', socket.id);
-  });
 
-  this.ee = new EventEmitter();
+  // this.io = require('socket.io').listen(this.options.socketio_port);
+  // this.log('socketio listen on '+this.options.socketio_port);
+
+
+
+  this.ee = new EventEmitter2();
   this.executions = [];
   this.memory = {};
   var ros = this.ros = new ROSLIB.Ros({encoding: 'utf8'});
@@ -67,24 +68,13 @@ var Engine = function(opts){
     ros.on('connection', function(){
       engine.log('ros connected');
       engine.emit('started');
+      engine.emit('status.started')
 
       engine.waitForTopicsReady(['/concert/scheduler/requests']).then(function(){
         engine.emit('ready');
+        engine.emit('status.ready')
       });
       connected = true;
-      // ros.getMessageDetails('simple_delivery_msgs/DeliveryStatus', function(detail){
-        // console.log('detail', detail);
-      // });
-      // ros.getMessageDetails('simple_delivery_msgs/DeliveryOrder', function(detail){
-        // console.log('detail', detail);
-      // });
-      // ros.getTopics(function(topics){
-        // console.log('topics : ', topics);
-      // });
-      // ros.getServices(function(topics){
-        // // console.log('services : ', topics);
-      // });
-
     });
     ros.on('close', function(){
       engine.log('ros closed');
@@ -95,6 +85,7 @@ var Engine = function(opts){
   }, function(e){
     logger.error('ros connection failed', e);
     engine.emit('start_failed');
+    engine.emit('status.start_failed');
 
     
   }, this.options.ros_retries, this.options.ros_retry_interval);
@@ -108,25 +99,25 @@ var Engine = function(opts){
   this.initSocket();
 
 };
-util.inherits(Engine, EventEmitter);
+util.inherits(Engine, EventEmitter2);
 
 Engine.prototype.socketBroadcast = function(key, msg){
-  this.io.emit(key, msg);
+  this.socket.emit(key, msg);
   this.debug('socket#emit', key, msg);
 };
 
 Engine.prototype.initSocket = function(){
-  var engine = this;
-  this.io.of('/engine').on('connection', function(socket){
-    engine.log('websocket connected');
-  });
+  // var engine = this;
+  // this.io.of('/engine').on('connection', function(socket){
+    // engine.log('websocket connected');
+  // });
 
 
-  engine.ee.on('engine:publish', function(data){
-    engine.io.of('/engine').emit('publish', data);
+  // engine.ee.on('engine:publish', function(data){
+    // engine.io.of('/engine').emit('publish', data);
 
 
-  });
+  // });
 
 
 
@@ -134,7 +125,7 @@ Engine.prototype.initSocket = function(){
 };
 
 Engine.prototype.socketBroadcast = function(key, msg){
-  this.io.emit(key, msg);
+  this.socket.emit(key, msg);
   this.log('socket#emit', key, msg);
 };
 
@@ -173,6 +164,7 @@ Engine.prototype.subscribe = function(topic, type){
   listener.subscribe(function(message) {
     engine.debug('Received message on ' + listener.name + ': ' + message);
     engine.ee.emit(listener.name, message);
+    engine.emit('ros.subscribe.'+listener.name, message);
 
   });
 
@@ -204,6 +196,7 @@ Engine.prototype.startPublishLoop = function(){
     topic.publish(msg);
     engine.debug("published "+topic.name);
     engine.ee.emit('engine:publish', {name: data.name, type: data.type, payload: data.msg});
+    engine.emit('ros.publish.' + data.name, {name: data.name, type: data.type, payload: data.msg});
 
   }, this.options.publish_delay);
   engine.log('publish loop started');
