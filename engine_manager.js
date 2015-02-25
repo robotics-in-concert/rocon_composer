@@ -65,7 +65,9 @@ EngineManager.prototype._bindClientSocketHandlers = function(socket){
 
 };
 
-EngineManager.prototype.allocateGlobalResource = function(key, rapp, uri, remappings, parameters, options){ 
+
+/* from : child pid */
+EngineManager.prototype.allocateGlobalResource = function(from, key, rapp, uri, remappings, parameters, options){ 
 
 
   var that = this;
@@ -87,9 +89,14 @@ EngineManager.prototype.allocateGlobalResource = function(key, rapp, uri, remapp
 
   that.global_resources[key] = r;
   r.send_allocation_request(res, options.timeout).then(function(reqId){
-    that.broadcastMessage({action: 'resource_allocated'});
-    return {req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type};
+    // that.broadcastMessage({action: 'resource_allocated', key: key});
+
+    var proc = that.engine_processes[from].process;
+    var ctx = {req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type};
+    proc.send({action: 'resource_allocated', ctx: ctx});
+    return ctx;
   }).catch(function(e){
+    proc.send({action: 'resource_allocation_failed'});
     return null;
   });
 };

@@ -344,14 +344,34 @@ Engine.prototype._waitForTopicsReadyF = function(required_topics){
 
 
 
+Engine.prototype.allocateGlobaResource = function(rapp, uri, remappings, parameters, options){
+  var key = rapp + uri;
+  process.send({action: 'allocate_resource', rapp: rapp, uri: uri, remappings: remappings, parameters: parameters, options: options});
+
+
+  var future = new Future();
+  process.on('message', function(data){
+    if(data.action == 'resource_allocated'){
+
+      var ctx = data.ctx;
+      future.return(ctx);
+      return ctx;
+
+    }
+    
+  });
+ 
+  return future.wait();
+
+};
+
 Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, options){
 
   var engine = this;
   var allocation_type = options.type || 'dynamic';
 
   if(allocation_type == 'static'){
-    
-
+    return this.allocateGlobalResource(rapp, uri, remappings, parameters, options);
   }
   
   var r = new Requester(this);
