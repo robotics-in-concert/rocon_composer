@@ -2,6 +2,8 @@ var spawn = require('child_process').spawn,
   _ = require('lodash'),
   util = require('util'),
   Settings = require('./model').Settings,
+  Requester = require('./requester').Requester,
+  Resource = require('./requester').Resource,
   EventEmitter2 = require('eventemitter2').EventEmitter2;
 
 
@@ -15,6 +17,7 @@ var EngineManager = function(io, options){
 
   this.io = io;
   this.engine_processes = {};
+  this.global_resources = {};
   this.options = options;
   console.log(this.options);
 
@@ -61,6 +64,36 @@ EngineManager.prototype._bindClientSocketHandlers = function(socket){
   });
 
 };
+
+EngineManager.prototype.allocateGlobalResource = function(key, rapp, uri, remappings, parameters, options){ 
+
+
+  var that = this;
+  var r = new Requester(this);
+  var rid = r.id.toString();
+
+  R.forEach(function(remap){
+    if(R.isEmpty(remap.remap_to)){
+      remap.remap_to = "/" + remap.remap_from + "_" + UUID.v4().replace(/-/g, "")
+    }
+
+  })(remappings);
+
+  var res = new Resource();
+  res.rapp = rapp;
+  res.uri = uri;
+  res.remappings = remappings;
+  res.parameters = parameters;
+
+  that.global_resources[key] = r;
+  r.send_allocation_request(res, options.timeout).then(function(reqId){
+    return {req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type};
+  }).catch(function(e){
+    return null;
+  });
+};
+
+
 
 EngineManager.prototype.startEngine = function(io, extras){
   var engine_opts = this.options.engine_options;

@@ -347,6 +347,12 @@ Engine.prototype._waitForTopicsReadyF = function(required_topics){
 Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, options){
 
   var engine = this;
+  var allocation_type = options.type || 'dynamic';
+
+  if(allocation_type == 'static'){
+    
+
+  }
   
   var r = new Requester(this);
   var rid = r.id.toString();
