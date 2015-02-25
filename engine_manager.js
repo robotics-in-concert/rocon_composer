@@ -87,6 +87,7 @@ EngineManager.prototype.allocateGlobalResource = function(key, rapp, uri, remapp
 
   that.global_resources[key] = r;
   r.send_allocation_request(res, options.timeout).then(function(reqId){
+    that.broadcastMessage({action: 'resource_allocated'});
     return {req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type};
   }).catch(function(e){
     return null;
@@ -120,7 +121,16 @@ EngineManager.prototype.startEngine = function(io, extras){
   return child.pid;
 }
 
+EngineManager.prototype.broadcastMessage = function(msg){
+  return _(this.engine_processes)
+    .each(function(child, pid){
+      var proc = child.process;
+      proc.send(msg);
+    }).value();
 
+
+
+};
 
 
 EngineManager.prototype.callOnReady = function(pid, cb) {
