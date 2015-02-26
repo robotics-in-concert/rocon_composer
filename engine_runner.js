@@ -51,6 +51,10 @@ process.on('message', function(data){
       _postStatus('stopped');
     });
   }
+  if(action == 'resource_allocated'){
+    var ctx = payload.ctx;
+    $engine.emit('manager.resource_allocated.'+ctx.key);
+  };
 
 });
 

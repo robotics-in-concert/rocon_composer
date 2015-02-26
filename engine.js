@@ -350,19 +350,15 @@ Engine.prototype.allocateGlobaResource = function(rapp, uri, remappings, paramet
 
 
   var future = new Future();
-  process.on('message', function(data){
-    if(data.action == 'resource_allocated'){
 
-      var ctx = data.ctx;
-      future.return(ctx);
-      return ctx;
+  this.once('manager.resource_allocated.'+key, function(){
+    var ctx = data.ctx;
+    future.return(ctx);
+    return ctx;
 
-    }
-    
   });
- 
   return future.wait();
-
+ 
 };
 
 Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, options){

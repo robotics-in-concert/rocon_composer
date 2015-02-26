@@ -99,7 +99,7 @@ EngineManager.prototype.allocateGlobalResource = function(from, key, rapp, uri, 
     r.send_allocation_request(res, options.timeout).then(function(reqId){
       // that.broadcastMessage({action: 'resource_allocated', key: key});
 
-      var ctx = {req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type};
+      var ctx = {req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type, key: key};
 
 
       _.each(that.global_resources_users[key], function(pid){
