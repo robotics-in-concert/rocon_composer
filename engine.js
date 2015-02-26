@@ -361,15 +361,9 @@ Engine.prototype.allocateGlobaResource = function(rapp, uri, remappings, paramet
  
 };
 
-Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, options){
 
+Engine.prototype._allocateResource = function(rapp, uri, remappings, parameters, options){
   var engine = this;
-  var allocation_type = options.type || 'dynamic';
-
-  if(allocation_type == 'static'){
-    return this.allocateGlobalResource(rapp, uri, remappings, parameters, options);
-  }
-  
   var r = new Requester(this);
   var rid = r.id.toString();
 
@@ -377,7 +371,6 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, 
     if(R.isEmpty(remap.remap_to)){
       remap.remap_to = "/" + remap.remap_from + "_" + UUID.v4().replace(/-/g, "")
     }
-
   })(remappings);
 
   var res = new Resource();
@@ -386,15 +379,60 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, 
   res.remappings = remappings;
   res.parameters = parameters;
 
-  var future = new Future();
   engine.schedule_requests[rid] = r;
-  r.send_allocation_request(res, options.timeout).then(function(reqId){
-    engine.schedule_requests_ref_counts[rid] = 0;
-    future.return({req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type});
-  }).catch(function(e){
-    future.return(null);
+  return r.send_allocation_request(res, options.timeout).then(function(reqId){
+        return {req_id: reqId, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type};
+      });
+  
+};
+
+
+Engine.prototype._checkSharedResource = function(key, rapp, uri, remappings, parameters, options){
+  var engine = this;
+
+  return new Promise(function(resolve, reject){
+    process.send({action: 'get_shared_resource', key: key, rapp: rapp, uri: uri, remappings: remappings, parameters: parameters, options: options});
+    engine.once('manager.shared_resource.'+key, function(ctx){
+      resolve(ctx);
+    });
+
+  });
+};
+
+Engine.prototype._getOrAllocateSharedResource = function(key, rapp, uri, remappings, parameters, options){
+  var engine = this;
+  return engine._checkSharedResource(key, rapp, uri, remappings, parameters, options).then(function(ctx){
+    if(ctx){
+      return ctx;
+    }else{
+      return engine._allocateResource(rapp, uri, remappings, parameters, options).then(function(ctx){
+        process.send({action: 'set_shared_resource', key: key, ctx: ctx});
+      });
+    }
+
+
   });
 
+};
+
+Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, options){
+
+  var engine = this;
+  var allocation_type = options.type || 'dynamic';
+
+  var future = new Future();
+
+  if(allocation_type == 'static'){
+    return this.allocateGlobalResource(rapp, uri, remappings, parameters, options);
+  }else{ // dynamic
+    engine._allocateResource(rapp, uri, remappings, parameters, options)
+      .then(function(ctx){
+        engine.schedule_requests_ref_counts[ctx.req_id] = 0;
+        future.return(ctx);
+      }).catch(function(e){
+        future.return(null);
+      });
+  }
   
   return future.wait();
 };
