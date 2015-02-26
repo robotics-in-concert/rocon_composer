@@ -3,6 +3,8 @@
 var _ = require('lodash'),
   argv = require('minimist')(process.argv.slice(2)),
   winston = require('winston'),
+  EventEmitter2 = require('eventemitter2').EventEmitter2,
+  process_send2 = require('./utils').process_send2,
   Engine = require('./engine');
 
 
@@ -31,7 +33,27 @@ $engine.on('ros.**', function(payload){
   var tail = _.tail(this.event.split(/\./));
   var action = tail[0];
   var topic = tail[1];
-  process.send({action: action, topic: topic, payload: payload});
+  process_send2({action: action, topic: topic, payload: payload})
+    .then(function(x){
+      console.log('XXXX', x);
+
+    });
+});
+
+
+global.process_events = new EventEmitter2({wildcard: true});
+
+process.on('message', function(data){
+  var name = data.action || data.cmd;
+  process_events.emit(name, data);
+});
+
+
+
+process_events.on('run', function(data){
+  var items = data.items;
+  $engine.runItems(items);
+  _postStatus('running');
 });
 
 process.on('message', function(data){
@@ -41,11 +63,6 @@ process.on('message', function(data){
   var action = data.action;
   console.log(action);
 
-  if(action == 'run'){
-    var items = data.items;
-    $engine.runItems(items);
-    _postStatus('running');
-  }
   if(action == 'clear'){
     $engine.clear().then(function(){
       _postStatus('stopped');

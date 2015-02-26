@@ -1,4 +1,5 @@
 var fs = require('fs'),
+  Promise = require('bluebird'),
   request = require('request'),
   zlib = require('zlib'),
   os = require('os'),
@@ -7,12 +8,31 @@ var fs = require('fs'),
   tar = require('tar'),
   _ = require('lodash'),
   yaml = require('js-yaml'),
+  UUID = require('node-uuid'),
   Path = require('path');
   
   
 
 
+
+process_send2 = function(data){
+  var reqId = UUID.v4().replace(/-/g, "")
+  data.__request_id = reqId;
+
+
+  return new Promise(function(resolve, reject){
+    process.send(data);
+    process_events.once('return.'+reqId, function(payload){
+      var res = payload.result;
+      resolve(res);
+    });
+  });
+
+
+};
+
 module.exports = {
+  process_send2: process_send2,
 
   retry: function(f, cb, n, ms){
     var op = {};

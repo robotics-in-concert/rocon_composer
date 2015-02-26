@@ -7,12 +7,14 @@ var _ = require('lodash'),
   Future = require('fibers/future'),
   wait = Future.wait,
   Utils = require('./utils'),
+  process_send2 = Utils.process_send2,
   util = require('util'),
   request = require('request'),
   Requester = require('./requester').Requester,
   Resource = require('./requester').Resource,
   UUID = require('node-uuid'),
   URL = require('url');
+
 
 
 DEBUG = process.env.DEBUG || false
@@ -406,7 +408,9 @@ Engine.prototype._getOrAllocateSharedResource = function(key, rapp, uri, remappi
       return ctx;
     }else{
       return engine._allocateResource(rapp, uri, remappings, parameters, options).then(function(ctx){
-        process.send({action: 'set_shared_resource', key: key, ctx: ctx});
+        return process_send2({action: 'set_shared_resource', key: key, ctx: ctx}).then(function(){
+          return ctx;
+        });
       });
     }
 

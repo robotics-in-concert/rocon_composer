@@ -1,5 +1,6 @@
 var spawn = require('child_process').spawn,
   _ = require('lodash'),
+  Promise = require('bluebird'),
   util = require('util'),
   Settings = require('./model').Settings,
   Requester = require('./requester').Requester,
@@ -212,22 +213,36 @@ EngineManager.prototype._bindEvents = function(child){
   child.on('message', function(msg){
 
     var action = msg.action;
+    var result = null;
     if(action == 'status'){
       var status = msg.status;
       logger.info('engine status to '+status);
       proc.status = status;
       that.emit(['child', child.pid, status].join('.'));
-      that.broadcastEnginesInfo();
+      result = that.broadcastEnginesInfo();
 
     }
     else if(action == 'allocate_resource'){
-      that.allocateGlobalResource(child.pid, msg.key,
+      result = that.allocateGlobalResource(child.pid, msg.key,
                              msg.rapp, msg.uri, msg.remappings, msg.parameters, msg.options);
 
     }
     else{
       var action = msg.action;
-      that.emit(['child', child.pid, action].join('.'), msg);
+      result = that.emit(['child', child.pid, action].join('.'), msg);
+
+
+    }
+
+
+    if(msg.__request_id){
+      Promise.all([result]).then(function(results){
+        var res = results[0];
+        // child.send('return.'+msg.__request_id);
+        // child.send({cmd: 'return', request_id: msg.__request_id, result: res}); // 'return.'+msg.__request_id);
+        child.send({cmd: 'return.'+msg.__request_id, request_id: msg.__request_id, result: res}); // 'return.'+msg.__request_id);
+
+      });
 
 
     }
