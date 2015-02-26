@@ -346,7 +346,7 @@ Engine.prototype._waitForTopicsReadyF = function(required_topics){
 
 Engine.prototype.allocateGlobaResource = function(rapp, uri, remappings, parameters, options){
   var key = rapp + uri;
-  process.send({action: 'allocate_resource', rapp: rapp, uri: uri, remappings: remappings, parameters: parameters, options: options});
+  process.send({action: 'allocate_resource', key: key, rapp: rapp, uri: uri, remappings: remappings, parameters: parameters, options: options});
 
 
   var future = new Future();

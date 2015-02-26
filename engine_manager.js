@@ -18,6 +18,7 @@ var EngineManager = function(io, options){
   this.io = io;
   this.engine_processes = {};
   this.global_resources = {};
+  this.global_resource_users = {};
   this.options = options;
   console.log(this.options);
 
@@ -87,18 +88,36 @@ EngineManager.prototype.allocateGlobalResource = function(from, key, rapp, uri, 
   res.remappings = remappings;
   res.parameters = parameters;
 
-  that.global_resources[key] = r;
-  r.send_allocation_request(res, options.timeout).then(function(reqId){
-    // that.broadcastMessage({action: 'resource_allocated', key: key});
 
-    var proc = that.engine_processes[from].process;
-    var ctx = {req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type};
-    proc.send({action: 'resource_allocated', ctx: ctx});
-    return ctx;
-  }).catch(function(e){
-    proc.send({action: 'resource_allocation_failed'});
-    return null;
-  });
+
+
+
+  that.global_resources_users[key] = _.compact([from].concat(that.global_resources_users[key]));
+  if(_.isEmpty(that.global_resources[key])){
+    that.global_resources[key] = r;
+
+    r.send_allocation_request(res, options.timeout).then(function(reqId){
+      // that.broadcastMessage({action: 'resource_allocated', key: key});
+
+      var ctx = {req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type};
+
+
+      _.each(that.global_resources_users[key], function(pid){
+        var proc = that.engine_processes[pid].process;
+        if(proc){
+          proc.send({action: 'resource_allocated', ctx: ctx});
+        }
+      });
+      return ctx;
+    }).catch(function(e){
+      proc.send({action: 'resource_allocation_failed'});
+      return null;
+    });
+
+  }else{
+
+
+  }
 };
 
 
@@ -200,7 +219,13 @@ EngineManager.prototype._bindEvents = function(child){
       that.emit(['child', child.pid, status].join('.'));
       that.broadcastEnginesInfo();
 
-    }else{
+    }
+    else if(action == 'allocate_resource'){
+      that.allocateGlobalResource(child.pid, msg.key,
+                             msg.rapp, msg.uri, msg.remappings, msg.parameters, msg.options);
+
+    }
+    else{
       var action = msg.action;
       that.emit(['child', child.pid, action].join('.'), msg);
 
