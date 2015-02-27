@@ -2,6 +2,7 @@ var spawn = require('child_process').spawn,
   _ = require('lodash'),
   Promise = require('bluebird'),
   Engine = require('./engine'),
+  ResourceManager = require('./src/resource_manager'),
   util = require('util'),
   Settings = require('./model').Settings,
   Requester = require('./requester').Requester,
@@ -20,8 +21,11 @@ var EngineManager = function(io, options){
 
   this.io = io;
   this.engine_processes = {};
-  this.global_resources = {};
-  this.global_resource_users = {};
+
+
+  this.resource_manage = new ResourceManager(this.mainEngine);
+
+
   this.options = options;
   console.log(this.options);
 
@@ -70,38 +74,6 @@ EngineManager.prototype._bindClientSocketHandlers = function(socket){
 };
 
 
-/* from : child pid */
-EngineManager.prototype.allocateGlobalResource = function(from, key, rapp, uri, remappings, parameters, options){ 
-  var that = this;
-
-  var resource = that.global_resources[key];
-
-  if(_.isEmpty(resource)){
-    var r = new Requester(this.mainEngine);
-    var rid = r.id.toString();
-
-    _.each(remappings, function(remap){
-      if(_.isEmpty(remap.remap_to)){
-        remap.remap_to = "/" + remap.remap_from + "_" + UUID.v4().replace(/-/g, "");
-      }
-    });
-
-    var res = new Resource();
-    res.rapp = rapp;
-    res.uri = uri;
-    res.remappings = remappings;
-    res.parameters = parameters;
-
-    resource = r.send_allocation_request(res, {timeout: options.timeout, test: true}).then(function(reqId){
-      var ctx = {req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type, key: key};
-      return ctx;
-    });
-    that.global_resources[key] = resource;
-
-  }
-
-  return resource;
-};
 
 
 
@@ -205,9 +177,8 @@ EngineManager.prototype._bindEvents = function(child){
 
     }
     else if(action == 'allocate_resource'){
-      result = that.allocateGlobalResource(child.pid, msg.key,
+      result = that.resource_manager.allocate(msg.key,
                              msg.rapp, msg.uri, msg.remappings, msg.parameters, msg.options);
-
     }
     else{
       var action = msg.action;
