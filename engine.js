@@ -427,7 +427,11 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, 
   var future = new Future();
 
   if(allocation_type == 'static'){
-    return this.allocateGlobalResource(rapp, uri, remappings, parameters, options);
+    var key = rapp + uri;
+    process_send2({action: 'allocate_resource', key: key, rapp: rapp, uri: uri, remappings: remappings, parameters: parameters, options: options})
+      .then(function(ctx){
+        future.return(ctx);
+      });
   }else{ // dynamic
     engine._allocateResource(rapp, uri, remappings, parameters, options)
       .then(function(ctx){

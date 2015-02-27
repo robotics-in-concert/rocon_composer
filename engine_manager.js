@@ -70,55 +70,36 @@ EngineManager.prototype._bindClientSocketHandlers = function(socket){
 
 /* from : child pid */
 EngineManager.prototype.allocateGlobalResource = function(from, key, rapp, uri, remappings, parameters, options){ 
-
-
   var that = this;
-  var r = new Requester(this);
-  var rid = r.id.toString();
 
-  R.forEach(function(remap){
-    if(R.isEmpty(remap.remap_to)){
-      remap.remap_to = "/" + remap.remap_from + "_" + UUID.v4().replace(/-/g, "")
-    }
+  var resource = that.global_resources[key];
 
-  })(remappings);
+  if(_.isEmpty(resource)){
+    var r = new Requester(this);
+    var rid = r.id.toString();
 
-  var res = new Resource();
-  res.rapp = rapp;
-  res.uri = uri;
-  res.remappings = remappings;
-  res.parameters = parameters;
+    R.forEach(function(remap){
+      if(R.isEmpty(remap.remap_to)){
+        remap.remap_to = "/" + remap.remap_from + "_" + UUID.v4().replace(/-/g, "")
+      }
 
+    })(remappings);
 
+    var res = new Resource();
+    res.rapp = rapp;
+    res.uri = uri;
+    res.remappings = remappings;
+    res.parameters = parameters;
 
-
-
-  that.global_resources_users[key] = _.compact([from].concat(that.global_resources_users[key]));
-  if(_.isEmpty(that.global_resources[key])){
-    that.global_resources[key] = r;
-
-    r.send_allocation_request(res, options.timeout).then(function(reqId){
-      // that.broadcastMessage({action: 'resource_allocated', key: key});
-
+    resource = r.send_allocation_request(res, options.timeout).then(function(reqId){
       var ctx = {req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type, key: key};
-
-
-      _.each(that.global_resources_users[key], function(pid){
-        var proc = that.engine_processes[pid].process;
-        if(proc){
-          proc.send({action: 'resource_allocated', ctx: ctx});
-        }
-      });
       return ctx;
-    }).catch(function(e){
-      proc.send({action: 'resource_allocation_failed'});
-      return null;
     });
-
-  }else{
-
+    that.global_resources[key] = resource;
 
   }
+
+  return resource;
 };
 
 
