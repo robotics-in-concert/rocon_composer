@@ -1,6 +1,7 @@
 var spawn = require('child_process').spawn,
   _ = require('lodash'),
   Promise = require('bluebird'),
+  Engine = require('./engine'),
   util = require('util'),
   Settings = require('./model').Settings,
   Requester = require('./requester').Requester,
@@ -11,6 +12,7 @@ var spawn = require('child_process').spawn,
 
 var EngineManager = function(io, options){
   var that = this;
+  this.mainEngine = new Engine({});
   EventEmitter2.call(this, {wildcard: true});
   console.log(this.options);
 
@@ -75,15 +77,14 @@ EngineManager.prototype.allocateGlobalResource = function(from, key, rapp, uri, 
   var resource = that.global_resources[key];
 
   if(_.isEmpty(resource)){
-    var r = new Requester(this);
+    var r = new Requester(this.mainEngine);
     var rid = r.id.toString();
 
-    R.forEach(function(remap){
-      if(R.isEmpty(remap.remap_to)){
-        remap.remap_to = "/" + remap.remap_from + "_" + UUID.v4().replace(/-/g, "")
+    _.each(remappings, function(remap){
+      if(_.isEmpty(remap.remap_to)){
+        remap.remap_to = "/" + remap.remap_from + "_" + UUID.v4().replace(/-/g, "");
       }
-
-    })(remappings);
+    });
 
     var res = new Resource();
     res.rapp = rapp;
@@ -91,7 +92,7 @@ EngineManager.prototype.allocateGlobalResource = function(from, key, rapp, uri, 
     res.remappings = remappings;
     res.parameters = parameters;
 
-    resource = r.send_allocation_request(res, options.timeout).then(function(reqId){
+    resource = r.send_allocation_request(res, {timeout: options.timeout, test: true}).then(function(reqId){
       var ctx = {req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type, key: key};
       return ctx;
     });

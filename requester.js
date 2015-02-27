@@ -282,6 +282,10 @@ Requester.prototype.finish = function(){
 };
 
 Requester.prototype.send_allocation_request = function(res, timeout){
+  if(_.isPlainObject(timeout)){
+    var options = timeout;
+    timeout = options.timeout;
+  };
   var that = this;
   var uuid = this.new_request([res]);
   this.send_requests();
@@ -301,17 +305,24 @@ Requester.prototype.send_allocation_request = function(res, timeout){
 
 
   return new Promise(function(resolve, reject){
-    var timeout_timer = null;
-    that.ee.once('granted', function(){
+
+
+    if(options.test){
       resolve(uuid.toString());
       clearTimeout(timeout_timer);
-    });
+    }else{
+      var timeout_timer = null;
+      that.ee.once('granted', function(){
+        resolve(uuid.toString());
+        clearTimeout(timeout_timer);
+      });
 
-    timeout_timer = setTimeout(function(){ 
-      console.log('resource allocation timeout.', res, timeout);
-      clearInterval(that.heartbeat_timer);
-      reject('timedout'); 
-    }, timeout);
+      timeout_timer = setTimeout(function(){ 
+        console.log('resource allocation timeout.', res, timeout);
+        clearInterval(that.heartbeat_timer);
+        reject('timedout'); 
+      }, timeout);
+    }
 
 
   });
