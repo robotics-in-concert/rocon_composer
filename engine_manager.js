@@ -151,56 +151,10 @@ EngineManager.prototype.run = function(pid, workflows){
   });
 
 };
-  // msgs.push('requester : '+ this.requester.toString());
-  // _.each(this.requests, function(req){
-    // msgs.push("request : " + req.id.toString());
-    // var keys = "status availability priority reason problem hold_time".split(/ /);
-    // var kv = _.map(keys, function(k){ return (k + " : " + req[k]); });
-    // msgs.push("\t" + kv.join(" "));
-
-
-    // _.each(req.resources, function(res){
-      // msgs.push("\tresource "+res.id.toString());
-      // msgs.push("\t\trapp "+res.rapp);
-      // msgs.push("\t\turi "+res.uri);
-      // msgs.push("\t\tremappings "+JSON.stringify(res.remappings));
-      // msgs.push("\t\tparameters "+JSON.stringify(res.parameters));
-      
-
-    // });
-  
 
 EngineManager.prototype.broadcastResourcesInfo = function(){
-
-  var payload = _(this.resource_manager.requesters)
-    .map(function(v, k){ 
-
-      var srequests = v.requests;
-
-
-
-      
-      var requests = _.map(srequests.requests, function(req){
-        var keys = "status availability priority reason problem hold_time".split(/ /);
-        var kv = _.pick(req, keys);
-
-        var resources = _.map(req.resources, function(res){
-          var r = _.cloneDeep(res);
-          r.id = res.id.toString();
-          return r;
-        });
-
-        return _.assign(kv, {id: req.id.toString(), resources: resources});
-      });
-
-      return {
-        requester: v.id.toString(),
-        requests: requests
-      }
-    })
-    .value();
   this.io.of('/engine/client')
-    .emit('data', {event: 'resources', payload: payload});
+    .emit('data', {event: 'resources', payload: this.resource_manager.to_json()});
 
 };
 

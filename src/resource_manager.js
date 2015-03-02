@@ -55,5 +55,35 @@ ResourceManager.prototype.allocate = function(key, rapp, uri, remappings, parame
 };
 
 
+ResourceManager.prototype.to_json = function(){
+  var payload = _(this.requesters)
+    .map(function(v, k){ 
+
+      var srequests = v.requests;
+
+
+
+      
+      var requests = _.map(srequests.requests, function(req){
+        var keys = "status availability priority reason problem hold_time".split(/ /);
+        var kv = _.pick(req, keys);
+
+        var resources = _.map(req.resources, function(res){
+          var r = _.cloneDeep(res);
+          r.id = res.id.toString();
+          return r;
+        });
+
+        return _.assign(kv, {id: req.id.toString(), resources: resources});
+      });
+
+      return {
+        requester: v.id.toString(),
+        requests: requests
+      }
+    })
+    .value();
+  return payload;
+};
 
 module.exports = ResourceManager;
