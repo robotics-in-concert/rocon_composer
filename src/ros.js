@@ -49,6 +49,11 @@ var Ros = function(opts){
   }, this.options.ros_retries, this.options.ros_retry_interval);
 
 
+  this.subscribe_topics = [];
+  this.publish_queue = [];
+  this.publish_loop_timer = null;
+
+
 
 };
 
@@ -80,3 +85,57 @@ Ros.prototype.waitForTopicsReady = function(required_topics){
 };
 
 
+Ros.prototype.subscribe = function(topic, type, cb){
+
+  var that = this;
+  var listener = new ROSLIB.Topic({
+    ros : this.underlying,
+    name : topic,
+    messageType : type
+  });
+
+  listener.subscribe(function(message) {
+    logger.debug('Received message on ' + listener.name + ': ' + message);
+    that.emit('subscribe.'+topic, message);
+    if(_.isFunction(cb)){ cb.call(null, message); }
+  });
+
+  this.subscribe_topics.push({topic: topic, listener: listener});
+};
+
+
+Ros.prototype.startPublishLoop = function(){
+
+  var that = this;
+  that.publish_loop_timer = setInterval(function(){
+    var data = that.publish_queue.shift();
+    if(!data){
+      return;
+    }
+
+    var topic = new ROSLIB.Topic({
+      ros : that.underlying,
+      name : data.topic,
+      messageType : data.type
+    });
+
+    var msg = new ROSLIB.Message(data.msg);
+
+
+    // And finally, publish.
+    topic.publish(msg);
+    logger.debug("published "+topic.name);
+    that.emit('publish', {name: data.name, type: data.type, payload: data.msg});
+
+  }, this.options.publish_delay);
+  engine.log('publish loop started');
+};
+Engine.prototype.stopPublishLoop = function(){
+  clearInterval(this.publish_loop_timer);
+};
+
+
+Ros.prototype.publish = function(topic, type, msg){
+  this.publish_queue.push({topic: topic,  type: type, msg: msg});
+
+};

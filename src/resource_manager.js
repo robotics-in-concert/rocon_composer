@@ -44,6 +44,9 @@ ResourceManager.prototype.allocate = function(key, rapp, uri, remappings, parame
       that.emit('allocated');
       var ctx = {req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type, key: key};
       return ctx;
+    }).catch(function(e){
+      that.emit('allocation_failed');
+      return null;
     });
     that.requesters[rid] = r;
     that.resources[key] = resource;
