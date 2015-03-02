@@ -40,7 +40,7 @@ ResourceManager.prototype.allocate = function(key, rapp, uri, remappings, parame
     res.remappings = remappings;
     res.parameters = parameters;
 
-    resource = r.send_allocation_request(res, {timeout: options.timeout, test: true}).then(function(reqId){
+    resource = r.send_allocation_request(res, {timeout: options.timeout}).then(function(reqId){
       that.emit('allocated');
       var ctx = {req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type, key: key};
       return ctx;
