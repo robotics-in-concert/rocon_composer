@@ -345,80 +345,6 @@ Engine.prototype._waitForTopicsReadyF = function(required_topics){
 };
 
 
-
-Engine.prototype.allocateGlobaResource = function(rapp, uri, remappings, parameters, options){
-  var key = rapp + uri;
-  process.send({action: 'allocate_resource', key: key, rapp: rapp, uri: uri, remappings: remappings, parameters: parameters, options: options});
-
-
-  var future = new Future();
-
-  this.once('manager.resource_allocated.'+key, function(){
-    var ctx = data.ctx;
-    future.return(ctx);
-    return ctx;
-
-  });
-  return future.wait();
- 
-};
-
-
-Engine.prototype._allocateResource = function(rapp, uri, remappings, parameters, options){
-  var engine = this;
-  var r = new Requester(this);
-  var rid = r.id.toString();
-
-  R.forEach(function(remap){
-    if(R.isEmpty(remap.remap_to)){
-      remap.remap_to = "/" + remap.remap_from + "_" + UUID.v4().replace(/-/g, "")
-    }
-  })(remappings);
-
-  var res = new Resource();
-  res.rapp = rapp;
-  res.uri = uri;
-  res.remappings = remappings;
-  res.parameters = parameters;
-
-  engine.schedule_requests[rid] = r;
-  return r.send_allocation_request(res, options.timeout).then(function(reqId){
-        return {req_id: reqId, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type};
-      });
-  
-};
-
-
-Engine.prototype._checkSharedResource = function(key, rapp, uri, remappings, parameters, options){
-  var engine = this;
-
-  return new Promise(function(resolve, reject){
-    process.send({action: 'get_shared_resource', key: key, rapp: rapp, uri: uri, remappings: remappings, parameters: parameters, options: options});
-    engine.once('manager.shared_resource.'+key, function(ctx){
-      resolve(ctx);
-    });
-
-  });
-};
-
-Engine.prototype._getOrAllocateSharedResource = function(key, rapp, uri, remappings, parameters, options){
-  var engine = this;
-  return engine._checkSharedResource(key, rapp, uri, remappings, parameters, options).then(function(ctx){
-    if(ctx){
-      return ctx;
-    }else{
-      return engine._allocateResource(rapp, uri, remappings, parameters, options).then(function(ctx){
-        return process_send2({action: 'set_shared_resource', key: key, ctx: ctx}).then(function(){
-          return ctx;
-        });
-      });
-    }
-
-
-  });
-
-};
-
 Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, options){
 
   var engine = this;
@@ -426,24 +352,15 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, 
 
   var future = new Future();
 
+  var key = null;
   if(allocation_type == 'static'){
     var key = rapp + uri;
-    process_send2({action: 'allocate_resource', key: key, rapp: rapp, uri: uri, remappings: remappings, parameters: parameters, options: options})
-      .then(function(ctx){
-        future.return(ctx);
-      });
-
-
-  }else{ // dynamic
-    // engine._allocateResource(rapp, uri, remappings, parameters, options)
-      // .then(function(ctx){
-        // engine.schedule_requests_ref_counts[ctx.req_id] = 0;
-        // future.return(ctx);
-      // }).catch(function(e){
-        // future.return(null);
-      // });
   }
-  
+  process_send2({action: 'allocate_resource', key: key, rapp: rapp, uri: uri, remappings: remappings, parameters: parameters, options: options})
+    .then(function(ctx){
+      future.return(ctx);
+    });
+
   return future.wait();
 };
 
