@@ -7,6 +7,7 @@ var ResourceManager = function(engine){
   EventEmitter2.call(this, {wildcard: true});
 
   this.resources = {}; // thenables
+  this.requesters = {};
 
 };
 util.inherits(ResourceManager, EventEmitter2);
@@ -23,6 +24,7 @@ ResourceManager.prototype.allocate = function(key, rapp, uri, remappings, parame
   var resource = that.resources[key];
 
   if(_.isEmpty(resource)){
+    this.emit('allocation_started');
     var r = new Requester(this.engine);
     var rid = r.id.toString();
 
@@ -39,10 +41,13 @@ ResourceManager.prototype.allocate = function(key, rapp, uri, remappings, parame
     res.parameters = parameters;
 
     resource = r.send_allocation_request(res, {timeout: options.timeout, test: true}).then(function(reqId){
+      that.emit('allocated');
       var ctx = {req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type, key: key};
       return ctx;
     });
+    that.requesters[rid] = r;
     that.resources[key] = resource;
+    that.emit('allocating');
 
   }
 

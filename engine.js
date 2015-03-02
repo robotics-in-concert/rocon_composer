@@ -432,14 +432,16 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, 
       .then(function(ctx){
         future.return(ctx);
       });
+
+
   }else{ // dynamic
-    engine._allocateResource(rapp, uri, remappings, parameters, options)
-      .then(function(ctx){
-        engine.schedule_requests_ref_counts[ctx.req_id] = 0;
-        future.return(ctx);
-      }).catch(function(e){
-        future.return(null);
-      });
+    // engine._allocateResource(rapp, uri, remappings, parameters, options)
+      // .then(function(ctx){
+        // engine.schedule_requests_ref_counts[ctx.req_id] = 0;
+        // future.return(ctx);
+      // }).catch(function(e){
+        // future.return(null);
+      // });
   }
   
   return future.wait();

@@ -39,14 +39,61 @@
               </div>
             </div>
           </div>
+          <button class="btn btn-default" ng-click="run()">Run</button>
+          <button class="btn btn-default" ng-click="start()">Start</button>
+
+          <h3>Resources</h3>
+          <div id="resources">
+            <div class="panel panel-default" ng-repeat="res in resources">
+              <div class="panel-heading">[[res.requester]]</div>
+              <div class="panel-body">
+                <ul class="list-unstyled">
+                  <li ng-repeat="req in res.requests">
+                    <dl class="dl-horizontal2">
+                      <dt>status</dt><dd>[[req.status]]</dd>
+                      <dt>availability</dt><dd>[[req.availability]]</dd>
+                      <dt>priority</dt><dd>[[req.priority]]</dd>
+                    </dl>
+
+
+                    <div ng-repeat="res in req.resources">
+                      <dl class="dl-horizontal2">
+                        <dt>rapp</dt><dd>[[res.rapp]]</dd>
+                        <dt>uri</dt><dd>[[res.uri]]</dd>
+                      </dl>
+                      Remappings
+                      <ul>
+                        <li ng-repeat="remap in res.remappings">
+                          <span>[[remap.remap_from]] &rarr; [[remap.remap_to]]</span>
+                        </li>
+                      </ul>
+                      Parameters
+                      <ul>
+                        <li ng-repeat="param in res.parameters">
+                          <span>[[param.key]] : [[param.value]]</span>
+                        </li>
+                      </ul>
+                    </div>
+
+
+
+
+
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+
+
+
           <ul>
             <li ng-repeat="topic in published">
               [[topic.name]] ([[topic.type]]) [[topic.payload | json]]
             </li>
           </ul>
 
-          <button class="btn btn-default" ng-click="run()">Run</button>
-          <button class="btn btn-default" ng-click="start()">Start</button>
         </div>
 
 

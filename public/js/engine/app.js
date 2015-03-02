@@ -37,6 +37,7 @@ function EngineDashboardController($scope, socket, $location, $http, $modal){
   socket.on('connect', function(){
     console.log('connected');
     socket.emit('get_processes');
+    socket.emit('get_resources');
 
 
   });
@@ -53,6 +54,12 @@ function EngineDashboardController($scope, socket, $location, $http, $modal){
     if(data.event == 'processes'){
       $scope.processes = data.payload;
     }
+    if(data.event == 'resources'){
+      console.log("RES", data.payload);
+
+      $scope.resources = data.payload;
+    }
+
 
 
   });
