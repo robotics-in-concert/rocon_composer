@@ -355,6 +355,14 @@ button {
   padding: 20px 40px;
   flex: 1;
 }
+.engine-dashboard .main #resources {
+  display: flex;
+  flex-wrap: wrap;
+}
+.engine-dashboard .main #resources .panel {
+  width: 500px;
+  margin-right: 20px;
+}
 .engine-dashboard .main #engines {
   display: flex;
   flex-wrap: wrap;

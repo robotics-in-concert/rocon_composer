@@ -13,6 +13,18 @@ var ResourceManager = function(ros){
 util.inherits(ResourceManager, EventEmitter2);
 
 
+ResourceManager.prototype.release = function(requester_id){
+  var that = this;
+  this.emit('releasing');
+  console.log(_.keys(this.requesters), requester_id);
+
+  var requester = this.requesters[requester_id];
+  return requester.cancel_all().then(function(){
+    delete that.requesters[requester_id];
+    that.emit('released');
+  });
+};
+
 ResourceManager.prototype.allocate = function(key, rapp, uri, remappings, parameters, options){ 
   var that = this;
 

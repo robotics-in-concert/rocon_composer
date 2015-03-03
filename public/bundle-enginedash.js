@@ -139,6 +139,9 @@ function EngineDashboardController($scope, socket, $location, $http, $modal){
   $scope.killEngine = function(pid){
     socket.emit('kill', {pid: pid});
   };
+  $scope.releaseResource = function(rid){
+    socket.emit('release_resource', {requester: rid});
+  };
 
 }
 

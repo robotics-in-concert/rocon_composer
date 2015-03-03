@@ -67,6 +67,11 @@ EngineManager.prototype._bindClientSocketHandlers = function(socket){
 
     that.killEngine(pid.pid);
   });
+  socket.on('release_resource', function(payload){
+    console.log('REL PAYLOAD', payload);
+
+    that.resource_manager.release(payload.requester);
+  });
 
 };
 
