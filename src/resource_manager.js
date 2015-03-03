@@ -2,8 +2,8 @@ var _ = require('lodash'),
   UUID = require('node-uuid'),
   EventEmitter2 = require('eventemitter2').EventEmitter2;
 
-var ResourceManager = function(engine){
-  this.engine = engine;
+var ResourceManager = function(ros){
+  this.ros = ros;
   EventEmitter2.call(this, {wildcard: true});
 
   this.resources = {}; // thenables
@@ -25,7 +25,7 @@ ResourceManager.prototype.allocate = function(key, rapp, uri, remappings, parame
 
   if(_.isEmpty(resource)){
     this.emit('allocation_started');
-    var r = new Requester(this.engine);
+    var r = new Requester(this.ros);
     var rid = r.id.toString();
 
     _.each(remappings, function(remap){

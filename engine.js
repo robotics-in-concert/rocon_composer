@@ -34,24 +34,19 @@ var Engine = function(opts){
   }, opts);
 
   var engine = this;
+  var that = this;
 
   var ros = engine.ros = new Ros(this.options);
   ros.on('status.**', function(){
-    var name = this.event.split(/\./)[1];
-    engine.emit(name);
+    engine.emit(this.event);
   });
 
 
   this.ee = new EventEmitter2();
   this.executions = [];
-  this.memory = {};
-  var ros = this.ros = new ROSLIB.Ros({encoding: 'utf8'});
   this.topics = [];
-  var that = this;
   this.schedule_requests = {};
   this.schedule_requests_ref_counts = {};
-
-  this.publish_queue = [];
 
   _.defer(function(){
     // engine.emit('started');
@@ -412,7 +407,6 @@ Engine.prototype.clear = function(){
 
   return Promise.all(q_cancels).then(function(){
     that.ee.removeAllListeners();
-    that.memory = {};
     that.unsubscribeAll();
     that.log('engine cleared');
   }).catch(function(e){

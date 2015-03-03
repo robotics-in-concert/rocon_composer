@@ -248,9 +248,8 @@ SchedulerRequests.prototype.debug = function(){
  *
  */
 
-Requester = function(engine, options){
-  this.engine = engine;
-  this.ros = engine.ros;
+Requester = function(ros, options){
+  this.ros = ros;
   this.id = new UniqueId();
   this.requests = new SchedulerRequests(this.id);
 
@@ -268,16 +267,16 @@ Requester = function(engine, options){
   this.options = _.defaults(options, default_options);
 
 
-  // subscribe feedback topic
-  this.engine.ee.on(this.feedback_topic(), _.bind(this._handleFeedback, this)); 
-  this.engine.subscribe(this.feedback_topic(), MSG_SCHEDULER_REQUEST);
+  ros.on('subscribe.' + this.feedback_topic(), _.bind(this._handleFeedback, this)); 
+  ros.subscribe(this.feedback_topic(), MSG_SCHEDULER_REQUEST);
+
 };
 
 Requester.prototype.finish = function(){
   console.log("unadvertise publish topic");
   this.publish_topic.unadvertise();
   console.log("unsubscribe topic : ", this.feedback_topic());
-  this.engine.unsubscribe(this.feedback_topic());
+  // this.engine.unsubscribe(this.feedback_topic());
 
 };
 
@@ -351,7 +350,7 @@ Requester.prototype.send_requests = function(options){
     console.log(Util.inspect(this.requests.to_msg(), {depth: 10, color: true}));
   }
 
-  this.publish_topic = this.engine.publish(SCHEDULER_TOPIC, MSG_SCHEDULER_REQUEST, this.requests.to_msg());
+  this.publish_topic = this.ros.publish(SCHEDULER_TOPIC, MSG_SCHEDULER_REQUEST, this.requests.to_msg());
 };
 
 Requester.prototype.new_request = function(resources){

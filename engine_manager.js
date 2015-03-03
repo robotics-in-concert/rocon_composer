@@ -19,8 +19,10 @@ var EngineManager = function(io, options){
   this.io = io;
   this.engine_processes = {};
 
+  var ros = this.ros = new Ros(options);
+  ros.on('status.**', function(){});
 
-  this.resource_manager = new ResourceManager(this.mainEngine);
+  this.resource_manager = new ResourceManager(ros);
   this.resource_manager.onAny(function(){
     that.broadcastResourcesInfo();
   });
