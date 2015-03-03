@@ -3,7 +3,7 @@ var _ = require('lodash'),
   Promise = require('bluebird'),
   EventEmitter2 = require('eventemitter2').EventEmitter2,
   ROSLIB = require('roslib'),
-  Utils = require('./utils'),
+  Utils = require('../utils'),
   process_send2 = Utils.process_send2,
   util = require('util');
 
@@ -29,10 +29,10 @@ var Ros = function(opts){
     });
     ros.on('connection', function(){
       logger.info('ros connected');
-      that.emit('started');
+      that.emit('status.started');
 
       that.waitForTopicsReady(['/concert/scheduler/requests']).then(function(){
-        that.emit('ready');
+        that.emit('status.ready');
       });
       connected = true;
     });
@@ -44,7 +44,7 @@ var Ros = function(opts){
 
   }, function(e){
     logger.error('ros connection failed', e);
-    that.emit('start_failed');
+    that.emit('status.start_failed');
     
   }, this.options.ros_retries, this.options.ros_retry_interval);
 
@@ -53,6 +53,7 @@ var Ros = function(opts){
   this.publish_queue = [];
   this.publish_loop_timer = null;
 
+  this.startPublishLoop();
 
 
 };
@@ -69,7 +70,7 @@ Ros.prototype.waitForTopicsReady = function(required_topics){
     var timer = setInterval(function(){
       that.underlying.getTopics(function(topics){
         var open_topics = _(topics).filter(function(t){ return _.contains(required_topics, t); }).value();
-        console.log('topic count check : ', [open_topics.length, required_topics.length].join("/"), open_topics, required_topics);
+        logger.debug('topic count check : ', [open_topics.length, required_topics.length].join("/"), open_topics, required_topics);
 
         if(open_topics.length >= required_topics.length){
           clearInterval(timer);
@@ -128,10 +129,12 @@ Ros.prototype.startPublishLoop = function(){
     that.emit('publish', {name: data.name, type: data.type, payload: data.msg});
 
   }, this.options.publish_delay);
-  engine.log('publish loop started');
+  logger.info('publish loop started');
 };
-Engine.prototype.stopPublishLoop = function(){
+
+Ros.prototype.stopPublishLoop = function(){
   clearInterval(this.publish_loop_timer);
+  logger.info('publish loop stopped');
 };
 
 
@@ -139,3 +142,19 @@ Ros.prototype.publish = function(topic, type, msg){
   this.publish_queue.push({topic: topic,  type: type, msg: msg});
 
 };
+
+Ros.prototype.unsubscribe = function(topic){
+  var t = _.remove(this.subscribe_topics, {name: topic});
+  t = t[0];
+  t.listener.unsubscribe();
+};
+Ros.prototype.unsubscribeAll = function(){
+  var engine = this;
+  this.topics.forEach(function(t){
+    t.listener.unsubscribe();
+    logger.info("topic "+t.name+" unsubscribed");
+  });
+  this.subscribe_topics = [];
+};
+
+module.exports = Ros;

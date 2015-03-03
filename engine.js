@@ -13,6 +13,7 @@ var _ = require('lodash'),
   Requester = require('./requester').Requester,
   Resource = require('./requester').Resource,
   UUID = require('node-uuid'),
+  Ros = require('./src/ros'),
   URL = require('url');
 
 
@@ -32,22 +33,19 @@ var Engine = function(opts){
     ros_retry_interval: 1000,
   }, opts);
 
+  var engine = this;
 
-  // this.socket = require('socket.io-client')('ws://localhost:'+this.options.service_port + '/engine');
-  this.socket = null;
-
-
-
-  // this.io = require('socket.io').listen(this.options.socketio_port);
-  // this.log('socketio listen on '+this.options.socketio_port);
-
+  var ros = engine.ros = new Ros(this.options);
+  ros.on('status.**', function(){
+    var name = this.event.split(/\./)[1];
+    engine.emit(name);
+  });
 
 
   this.ee = new EventEmitter2();
   this.executions = [];
   this.memory = {};
   var ros = this.ros = new ROSLIB.Ros({encoding: 'utf8'});
-  var engine = this;
   this.topics = [];
   var that = this;
   this.schedule_requests = {};
@@ -55,50 +53,9 @@ var Engine = function(opts){
 
   this.publish_queue = [];
 
-  var retry_op = Utils.retry(function(){
-    engine.log('trying to connect to ros ' + process.env.ROCON_AUTHORING_ROSBRIDGE_URL);
-    var connected = false;
-
-    var ros = that.ros = new ROSLIB.Ros({encoding: 'utf8'});
-
-    ros.on('error', function(e){
-      engine.log('ros error', e);
-      if(!connected){
-        retry_op.retry();
-      }
-    });
-    ros.on('connection', function(){
-      engine.log('ros connected');
-      engine.emit('started');
-      engine.emit('status.started')
-
-      engine.waitForTopicsReady(['/concert/scheduler/requests']).then(function(){
-        engine.emit('ready');
-        engine.emit('status.ready')
-      });
-      connected = true;
-    });
-    ros.on('close', function(){
-      engine.log('ros closed');
-      // retry_op.retry();
-    });
-    ros.connect(process.env.ROCON_AUTHORING_ROSBRIDGE_URL);
-
-  }, function(e){
-    logger.error('ros connection failed', e);
-    engine.emit('start_failed');
-    engine.emit('status.start_failed');
-
-    
-  }, this.options.ros_retries, this.options.ros_retry_interval);
-
-  engine.startPublishLoop();
-
   _.defer(function(){
     // engine.emit('started');
-
   });
-  this.initSocket();
 
 };
 util.inherits(Engine, EventEmitter2);
@@ -106,24 +63,6 @@ util.inherits(Engine, EventEmitter2);
 Engine.prototype.socketBroadcast = function(key, msg){
   this.socket.emit(key, msg);
   this.debug('socket#emit', key, msg);
-};
-
-Engine.prototype.initSocket = function(){
-  // var engine = this;
-  // this.io.of('/engine').on('connection', function(socket){
-    // engine.log('websocket connected');
-  // });
-
-
-  // engine.ee.on('engine:publish', function(data){
-    // engine.io.of('/engine').emit('publish', data);
-
-
-  // });
-
-
-
-
 };
 
 Engine.prototype.socketBroadcast = function(key, msg){
@@ -140,76 +79,18 @@ Engine.prototype.getMessageDetails = function(type, cb){
   });
 };
 
-Engine.prototype.unsubscribe = function(topic){
-  var t = _.remove(this.topics, {name: topic});
-  t = t[0];
-  t.listener.unsubscribe();
-};
-Engine.prototype.unsubscribeAll = function(){
-  var engine = this;
-  this.topics.forEach(function(t){
-    t.listener.unsubscribe();
-    engine.log("topic "+t.name+" unsubscribed");
 
-  });
-  this.topics = [];
-};
-
-Engine.prototype.subscribe = function(topic, type){
-  var engine = this;
-  var listener = new ROSLIB.Topic({
-    ros : this.ros,
-    name : topic,
-    messageType : type
-  });
-
-  listener.subscribe(function(message) {
-    engine.debug('Received message on ' + listener.name + ': ' + message);
-    engine.ee.emit(listener.name, message);
-    engine.emit('ros.subscribe.'+listener.name, message);
-
-  });
-
-  this.topics.push({name: topic, listener: listener});
-
+Engine.prototype.subscribe = function(topic, type, cb){
+  return this.ros.subscribe(topic, type, cb);
 };
 
 
-Engine.prototype.startPublishLoop = function(){
-
-  var engine = this;
-  this.publish_loop_timer = setInterval(function(){
-
-    var data = engine.publish_queue.shift();
-    if(!data){
-      return;
-    }
-
-    var topic = new ROSLIB.Topic({
-      ros : engine.ros,
-      name : data.name,
-      messageType : data.type
-    });
-
-    var msg = new ROSLIB.Message(data.msg);
-
-
-    // And finally, publish.
-    topic.publish(msg);
-    engine.debug("published "+topic.name);
-    engine.ee.emit('engine:publish', {name: data.name, type: data.type, payload: data.msg});
-    engine.emit('ros.publish.' + data.name, {name: data.name, type: data.type, payload: data.msg});
-
-  }, this.options.publish_delay);
-  engine.log('publish loop started');
+Engine.prototype.publish = function(topic, type, msg){
+  return this.pub(topic, type, msg);
 };
-Engine.prototype.stopPublishLoop = function(){
-  clearInterval(this.publish_loop_timer);
-};
-
 
 Engine.prototype.pub = function(topic, type, msg){
-  this.publish_queue.push({name: topic,  type: type, msg: msg});
+  this.ros.publish(topic, type, msg);
   return null;
 };
 
@@ -272,33 +153,7 @@ Engine.prototype.runCode = function(code){
 
 // public - promise version
 Engine.prototype.waitForTopicsReady = function(required_topics){
-  var engine = this;
-  var delay = process.env.rocon_authoring_delay_after_topics || 2000;
-
-
-
-  return new Promise(function(resolve, reject){
-    var timer = setInterval(function(){
-      engine.ros.getTopics(function(topics){
-        var open_topics = _(topics).filter(function(t){ return _.contains(required_topics, t); }).value();
-        console.log('topic count check : ', [open_topics.length, required_topics.length].join("/"), open_topics, required_topics);
-
-        if(open_topics.length >= required_topics.length){
-          clearInterval(timer);
-          setTimeout(function(){ resolve(); }, delay);
-        }
-      });
-
-    }, 1000);
-
-  });
-
-
-
-
-
-
-
+  return this.ros.waitForTopicsReady(required_topics);
 };
 
 
@@ -534,9 +389,6 @@ Engine.prototype.cmdVel = function(options){
 };
 
 
-Engine.prototype.publish = function(topic, type, msg){
-  return this.pub(topic, type, msg);
-};
 
 // Engine.prototype.publish = function(event_name, params){
   // var data = {event: event_name};

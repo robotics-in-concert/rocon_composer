@@ -15,9 +15,6 @@ var EngineManager = function(io, options){
   var that = this;
   this.mainEngine = new Engine({});
   EventEmitter2.call(this, {wildcard: true});
-  console.log(this.options);
-
-  
 
   this.io = io;
   this.engine_processes = {};
@@ -30,13 +27,6 @@ var EngineManager = function(io, options){
 
 
   this.options = options;
-  console.log(this.options);
-
-
-
-  console.log('CONF', this._conf);
-  console.log(this.wildcard);
-
 
   this.onAny(function(payload){
     console.log('ee', this.event, payload);
