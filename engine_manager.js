@@ -13,7 +13,6 @@ var spawn = require('child_process').spawn,
 
 var EngineManager = function(io, options){
   var that = this;
-  this.mainEngine = new Engine({});
   EventEmitter2.call(this, {wildcard: true});
 
   this.io = io;
@@ -45,33 +44,48 @@ var EngineManager = function(io, options){
 util.inherits(EngineManager, EventEmitter2);
 
 EngineManager.prototype._bindClientSocketHandlers = function(socket){
-  var that = this;
-  socket.on('get_processes', function(){
-    that.broadcastEnginesInfo();
-  });
-  socket.on('get_resources', function(){
-    that.broadcastResourcesInfo();
-  });
-  socket.on('start', function(payload){
-    
-    var pid = that.startEngine();
-    if(payload && payload.items && payload.items.length){
-      that.run(pid, payload.items);
+  var mgr = this;
+
+  socket.on('*', function(e){
+    // e.nsp
+    // e.data
+    var cmd = e.data[0];
+
+    switch(cmd){
+      case 'get_processes':
+        mgr.broadcastEnginesInfo();
+        break;
+
+      case 'get_resources':
+        mgr.broadcastResourcesInfo();
+        break;
+
+      case 'start':
+        var pid = mgr.startEngine();
+        var payload = e.data[1];
+        if(payload && payload.items && payload.items.length){
+          mgr.run(pid, payload.items);
+        }
+        break;
+
+      case 'run':
+        var payload = e.data[1];
+        mgr.run(payload.pid, payload.items);
+        break;
+
+      case 'kill':
+        var payload = e.data[1];
+        mgr.killEngine(payload.pid);
+        break;
+
+      case 'release_resource':
+        mgr.resource_manager.release(payload.requester);
+        break;
     }
-  });
-  socket.on('run', function(payload){
-    that.run(payload.pid, payload.items);
-  });
-  socket.on('kill', function(pid){
-     console.log('KILL', pid);
 
-    that.killEngine(pid.pid);
-  });
-  socket.on('release_resource', function(payload){
-    console.log('REL PAYLOAD', payload);
 
-    that.resource_manager.release(payload.requester);
   });
+
 
 };
 
@@ -175,33 +189,36 @@ EngineManager.prototype._bindEvents = function(child){
 
     var action = msg.action || msg.cmd;
     var result = null;
-    if(action == 'status'){
-      var status = msg.status;
-      logger.info('engine status to '+status);
-      proc.status = status;
-      that.emit(['child', child.pid, status].join('.'));
-      result = that.broadcastEnginesInfo();
 
-    }
-    else if(action == 'change_resource_ref_count'){
-      result = that.resource_manager.change_ref_count(msg.req_id, msg.delta);
-    }
-    else if(action == 'ref_counted_release_resource'){
-      var ctx = msg.ctx;
-      result = that.resource_manager.ref_counted_release(ctx.req_id);
-    }
-    else if(action == 'allocate_resource'){
-      result = that.resource_manager.allocate(msg.key,
-                             msg.rapp, msg.uri, msg.remappings, msg.parameters, msg.options);
-                             
-    }
-    else{
-      var action = msg.action;
-      result = that.emit(['child', child.pid, action].join('.'), msg);
+    switch(action) {
+      case "status":
+        var status = msg.status;
+        logger.info('engine status to '+status);
+        proc.status = status;
+        that.emit(['child', child.pid, status].join('.'));
+        result = that.broadcastEnginesInfo();
+        break;
+
+      case "change_resource_ref_count":
+        result = that.resource_manager.change_ref_count(msg.req_id, msg.delta);
+        break;
+      
+      case 'ref_counted_release_resource':
+        var ctx = msg.ctx;
+        result = that.resource_manager.ref_counted_release(ctx.req_id);
+        break;
 
 
+      case 'allocate_resource':
+        result = that.resource_manager.allocate(msg.key, msg.rapp, msg.uri, msg.remappings, msg.parameters, msg.options);
+        break;
+    
+      default:
+        var action = msg.action;
+        result = that.emit(['child', child.pid, action].join('.'), msg);
+        break;
+        
     }
-
 
     if(msg.__request_id){
       Promise.all([result]).then(function(results){
@@ -211,8 +228,6 @@ EngineManager.prototype._bindEvents = function(child){
         child.send({cmd: 'return.'+msg.__request_id, request_id: msg.__request_id, result: res}); // 'return.'+msg.__request_id);
 
       });
-
-
     }
 
   });
