@@ -8,6 +8,7 @@ var ResourceManager = function(ros){
 
   this.resources = {}; // thenables
   this.requesters = {};
+  this.ref_counts = {};
 
 };
 util.inherits(ResourceManager, EventEmitter2);
@@ -25,6 +26,32 @@ ResourceManager.prototype.release = function(requester_id){
   });
 };
 
+
+ResourceManager.prototype.ref_counted_release = function(req_id){
+  var that = this;
+  this.resources[req_id].then(function(ctx){
+
+    if(!ctx.allocation_type || ctx.allocation_type == 'dynamic'){
+      that.change_ref_count(req_id, -1);
+      if(that.ref_count[ctx.req_id] <= 0){
+        that.release(req_id);
+      }
+    }
+
+  });
+
+
+};
+ResourceManager.prototype.change_ref_count = function(req_id, delta){
+  if(!this.ref_counts[req_id]){
+    this.ref_counts[req_id] = 0;
+  }
+
+  this.ref_counts[req_id] = this.ref_counts[req_id] + delta;
+  logger.debug('ref count change : ', req_id, delta);
+  this.emit('change_ref_count');
+};
+
 ResourceManager.prototype.allocate = function(key, rapp, uri, remappings, parameters, options){ 
   var that = this;
 
@@ -34,6 +61,7 @@ ResourceManager.prototype.allocate = function(key, rapp, uri, remappings, parame
 
 
   var resource = that.resources[key];
+  var allocation_type = options.type || 'dynamic';
 
   if(_.isEmpty(resource)){
     this.emit('allocation_started');
@@ -53,6 +81,9 @@ ResourceManager.prototype.allocate = function(key, rapp, uri, remappings, parame
     res.parameters = parameters;
 
     resource = r.send_allocation_request(res, {timeout: options.timeout}).then(function(reqId){
+      if(allocation_type == 'dynamic'){
+        that.change_ref_count(rid, 1);
+      }
       that.emit('allocated');
       var ctx = {req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type, key: key};
       return ctx;
@@ -71,14 +102,12 @@ ResourceManager.prototype.allocate = function(key, rapp, uri, remappings, parame
 
 
 ResourceManager.prototype.to_json = function(){
+  var that = this;
   var payload = _(this.requesters)
     .map(function(v, k){ 
 
       var srequests = v.requests;
 
-
-
-      
       var requests = _.map(srequests.requests, function(req){
         var keys = "status availability priority reason problem hold_time".split(/ /);
         var kv = _.pick(req, keys);
@@ -94,6 +123,7 @@ ResourceManager.prototype.to_json = function(){
 
       return {
         requester: v.id.toString(),
+        ref_count: that.ref_counts[v.id.toString()],
         requests: requests
       }
     })

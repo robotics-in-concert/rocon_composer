@@ -173,7 +173,7 @@ EngineManager.prototype._bindEvents = function(child){
   var that = this;
   child.on('message', function(msg){
 
-    var action = msg.action;
+    var action = msg.action || msg.cmd;
     var result = null;
     if(action == 'status'){
       var status = msg.status;
@@ -182,6 +182,13 @@ EngineManager.prototype._bindEvents = function(child){
       that.emit(['child', child.pid, status].join('.'));
       result = that.broadcastEnginesInfo();
 
+    }
+    else if(action == 'change_resource_ref_count'){
+      result = that.resource_manager.change_ref_count(msg.req_id, msg.delta);
+    }
+    else if(action == 'ref_counted_release_resource'){
+      var ctx = msg.ctx;
+      result = that.resource_manager.ref_counted_release(ctx.req_id);
     }
     else if(action == 'allocate_resource'){
       result = that.resource_manager.allocate(msg.key,

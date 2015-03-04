@@ -215,15 +215,7 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, 
 };
 
 Engine.prototype.releaseResource = function(ctx){
-  var requester = this.schedule_requests[ctx.req_id];
-  if(!ctx.allocation_type || ctx.allocation_type == 'dynamic'){
-    this.schedule_requests_ref_counts[ctx.req_id] = this.schedule_requests_ref_counts[ctx.req_id] - 1;
-    if(this.schedule_requests_ref_counts[ctx.req_id] <= 0){
-      var requester = this.schedule_requests[ctx.req_id];
-      requester.cancel_all();
-    }
-  }
-
+  process_send2({cmd: 'ref_counted_release_resource', ctx: ctx});
 };
 
 Engine.prototype._scheduled = function(rapp, uri, remappings, parameters, topics_count, name, callback){
@@ -274,6 +266,21 @@ Engine.prototype._scheduled = function(rapp, uri, remappings, parameters, topics
 
 };
 
+
+Engine.prototype._changeResourceRefCount = function(rid, delta){
+  delta = delta || 1;
+  process_send2({cmd: 'change_resource_ref_count', req_id: rid, delta: delta});
+};
+
+Engine.prototype.incResourceRefCount = function(rid){
+  return _changeResourceRefCount(rid, +1);
+};
+
+Engine.prototype.decResourceRefCount = function(rid){
+  return _changeResourceRefCount(rid, -1);
+};
+
+
 Engine.prototype.runScheduledAction = function(ctx, name, type, goal, onResult, onFeedback){
 
   var remapping_kv = R.compose(
@@ -288,7 +295,7 @@ Engine.prototype.runScheduledAction = function(ctx, name, type, goal, onResult, 
 
 
   engine._waitForTopicsReadyF(required_topics);
-  this.schedule_requests_ref_counts[ctx.req_id] = this.schedule_requests_ref_counts[ctx.req_id] + 1;
+  this.incResourceRefCount(ctx.req_id);
   engine.runAction(name, type, goal, 
     function(items){ 
       onResult(items); 
@@ -320,7 +327,7 @@ Engine.prototype.scheduledSubscribe = function(ctx, topic, type, callback){
     engine.debug('Received message on ' + listener.name + ': ' + message);
     callback(message);
   });
-  this.schedule_requests_ref_counts[ctx.req_id] = this.schedule_requests_ref_counts[ctx.req_id] + 1;
+  this.incResourceRefCount(ctx.req_id);
 
   this.topics.push({name: name, listener: listener});
   
@@ -339,7 +346,7 @@ Engine.prototype.scheduledPublish = function(ctx, topic, type, msg){
 
   // engine._waitForTopicsReadyF([name]);
   engine.pub(name, type, msg);
-  this.schedule_requests_ref_counts[ctx.req_id] = this.schedule_requests_ref_counts[ctx.req_id] + 1;
+  this.incResourceRefCount(ctx.req_id);
 
 };
 

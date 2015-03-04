@@ -46,7 +46,7 @@
           <h3>Resources</h3>
           <div id="resources">
             <div class="panel panel-default" ng-repeat="res in resources">
-              <div class="panel-heading">[[res.requester]]</div>
+              <div class="panel-heading">[[res.requester]] ([[res.ref_count]])</div>
               <div class="panel-body">
                 <ul class="list-unstyled">
                   <li ng-repeat="req in res.requests">
