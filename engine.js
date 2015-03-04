@@ -282,21 +282,16 @@ Engine.prototype.decResourceRefCount = function(rid){
 
 
 Engine.prototype.runScheduledAction = function(ctx, name, type, goal, onResult, onFeedback){
-
-  var remapping_kv = R.compose(
-    R.fromPairs,
-    R.map(R.values)
-  )(ctx.remappings);
-  var name = remapping_kv[name];
+  var name = _.detect(ctx.remappings, {remap_from: topic}).remap_to;
   var engine = this;
 
-  var required_topics = R.map(R.concat(name+"/"))(["feedback", "result", "status"]);
+  var required_topics = _.map(["feedback", "result", "status"], function(suffix){ return name + "/" + suffix});
   engine.log('action : ', ctx, required_topics, name);
 
 
   engine._waitForTopicsReadyF(required_topics);
   this.incResourceRefCount(ctx.req_id);
-  engine.runAction(name, type, goal, 
+  this.ros.run_action(name, type, goal, 
     function(items){ 
       onResult(items); 
       engine.releaseResource(ctx);
@@ -326,49 +321,7 @@ Engine.prototype.scheduledPublish = function(ctx, topic, type, msg){
 
 
 
-Engine.prototype.runAction = function(name, type, goal, onResult, onFeedback){
-  this.log("run action : " +  name + " " + type + " " + JSON.stringify(goal));
 
-  var ac = new ROSLIB.ActionClient({
-    ros : this.ros,
-    serverName : name,
-    actionName : type
-  });
-
-  var goal = new ROSLIB.Goal({
-    actionClient : ac,
-    goalMessage : goal
-  });
-
-  goal.on('feedback', onFeedback);
-  goal.on('result', onResult);
-
-  goal.send();
-
-};
-
-Engine.prototype.cmdVel = function(options){
-
-  var cmdVel = new ROSLIB.Topic({
-    ros : this.ros,
-    name : '/turtle1/cmd_vel',
-    messageType : 'geometry_msgs/Twist'
-  });
-
-  var twist = new ROSLIB.Message(options);
-
-  cmdVel.publish(twist);
-
-
-};
-
-
-
-// Engine.prototype.publish = function(event_name, params){
-  // var data = {event: event_name};
-  // _.assign(data, params);
-
-// };
 Engine.prototype.clear = function(){
   var that = this;
 

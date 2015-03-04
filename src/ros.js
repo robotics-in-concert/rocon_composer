@@ -157,4 +157,25 @@ Ros.prototype.unsubscribeAll = function(){
   this.subscribe_topics = [];
 };
 
+Ros.prototype.run_action = function(name, type, goal, onResult, onFeedback){
+  logger.info("run action : " +  name + " " + type + " " + JSON.stringify(goal));
+
+  var ac = new ROSLIB.ActionClient({
+    ros : this.underlying,
+    serverName : name,
+    actionName : type
+  });
+
+  var goal = new ROSLIB.Goal({
+    actionClient : ac,
+    goalMessage : goal
+  });
+
+  goal.on('feedback', onFeedback);
+  goal.on('result', onResult);
+
+  goal.send();
+
+};
+
 module.exports = Ros;
