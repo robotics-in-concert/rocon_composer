@@ -30,13 +30,11 @@ var EngineManager = function(io, options){
   this.options = options;
 
   this.onAny(function(payload){
-    console.log('ee', this.event, payload);
-
     io.emit('data', {event: this.event, payload: payload});
   });
 
   this.io.of('/engine/client').on('connection', function(socket){
-    console.log('client connected');
+    logger.info('socket.io client connected id:%s', socket.id);
     that._bindClientSocketHandlers(socket);
   });
 
@@ -142,7 +140,6 @@ EngineManager.prototype.callOnReady = function(pid, cb) {
 
 EngineManager.prototype.run = function(pid, workflows){
   var that = this;
-  console.log("*******", workflows);
 
   this.callOnReady(pid, function(){
 
@@ -174,7 +171,6 @@ EngineManager.prototype.broadcastEnginesInfo = function(){
     var data = _.omit(child, 'process');
     return _.assign(data, {pid: pid});
   });
-  console.log(payload);
 
   this.io.of('/engine/client')
     .emit('data', {event: 'processes', payload: payload});

@@ -43,9 +43,6 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
     $io = io;
 
     io.on('connection', function(sock){
-      console.log('socket.io connected');
-
-
     });
 
 
