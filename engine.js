@@ -331,15 +331,15 @@ Engine.prototype.clear = function(){
   });
   this.executions = [];
 
-  var q_cancels = R.map(function(r){
-    try{ 
-      return r.cancel_all(); 
-    }catch(e){ return null; }
-  })(R.values(this.schedule_requests));
+  // var q_cancels = R.map(function(r){
+    // try{ 
+      // return r.cancel_all(); 
+    // }catch(e){ return null; }
+  // })(R.values(this.schedule_requests));
 
-  return Promise.all(q_cancels).then(function(){
+  return Promise.all([]).then(function(){
     that.ee.removeAllListeners();
-    that.unsubscribeAll();
+    // that.unsubscribeAll();
     that.log('engine cleared');
   }).catch(function(e){
     that.log('fail - engine clear ' + e.toString());
