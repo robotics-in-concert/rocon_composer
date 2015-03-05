@@ -7,7 +7,6 @@ var ResourceManager = function(ros){
   EventEmitter2.call(this, {wildcard: true});
 
   this.resources = {}; // thenables
-  this.requesters = {};
   this.ref_counts = {};
 
 };
@@ -17,11 +16,12 @@ util.inherits(ResourceManager, EventEmitter2);
 ResourceManager.prototype.release = function(requester_id){
   var that = this;
   this.emit('releasing');
-  console.log(_.keys(this.requesters), requester_id);
 
-  var requester = this.requesters[requester_id];
+  var res = _.find(this.resources, {rid: requester_id});
+  var key = res.key;
+  var requester = res.requester;
   return requester.cancel_all().then(function(){
-    delete that.requesters[requester_id];
+    delete that.resources[key];
     that.emit('released');
   });
 };
@@ -91,8 +91,16 @@ ResourceManager.prototype.allocate = function(key, rapp, uri, remappings, parame
       that.emit('allocation_failed');
       return null;
     });
-    that.requesters[rid] = r;
+
+    // that.requesters[rid] = r;
     that.resources[key] = resource;
+    that.resources[key] = {
+      key: key,
+      thenable: resource,
+      requester: r,
+      rid: rid,
+      requester_id: rid
+    };
     that.emit('allocating');
 
   }
@@ -103,8 +111,9 @@ ResourceManager.prototype.allocate = function(key, rapp, uri, remappings, parame
 
 ResourceManager.prototype.to_json = function(){
   var that = this;
-  var payload = _(this.requesters)
+  var payload = _(this.resources)
     .map(function(v, k){ 
+      v = v.requester;
 
       var srequests = v.requests;
 
@@ -128,6 +137,8 @@ ResourceManager.prototype.to_json = function(){
       }
     })
     .value();
+  console.log("RESRES", payload);
+
   return payload;
 };
 
