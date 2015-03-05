@@ -45,8 +45,8 @@ var Engine = function(opts){
   this.ee = new EventEmitter2();
   this.executions = [];
   this.topics = [];
-  this.schedule_requests = {};
-  this.schedule_requests_ref_counts = {};
+  this.my_resource_ids = []; // dynamic resources id allocated in this engine.
+
 
   _.defer(function(){
     // engine.emit('started');
@@ -208,6 +208,9 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, 
   }
   process_send2({action: 'allocate_resource', key: key, rapp: rapp, uri: uri, remappings: remappings, parameters: parameters, options: options})
     .then(function(ctx){
+      engine.my_resource_ids.push(ctx.req_id);
+
+
       future.return(ctx);
     });
 
@@ -331,12 +334,6 @@ Engine.prototype.clear = function(){
   });
   this.executions = [];
 
-  // var q_cancels = R.map(function(r){
-    // try{ 
-      // return r.cancel_all(); 
-    // }catch(e){ return null; }
-  // })(R.values(this.schedule_requests));
-
   return Promise.all([]).then(function(){
     that.ee.removeAllListeners();
     // that.unsubscribeAll();
@@ -345,7 +342,6 @@ Engine.prototype.clear = function(){
     that.log('fail - engine clear ' + e.toString());
     
   });;
-
 
 };
 Engine.prototype.print = function(msg){
@@ -368,8 +364,6 @@ Engine.prototype.itemsToCode = function(items){
 
 
   return js;
-
-
 
 };
 

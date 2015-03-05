@@ -77,6 +77,7 @@ EngineManager.prototype._bindClientSocketHandlers = function(socket){
         break;
 
       case 'release_resource':
+        var payload = e.data[1];
         mgr.resource_manager.release(payload.requester);
         break;
     }
