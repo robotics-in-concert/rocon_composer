@@ -20,9 +20,6 @@ module.exports = ItemsSelectCtrl;
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 var ItemsSelectCtrl = require('../ctrls/items_select_ctrl');
 
-console.log(_);
-
-
 angular.module('engine-dashboard', [
   'btford.socket-io',
   'ui.bootstrap',
@@ -71,7 +68,24 @@ function Config($interpolateProvider, $stateProvider, $urlRouterProvider){
 function DashboardResourcesController($scope, socket, $location, $http, $modal){
   socket.on('connect', function(){
     console.log('connected');
+    socket.emit('get_resources');
   });
+
+
+  socket.on('data', function(data){
+    console.log('DATA', data);
+
+    switch(data.event){
+      case 'resource_pool':
+        if(data.payload.resources)
+          $scope.pool  = data.payload.resources;
+        break;
+
+    }
+
+           
+  });
+
 
 };
 

@@ -21,6 +21,19 @@ var EngineManager = function(io, options){
   var ros = this.ros = new Ros(options);
   ros.on('status.**', function(){});
 
+  this.resource_pool_status = null;
+  ros.once('status.ready', function(){
+
+    ros.subscribe('/concert/scheduler/resource_pool', 'scheduler_msgs/KnownResources', function(payload){
+      logger.debug("POOL", payload);
+      that.resource_pool_status = payload;
+
+      that.io.of('/engine/client')
+        .emit('data', {event: 'resource_pool', payload: payload});
+    });
+
+  });
+
   this.resource_manager = new ResourceManager(ros);
   this.resource_manager.onAny(function(){
     that.broadcastResourcesInfo();
@@ -164,6 +177,8 @@ EngineManager.prototype.run = function(pid, workflows){
 EngineManager.prototype.broadcastResourcesInfo = function(){
   this.io.of('/engine/client')
     .emit('data', {event: 'resources', payload: this.resource_manager.to_json()});
+  this.io.of('/engine/client')
+    .emit('data', {event: 'resource_pool', payload: this.resource_pool_status});
 
 };
 
