@@ -237,6 +237,10 @@ EngineManager.prototype._bindEvents = function(child){
         var res = results[0];
         // child.send('return.'+msg.__request_id);
         // child.send({cmd: 'return', request_id: msg.__request_id, result: res}); // 'return.'+msg.__request_id);
+        //
+        //
+        console.log("RESULT", results);
+
         child.send({cmd: 'return.'+msg.__request_id, request_id: msg.__request_id, result: res}); // 'return.'+msg.__request_id);
 
       });

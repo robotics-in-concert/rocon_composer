@@ -80,7 +80,7 @@ ResourceManager.prototype.allocate = function(key, rapp, uri, remappings, parame
     res.remappings = remappings;
     res.parameters = parameters;
 
-    resource = r.send_allocation_request(res, {timeout: options.timeout}).then(function(reqId){
+    var thenable = r.send_allocation_request(res, {timeout: options.timeout}).then(function(reqId){
       if(allocation_type == 'dynamic'){
         that.change_ref_count(rid, 1);
       }
@@ -93,19 +93,20 @@ ResourceManager.prototype.allocate = function(key, rapp, uri, remappings, parame
     });
 
     // that.requesters[rid] = r;
-    that.resources[key] = resource;
     that.resources[key] = {
       key: key,
-      thenable: resource,
+      thenable: thenable,
       requester: r,
       rid: rid,
       requester_id: rid
     };
     that.emit('allocating');
 
+    resource = that.resources[key];
+
   }
 
-  return resource;
+  return resource.thenable;
 };
 
 
