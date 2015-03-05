@@ -25,7 +25,8 @@ console.log(_);
 
 angular.module('engine-dashboard', [
   'btford.socket-io',
-  'ui.bootstrap'
+  'ui.bootstrap',
+  'ui.router'
 ])
   .config(Config)
   .factory('socket', ['socketFactory', function(socketFactory){
@@ -38,16 +39,44 @@ angular.module('engine-dashboard', [
     sock.forward('error');
     return sock;
   }])
+  .controller('dashboardResourcesController', DashboardResourcesController)
   .controller('engineDashboardController', EngineDashboardController);
 
 
 
 /* @ngInject */
-function Config($interpolateProvider){
+function Config($interpolateProvider, $stateProvider, $urlRouterProvider){
   $interpolateProvider.startSymbol('[[');
   $interpolateProvider.endSymbol(']]');
 
+  $urlRouterProvider.otherwise('/index');
+
+  $stateProvider
+    .state('index', {
+      url: '/index',
+      templateUrl: '/js/tpl/dashboard_index.html',
+      controller: 'engineDashboardController'
+
+    })
+    .state('resources', {
+      url: '/resources',
+      templateUrl: '/js/tpl/dashboard_resources.html',
+      controller: 'dashboardResourcesController'
+
+    })
+
 }
+
+/* @ngInject */
+function DashboardResourcesController($scope, socket, $location, $http, $modal){
+  socket.on('connect', function(){
+    console.log('connected');
+  });
+
+};
+
+
+
 
 /* @ngInject */
 function EngineDashboardController($scope, socket, $location, $http, $modal){
