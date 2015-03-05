@@ -22,11 +22,13 @@ process_send2 = function(data){
 
 
   return new Promise(function(resolve, reject){
-    process.send(data);
-    process_events.once('return.'+reqId, function(payload){
-      var res = payload.result;
-      resolve(res);
+    process.on('message', function(payload){
+      if(payload.cmd == 'return.'+reqId){
+        resolve(payload.result);
+      };
     });
+    process.send(data);
+
   });
 
 
