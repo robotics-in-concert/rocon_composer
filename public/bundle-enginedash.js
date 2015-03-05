@@ -36,11 +36,45 @@ angular.module('engine-dashboard', [
     sock.forward('error');
     return sock;
   }])
+  .directive('resourceStatusLabel', resourceStatusLabel)
   .controller('dashboardRootController', DashboardRootController)
   .controller('dashboardResourcesController', DashboardResourcesController)
   .controller('engineDashboardController', EngineDashboardController);
 
 
+/* @ngInject */
+function resourceStatusLabel(){
+  return {
+    restrict: 'E',
+    replace: true,
+    template: '<span class="label [[cls]]">[[label]]</span>',
+    scope: {
+      status: '@'
+    },
+    link: function(scope, elem, attrs){
+      console.log(attrs);
+
+      var tbl = {
+        0: 'NEW',
+        1: 'RESERVED',
+        2: 'WAITING',
+        3: 'GRANTED',
+        4: 'PREEMPTING',
+        5: 'CANCELING',
+        6: 'CLOSED'
+      }
+     
+      scope.cls = 'label-default';
+      scope.label = tbl[+attrs.status];
+
+      if(+attrs.status == 3){
+        scope.cls = 'label-success';
+      }
+    }
+
+  }
+
+}
 
 /* @ngInject */
 function Config($interpolateProvider, $stateProvider, $urlRouterProvider){

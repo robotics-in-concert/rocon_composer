@@ -28,13 +28,14 @@
 
   <h3>Resources</h3>
   <div id="resources">
-    <div class="panel panel-default" ng-repeat="res in resources">
+    <div ng-class="{panel:true, 'panel-default':true, 'panel-success':(res.requests[0].status == 3)}" ng-repeat="res in resources">
       <div class="panel-heading">[[res.requester]] ([[res.ref_count]])</div>
       <div class="panel-body">
         <ul class="list-unstyled">
           <li ng-repeat="req in res.requests">
             <dl class="dl-horizontal2">
-              <dt>status</dt><dd>[[req.status]]</dd>
+              <dt>status</dt><dd><resource-status-label status="[[req.status]]"></resource-status-label></dd>
+
               <dt>availability</dt><dd>[[req.availability]]</dd>
               <dt>priority</dt><dd>[[req.priority]]</dd>
             </dl>
