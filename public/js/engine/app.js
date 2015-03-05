@@ -17,6 +17,7 @@ angular.module('engine-dashboard', [
     sock.forward('error');
     return sock;
   }])
+  .controller('dashboardRootController', DashboardRootController)
   .controller('dashboardResourcesController', DashboardResourcesController)
   .controller('engineDashboardController', EngineDashboardController);
 
@@ -44,17 +45,16 @@ function Config($interpolateProvider, $stateProvider, $urlRouterProvider){
     })
 
 }
-
 /* @ngInject */
-function DashboardResourcesController($scope, socket, $location, $http, $modal){
+function DashboardRootController($scope, socket, $location, $http, $modal){
   socket.on('connect', function(){
     console.log('connected');
     socket.emit('get_resources');
+    socket.emit('get_processes');
   });
 
 
   socket.on('data', function(data){
-    console.log('DATA', data);
 
     switch(data.event){
       case 'resource_pool':
@@ -62,11 +62,21 @@ function DashboardResourcesController($scope, socket, $location, $http, $modal){
           $scope.pool  = data.payload.resources;
         break;
 
-    }
+      case 'processes':
+        $scope.processes = data.payload;
+        break;
+      case 'resources':
+        $scope.resources = data.payload;
+        break;
 
+    }
            
   });
 
+};
+
+/* @ngInject */
+function DashboardResourcesController($scope, socket, $location, $http, $modal){
 
 };
 
@@ -75,46 +85,18 @@ function DashboardResourcesController($scope, socket, $location, $http, $modal){
 
 /* @ngInject */
 function EngineDashboardController($scope, socket, $location, $http, $modal){
-  console.log(socket);
 
   socket.on('connect', function(){
-    console.log('connected');
-    socket.emit('get_processes');
-    socket.emit('get_resources');
-
-
   });
-  $scope.foo = 'bar';
-
 
   $scope.published = [];
 
-  socket.on('data', function(data){
-    console.log(data);
-
-
-
-    if(data.event == 'processes'){
-      $scope.processes = data.payload;
-    }
-    if(data.event == 'resources'){
-      console.log("RES", data.payload);
-
-      $scope.resources = data.payload;
-    }
-
-
-
-  });
-
   socket.on('publish', function(data){
-    console.log('1');
 
     console.log(data);
     $scope.published.push(data)
 
   });
-
 
 
 
