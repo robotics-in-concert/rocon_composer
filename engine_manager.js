@@ -32,6 +32,9 @@ var EngineManager = function(io, options){
         .emit('data', {event: 'resource_pool', payload: payload});
     });
 
+
+    ros.subscribe('/enable_workflows', 'RoconAuthoring/EnableWorkflows', _.bind(that.enableWorkflows, that));
+
   });
 
   this.resource_manager = new ResourceManager(ros);
@@ -53,6 +56,24 @@ var EngineManager = function(io, options){
 
 };
 util.inherits(EngineManager, EventEmitter2);
+
+
+
+EngineManager.prototype.enableWorkflows = function(options){
+  var payload = options;
+  if(payload.enable){
+
+    var pid = this.startEngine({name: payload.name});
+    var workflows = _.sortBy(payload.workflows, 'order');
+    mgr.run(pid, workflows);
+    
+  }else{
+    var x = _.find(this.engine_processes, {name: payload.name})
+    this.killEngine(x.child.pid)
+  }
+
+
+};
 
 EngineManager.prototype._bindClientSocketHandlers = function(socket){
   var mgr = this;
@@ -105,8 +126,9 @@ EngineManager.prototype._bindClientSocketHandlers = function(socket){
 
 
 
-EngineManager.prototype.startEngine = function(io, extras){
+EngineManager.prototype.startEngine = function(extras){
   var engine_opts = this.options.engine_options;
+  extras = _.defaults(extras || {}, {});
 
   logger.info('engine options', engine_opts);
 
@@ -123,7 +145,13 @@ EngineManager.prototype.startEngine = function(io, extras){
   });
 
 
-  this.engine_processes[child.pid] = {process: child, ee: new EventEmitter2({wildcard: true})};
+  var data = {process: child, ee: new EventEmitter2({wildcard: true})};
+  if(extras.name){
+    data.name = extras.name;
+  }else{
+    data.name = "Engine#" + child.pid;
+  }
+  this.engine_processes[child.pid] = data;
   this._bindEvents(child);
 
 
@@ -157,18 +185,27 @@ EngineManager.prototype.run = function(pid, workflows){
 
   this.callOnReady(pid, function(){
 
-    var items = Settings.getItems(function(e, items){
-      var items_to_load = _(items)
-        .filter(function(i) { return _.contains(workflows, i.title); })
-        .sortBy(function(i) { return _.indexOf(workflows, i.title); })
-        .value();
-      var child = that.engine_processes[pid];
-      var proc = child.process;
+    if(_.isString(workflows[0])){
+      var items = Settings.getItems(function(e, items){
+        var items_to_load = _(items)
+          .filter(function(i) { return _.contains(workflows, i.title); })
+          .sortBy(function(i) { return _.indexOf(workflows, i.title); })
+          .value();
+        var child = that.engine_processes[pid];
+        var proc = child.process;
+        proc.send({action: 'run', items: items_to_load});
+        child.running_items = items_to_load;
+
+
+      });
+    }else if(_.isObject(workflows[1])){
+      var items_to_load = _.map(workflows, 'data');
       proc.send({action: 'run', items: items_to_load});
       child.running_items = items_to_load;
+    }
 
 
-    });
+
 
   });
 
