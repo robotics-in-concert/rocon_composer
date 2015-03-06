@@ -42,10 +42,9 @@ var Engine = function(opts){
   });
 
 
-  this.ee = new EventEmitter2();
   this.executions = [];
   this.topics = [];
-  this.my_resource_ids = []; // dynamic resources id allocated in this engine.
+  this.my_dynamic_resource_ids = []; // dynamic resources id allocated in this engine.
 
 
   _.defer(function(){
@@ -208,8 +207,8 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, 
   }
   process_send2({action: 'allocate_resource', key: key, rapp: rapp, uri: uri, remappings: remappings, parameters: parameters, options: options})
     .then(function(ctx){
-      engine.my_resource_ids.push(ctx.req_id);
 
+      engine.my_dynamic_resource_ids.push(ctx.req_id);
 
       future.return(ctx);
     });
@@ -218,7 +217,8 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, 
 };
 
 Engine.prototype.releaseResource = function(ctx){
-  process_send2({cmd: 'ref_counted_release_resource', ctx: ctx});
+  // process_send2({cmd: 'ref_counted_release_resource', ctx: ctx});
+  return process_send2({cmd: 'release_resource', requester_id: ctx.rid});
 };
 
 Engine.prototype._scheduled = function(rapp, uri, remappings, parameters, topics_count, name, callback){
@@ -334,8 +334,11 @@ Engine.prototype.clear = function(){
   });
   this.executions = [];
 
-  return Promise.all([]).then(function(){
-    that.ee.removeAllListeners();
+  var proms = _.map(this.my_dynamic_resource_ids, function(rid){
+    return process_send2({cmd: 'release_resource', requester_id: rid});
+
+  });
+  return Promise.all(proms).then(function(){
     // that.unsubscribeAll();
     that.log('engine cleared');
   }).catch(function(e){

@@ -6,7 +6,7 @@ var ResourceManager = function(ros){
   this.ros = ros;
   EventEmitter2.call(this, {wildcard: true});
 
-  this.resources = {}; // thenables
+  this.resources = {};
   this.ref_counts = {};
 
 };
@@ -18,6 +18,9 @@ ResourceManager.prototype.release = function(requester_id){
   this.emit('releasing');
 
   var res = _.find(this.resources, {rid: requester_id});
+  if(_.isEmpty(res)){
+    return null;
+  }
   var key = res.key;
   var requester = res.requester;
   return requester.cancel_all().then(function(){

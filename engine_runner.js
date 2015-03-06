@@ -50,6 +50,11 @@ process.on('message', function(data){
       $engine.runItems(items);
       _postStatus('running');
       break;
+    case 'stop':
+      $engine.clear().then(function(){
+        _postStatus('stopped');
+      });
+      break;
     case 'clear':
       $engine.clear().then(function(){
         _postStatus('stopped');
