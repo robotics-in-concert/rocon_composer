@@ -219,7 +219,7 @@ Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, 
 
 Engine.prototype.releaseResource = function(ctx){
   // process_send2({cmd: 'ref_counted_release_resource', ctx: ctx});
-  return process_send2({cmd: 'release_resource', requester_id: ctx.rid});
+  return process_send2({cmd: 'release_resource', requester_id: ctx.req_id});
 };
 
 Engine.prototype._scheduled = function(rapp, uri, remappings, parameters, topics_count, name, callback){
