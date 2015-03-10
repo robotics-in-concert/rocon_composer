@@ -284,7 +284,7 @@ Engine.prototype.decResourceRefCount = function(rid){
 
 
 Engine.prototype.runScheduledAction = function(ctx, name, type, goal, onResult, onFeedback){
-  var name = _.detect(ctx.remappings, {remap_from: topic}).remap_to;
+  var name = _.detect(ctx.remappings, {remap_from: name}).remap_to;
   var engine = this;
 
   var required_topics = _.map(["feedback", "result", "status"], function(suffix){ return name + "/" + suffix});
