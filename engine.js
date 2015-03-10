@@ -277,11 +277,9 @@ Engine.prototype._changeResourceRefCount = function(rid, delta){
 };
 
 Engine.prototype.incResourceRefCount = function(rid){
-  return _changeResourceRefCount(rid, +1);
 };
 
 Engine.prototype.decResourceRefCount = function(rid){
-  return _changeResourceRefCount(rid, -1);
 };
 
 
@@ -294,7 +292,6 @@ Engine.prototype.runScheduledAction = function(ctx, name, type, goal, onResult, 
 
 
   engine._waitForTopicsReadyF(required_topics);
-  this.incResourceRefCount(ctx.req_id);
   this.ros.run_action(name, type, goal, 
     function(items){ 
       onResult(items); 
@@ -309,7 +306,6 @@ Engine.prototype.runScheduledAction = function(ctx, name, type, goal, onResult, 
 Engine.prototype.scheduledSubscribe = function(ctx, topic, type, callback){
   var name = _.detect(ctx.remappings, {remap_from: topic}).remap_to;
   this.ros.subscribe(name, type, callback);
-  this.incResourceRefCount(ctx.req_id);
   
 };
 
@@ -317,7 +313,6 @@ Engine.prototype.scheduledSubscribe = function(ctx, topic, type, callback){
 Engine.prototype.scheduledPublish = function(ctx, topic, type, msg){
   var name = _.detect(ctx.remappings, {remap_from: topic}).remap_to;
   this.ros.publish(name, type, msg);
-  this.incResourceRefCount(ctx.req_id);
 
 };
 
