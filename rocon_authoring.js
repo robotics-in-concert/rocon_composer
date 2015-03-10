@@ -9,6 +9,7 @@ var _ = require('lodash'),
   http = require('http'),
   express = require('express'),
   socketio = require('socket.io'),
+  socketio_wildcard = require('socketio-wildcard'),
   MongoClient = require('mongodb').MongoClient,
   winston = require('winston'),
   EngineManager = require('./engine_manager'),
@@ -36,12 +37,12 @@ MongoClient.connect(process.env.ROCON_AUTHORING_MONGO_URL, function(e, db){
     var app = express(); 
     var server = http.createServer(app);
     var io = socketio(server);
+    io.use(socketio_wildcard());
+    io.of('/engine/client').use(socketio_wildcard());
+
     $io = io;
 
     io.on('connection', function(sock){
-      console.log('socket.io connected');
-
-
     });
 
 

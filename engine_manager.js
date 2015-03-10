@@ -1,7 +1,12 @@
 var spawn = require('child_process').spawn,
   _ = require('lodash'),
+  Promise = require('bluebird'),
+  Engine = require('./engine'),
+  ResourceManager = require('./src/resource_manager'),
   util = require('util'),
   Settings = require('./model').Settings,
+  Requester = require('./requester').Requester,
+  Resource = require('./requester').Resource,
   EventEmitter2 = require('eventemitter2').EventEmitter2;
 
 
@@ -9,61 +14,121 @@ var spawn = require('child_process').spawn,
 var EngineManager = function(io, options){
   var that = this;
   EventEmitter2.call(this, {wildcard: true});
-  console.log(this.options);
-
-  
 
   this.io = io;
   this.engine_processes = {};
+
+  var ros = this.ros = new Ros(options);
+  ros.on('status.**', function(){});
+
+  this.resource_pool_status = null;
+  ros.once('status.ready', function(){
+
+    ros.subscribe('/concert/scheduler/resource_pool', 'scheduler_msgs/KnownResources', function(payload){
+      logger.debug("POOL", payload);
+      that.resource_pool_status = payload;
+
+      that.io.of('/engine/client')
+        .emit('data', {event: 'resource_pool', payload: payload});
+    });
+
+
+    ros.subscribe('/enable_workflows', 'RoconAuthoring/EnableWorkflows', _.bind(that.enableWorkflows, that));
+
+  });
+
+  this.resource_manager = new ResourceManager(ros);
+  this.resource_manager.onAny(function(){
+    that.broadcastResourcesInfo();
+  });
+
+
   this.options = options;
-  console.log(this.options);
-
-
-
-  console.log('CONF', this._conf);
-  console.log(this.wildcard);
-
 
   this.onAny(function(payload){
-    console.log('ee', this.event, payload);
-
     io.emit('data', {event: this.event, payload: payload});
   });
 
   this.io.of('/engine/client').on('connection', function(socket){
-    console.log('client connected');
+    logger.info('socket.io client connected id:%s', socket.id);
     that._bindClientSocketHandlers(socket);
   });
 
 };
 util.inherits(EngineManager, EventEmitter2);
 
-EngineManager.prototype._bindClientSocketHandlers = function(socket){
-  var that = this;
-  socket.on('get_processes', function(){
 
-    that.broadcastEnginesInfo();
-  });
-  socket.on('start', function(payload){
+
+EngineManager.prototype.enableWorkflows = function(options){
+  var payload = options;
+  if(payload.enable){
+
+    var pid = this.startEngine({name: payload.name});
+    var workflows = _.sortBy(payload.workflows, 'order');
+    mgr.run(pid, workflows);
     
-    var pid = that.startEngine();
-    if(payload && payload.items && payload.items.length){
-      that.run(pid, payload.items);
-    }
-  });
-  socket.on('run', function(payload){
-    that.run(payload.pid, payload.items);
-  });
-  socket.on('kill', function(pid){
-     console.log('KILL', pid);
+  }else{
+    var x = _.find(this.engine_processes, {name: payload.name})
+    this.killEngine(x.child.pid)
+  }
 
-    that.killEngine(pid.pid);
-  });
 
 };
 
-EngineManager.prototype.startEngine = function(io, extras){
+EngineManager.prototype._bindClientSocketHandlers = function(socket){
+  var mgr = this;
+
+  socket.on('*', function(e){
+    // e.nsp
+    // e.data
+    var cmd = e.data[0];
+
+    switch(cmd){
+      case 'get_processes':
+        mgr.broadcastEnginesInfo();
+        break;
+
+      case 'get_resources':
+        mgr.broadcastResourcesInfo();
+        break;
+
+      case 'start':
+        var pid = mgr.startEngine();
+        var payload = e.data[1];
+        if(payload && payload.items && payload.items.length){
+          mgr.run(pid, payload.items);
+        }
+        break;
+
+      case 'run':
+        var payload = e.data[1];
+        mgr.run(payload.pid, payload.items);
+        break;
+
+      case 'kill':
+        var payload = e.data[1];
+        mgr.killEngine(payload.pid);
+        break;
+
+      case 'release_resource':
+        var payload = e.data[1];
+        mgr.resource_manager.release(payload.requester_id);
+        break;
+    }
+
+
+  });
+
+
+};
+
+
+
+
+
+EngineManager.prototype.startEngine = function(extras){
   var engine_opts = this.options.engine_options;
+  extras = _.defaults(extras || {}, {});
 
   logger.info('engine options', engine_opts);
 
@@ -80,14 +145,29 @@ EngineManager.prototype.startEngine = function(io, extras){
   });
 
 
-  this.engine_processes[child.pid] = {process: child};
+  var data = {process: child, ee: new EventEmitter2({wildcard: true})};
+  if(extras.name){
+    data.name = extras.name;
+  }else{
+    data.name = "Engine#" + child.pid;
+  }
+  this.engine_processes[child.pid] = data;
   this._bindEvents(child);
 
 
   return child.pid;
 }
 
+EngineManager.prototype.broadcastMessage = function(msg){
+  return _(this.engine_processes)
+    .each(function(child, pid){
+      var proc = child.process;
+      proc.send(msg);
+    }).value();
 
+
+
+};
 
 
 EngineManager.prototype.callOnReady = function(pid, cb) {
@@ -102,34 +182,48 @@ EngineManager.prototype.callOnReady = function(pid, cb) {
 
 EngineManager.prototype.run = function(pid, workflows){
   var that = this;
-  console.log("*******", workflows);
 
   this.callOnReady(pid, function(){
 
-    var items = Settings.getItems(function(e, items){
-      var items_to_load = _(items)
-        .filter(function(i) { return _.contains(workflows, i.title); })
-        .sortBy(function(i) { return _.indexOf(workflows, i.title); })
-        .value();
-      var child = that.engine_processes[pid];
-      var proc = child.process;
+    if(_.isString(workflows[0])){
+      var items = Settings.getItems(function(e, items){
+        var items_to_load = _(items)
+          .filter(function(i) { return _.contains(workflows, i.title); })
+          .sortBy(function(i) { return _.indexOf(workflows, i.title); })
+          .value();
+        var child = that.engine_processes[pid];
+        var proc = child.process;
+        proc.send({action: 'run', items: items_to_load});
+        child.running_items = items_to_load;
+
+
+      });
+    }else if(_.isObject(workflows[1])){
+      var items_to_load = _.map(workflows, 'data');
       proc.send({action: 'run', items: items_to_load});
       child.running_items = items_to_load;
+    }
 
 
-    });
+
 
   });
 
 };
 
+EngineManager.prototype.broadcastResourcesInfo = function(){
+  this.io.of('/engine/client')
+    .emit('data', {event: 'resources', payload: this.resource_manager.to_json()});
+  this.io.of('/engine/client')
+    .emit('data', {event: 'resource_pool', payload: this.resource_pool_status});
+
+};
 
 EngineManager.prototype.broadcastEnginesInfo = function(){
   var payload = _.map(this.engine_processes, function(child, pid){
     var data = _.omit(child, 'process');
     return _.assign(data, {pid: pid});
   });
-  console.log(payload);
 
   this.io.of('/engine/client')
     .emit('data', {event: 'processes', payload: payload});
@@ -142,19 +236,61 @@ EngineManager.prototype._bindEvents = function(child){
   var that = this;
   child.on('message', function(msg){
 
-    var action = msg.action;
-    if(action == 'status'){
-      var status = msg.status;
-      logger.info('engine status to '+status);
-      proc.status = status;
-      that.emit(['child', child.pid, status].join('.'));
-      that.broadcastEnginesInfo();
+    var action = msg.action || msg.cmd;
+    var result = null;
+    proc.ee.emit(action, msg);
 
-    }else{
-      var action = msg.action;
-      that.emit(['child', child.pid, action].join('.'), msg);
+    switch(action) {
+      case "status":
+        var status = msg.status;
+        logger.info('engine status to '+status);
+        proc.status = status;
+        that.emit(['child', child.pid, status].join('.'));
+
+        var event = {service_name: proc.name, status: status};
+        that.ros.publish('/get_workflows_status', 'rocon_authoring/WorkflowsStatus', event);
 
 
+        result = that.broadcastEnginesInfo();
+        break;
+
+      case "change_resource_ref_count":
+        result = that.resource_manager.change_ref_count(msg.req_id, msg.delta);
+        break;
+      
+      case 'ref_counted_release_resource':
+        var ctx = msg.ctx;
+        result = that.resource_manager.ref_counted_release(ctx.req_id);
+        break;
+
+
+      case 'allocate_resource':
+        result = that.resource_manager.allocate(msg.key, msg.rapp, msg.uri, msg.remappings, msg.parameters, msg.options);
+        break;
+    
+      case 'release_resource':
+        result = that.resource_manager.release(msg.requester_id);
+        break;
+
+      default:
+        var action = msg.action;
+        result = that.emit(['child', child.pid, action].join('.'), msg);
+        break;
+        
+    }
+
+    if(msg.__request_id){
+      Promise.all([result]).then(function(results){
+        var res = results[0];
+        // child.send('return.'+msg.__request_id);
+        // child.send({cmd: 'return', request_id: msg.__request_id, result: res}); // 'return.'+msg.__request_id);
+        //
+        //
+        console.log("RESULT", results);
+
+        child.send({cmd: 'return.'+msg.__request_id, request_id: msg.__request_id, result: res}); // 'return.'+msg.__request_id);
+
+      });
     }
 
   });
@@ -166,9 +302,26 @@ EngineManager.prototype._bindEvents = function(child){
 EngineManager.prototype.killEngine = function(pid){
   logger.info('will kill engine : ' + pid);
 
-  var child = this.engine_processes[pid].process;
-  child.kill('SIGTERM');
-  delete this.engine_processes[pid];
+  var that = this;
+  var child = this.engine_processes[pid];
+  var proc = child.process;
+  // delete this.engine_processes[pid];
+
+  child.ee.on('status', function(payload){
+    console.log('---------------', payload);
+
+    if(payload.status == 'stopped'){
+      proc.kill('SIGTERM');
+      delete that.engine_processes[pid];
+      
+      that.broadcastEnginesInfo();
+
+    }
+  });
+
+  proc.send({cmd: 'stop'});
+
+
 
 
   this.broadcastEnginesInfo();
@@ -198,34 +351,5 @@ EngineManager.prototype.restartEngine = function(pid){
   });
   childEngine.send({action: 'stop'});
 };
-
-// global.childEngine.on('message', function(msg){
-
-  // if(msg == 'engine_start_failed'){
-    // logger.error('engine start failed');
-  // }else if(msg == 'engine_started'){
-    // logger.info('engine started');
-  // }else if(msg == 'engine_ready'){
-    // logger.info('engine ready')
-    // var workflows = argv.workflow;
-    // if(!_.isEmpty(workflows)){
-      // var col = db.collection('settings');
-      // col.findOne({key: 'cento_authoring_items'}, function(e, data){
-        // var items = data ? data.value.data : [];
-        // var items_to_load = _(items)
-          // .filter(function(i) { return _.contains(workflows, i.title); })
-          // .sortBy(function(i) { return _.indexOf(workflows, i.title); })
-          // .value();
-    
-        // global.childEngine.send({action: 'run', items: items_to_load});
-      // });
-
-    // }
-
-  // }
-
-// });
-
-
 
 module.exports = EngineManager;

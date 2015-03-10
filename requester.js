@@ -5,13 +5,8 @@ var _ = require('lodash'),
     Promise = require('bluebird'),
     async = require('async'),
     Util = require('util'),
-    R = require('ramda'),
     EventEmitter = require('events').EventEmitter,
     UUID = require('node-uuid');
-
-R.invoker0 = R.curry(R.invokerN)(0);
-    
-
 
 // https://github.com/robotics-in-concert/rocon_scheduler_requests/blob/hydro-devel/src/rocon_scheduler_requests/requester.py
 MSG_SCHEDULER_REQUEST = "scheduler_msgs/SchedulerRequests";
@@ -148,7 +143,7 @@ Request = function(id){
 Request.prototype.to_msg = function(){
   var msg = _.pick(this, "status,reason,problem,availability,hold_time,priority".split(/,/));
   msg.id = this.id.to_msg();
-  msg.resources = R.map(R.invoker0('to_msg'), this.resources);
+  msg.resources = _.invoke(this.resources, 'to_msg');
   return msg;
 };
 
@@ -248,9 +243,8 @@ SchedulerRequests.prototype.debug = function(){
  *
  */
 
-Requester = function(engine, options){
-  this.engine = engine;
-  this.ros = engine.ros;
+Requester = function(ros, options){
+  this.ros = ros;
   this.id = new UniqueId();
   this.requests = new SchedulerRequests(this.id);
 
@@ -268,29 +262,33 @@ Requester = function(engine, options){
   this.options = _.defaults(options, default_options);
 
 
-  // subscribe feedback topic
-  this.engine.ee.on(this.feedback_topic(), _.bind(this._handleFeedback, this)); 
-  this.engine.subscribe(this.feedback_topic(), MSG_SCHEDULER_REQUEST);
+  ros.on('subscribe.' + this.feedback_topic(), _.bind(this._handleFeedback, this)); 
+  ros.subscribe(this.feedback_topic(), MSG_SCHEDULER_REQUEST);
+
 };
 
 Requester.prototype.finish = function(){
-  console.log("unadvertise publish topic");
+  logger.debug("unadvertise publish topic");
   this.publish_topic.unadvertise();
-  console.log("unsubscribe topic : ", this.feedback_topic());
-  this.engine.unsubscribe(this.feedback_topic());
+  logger.debug("unsubscribe topic : ", this.feedback_topic());
+  // this.engine.unsubscribe(this.feedback_topic());
 
 };
 
 Requester.prototype.send_allocation_request = function(res, timeout){
+  if(_.isPlainObject(timeout)){
+    var options = timeout;
+    timeout = options.timeout;
+  };
   var that = this;
   var uuid = this.new_request([res]);
   this.send_requests();
 
 
-  console.log("start to request resource", res, timeout);
+  logger.debug("start to request resource", res, timeout);
 
   this.heartbeat_timer = setInterval(function(){
-    console.log('hb', that.id.toString());
+    logger.debug('hb', that.id.toString());
 
     that.send_requests({debug: false});
   }, 4000);
@@ -301,17 +299,24 @@ Requester.prototype.send_allocation_request = function(res, timeout){
 
 
   return new Promise(function(resolve, reject){
-    var timeout_timer = null;
-    that.ee.once('granted', function(){
+
+
+    if(options.test){
       resolve(uuid.toString());
       clearTimeout(timeout_timer);
-    });
+    }else{
+      var timeout_timer = null;
+      that.ee.once('granted', function(){
+        resolve(uuid.toString());
+        clearTimeout(timeout_timer);
+      });
 
-    timeout_timer = setTimeout(function(){ 
-      console.log('resource allocation timeout.', res, timeout);
-      clearInterval(that.heartbeat_timer);
-      reject('timedout'); 
-    }, timeout);
+      timeout_timer = setTimeout(function(){ 
+        logger.info('resource allocation timeout.', res, timeout);
+        clearInterval(that.heartbeat_timer);
+        reject('timedout'); 
+      }, timeout);
+    }
 
 
   });
@@ -335,12 +340,11 @@ Requester.prototype.send_requests = function(options){
   opts = _.defaults(options || {}, {debug: true});
 
   if(opts.debug){
-    console.log("SEND REQS ----------------------------------------");
-    console.log(this.requests.debug());
-    console.log(Util.inspect(this.requests.to_msg(), {depth: 10, color: true}));
+    logger.debug("requester send", this.requests.debug());
+    // logger.debug(Util.inspect(this.requests.to_msg(), {depth: 10, color: true}));
   }
 
-  this.publish_topic = this.engine.publish(SCHEDULER_TOPIC, MSG_SCHEDULER_REQUEST, this.requests.to_msg());
+  this.publish_topic = this.ros.publish(SCHEDULER_TOPIC, MSG_SCHEDULER_REQUEST, this.requests.to_msg());
 };
 
 Requester.prototype.new_request = function(resources){
@@ -370,7 +374,7 @@ Requester.prototype.unserialize_message = function(msg){
 };
 
 Requester.prototype._handleFeedback = function(msg){
-  console.log("FEEDBACK : ", JSON.stringify(msg));
+  logger.debug("FEEDBACK : ", JSON.stringify(msg));
 
 
   try{
@@ -378,10 +382,9 @@ Requester.prototype._handleFeedback = function(msg){
     this.requests = this.unserialize_message(msg);
 
 
-    console.log("RECV REQS ----------------------------------------");
-    console.log(this.requests.debug());
+    logger.debug("requester receive", this.requests.debug());
     if(!_.isEqual(prev_rs, this.requests)){ // if diff
-      console.log("DIIIIFFFFFF");
+      logger.debug("DIIIIFFFFFF");
 
       this.handleFeedback(this.requests);
       if(!_.isEqual(prev_rs, this.requests)){ // if diff
@@ -400,8 +403,6 @@ Requester.prototype._handleFeedback = function(msg){
 
 Requester.prototype.handleFeedback = function(requests){
   var that = this;
-  console.log('HEREHERE');
-
 
   _.each(requests.requests, function(req){
     var uuid = req.id.toString();
@@ -409,9 +410,11 @@ Requester.prototype.handleFeedback = function(requests){
 
     if(req.status == STATUS_GRANTED){
       // handle granted resource
+      logger.info('granted ', uuid.toString());
       that.ee.emit('granted', uuid);
 
     }else if(req.status == STATUS_CLOSED){
+      logger.info('closed ', uuid.toString());
       that.ee.emit('closed', uuid);
     };
 

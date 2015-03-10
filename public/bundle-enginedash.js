@@ -20,12 +20,10 @@ module.exports = ItemsSelectCtrl;
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 var ItemsSelectCtrl = require('../ctrls/items_select_ctrl');
 
-console.log(_);
-
-
 angular.module('engine-dashboard', [
   'btford.socket-io',
-  'ui.bootstrap'
+  'ui.bootstrap',
+  'ui.router'
 ])
   .config(Config)
   .factory('socket', ['socketFactory', function(socketFactory){
@@ -38,52 +36,120 @@ angular.module('engine-dashboard', [
     sock.forward('error');
     return sock;
   }])
+  .directive('resourceStatusLabel', resourceStatusLabel)
+  .controller('dashboardRootController', DashboardRootController)
+  .controller('dashboardResourcesController', DashboardResourcesController)
   .controller('engineDashboardController', EngineDashboardController);
 
 
-
 /* @ngInject */
-function Config($interpolateProvider){
-  $interpolateProvider.startSymbol('[[');
-  $interpolateProvider.endSymbol(']]');
+function resourceStatusLabel(){
+  return {
+    restrict: 'E',
+    replace: true,
+    template: '<span class="label [[cls]]">[[label]]</span>',
+    scope: {
+      status: '@'
+    },
+    link: function(scope, elem, attrs){
+      console.log(attrs);
+
+      var tbl = {
+        0: 'NEW',
+        1: 'RESERVED',
+        2: 'WAITING',
+        3: 'GRANTED',
+        4: 'PREEMPTING',
+        5: 'CANCELING',
+        6: 'CLOSED'
+      }
+     
+      scope.cls = 'label-default';
+      scope.label = tbl[+attrs.status];
+
+      if(+attrs.status == 3){
+        scope.cls = 'label-success';
+      }
+    }
+
+  }
 
 }
 
 /* @ngInject */
-function EngineDashboardController($scope, socket, $location, $http, $modal){
-  console.log(socket);
+function Config($interpolateProvider, $stateProvider, $urlRouterProvider){
+  $interpolateProvider.startSymbol('[[');
+  $interpolateProvider.endSymbol(']]');
 
+  $urlRouterProvider.otherwise('/index');
+
+  $stateProvider
+    .state('index', {
+      url: '/index',
+      templateUrl: '/js/tpl/dashboard_index.html',
+      controller: 'engineDashboardController'
+
+    })
+    .state('resources', {
+      url: '/resources',
+      templateUrl: '/js/tpl/dashboard_resources.html',
+      controller: 'dashboardResourcesController'
+
+    })
+
+}
+/* @ngInject */
+function DashboardRootController($scope, socket, $location, $http, $modal){
   socket.on('connect', function(){
     console.log('connected');
+    socket.emit('get_resources');
     socket.emit('get_processes');
-
-
   });
-  $scope.foo = 'bar';
 
+
+  socket.on('data', function(data){
+
+    switch(data.event){
+      case 'resource_pool':
+        if(data.payload.resources)
+          $scope.pool  = data.payload.resources;
+        break;
+
+      case 'processes':
+        $scope.processes = data.payload;
+        break;
+      case 'resources':
+        $scope.resources = data.payload;
+        break;
+
+    }
+           
+  });
+
+};
+
+/* @ngInject */
+function DashboardResourcesController($scope, socket, $location, $http, $modal){
+
+};
+
+
+
+
+/* @ngInject */
+function EngineDashboardController($scope, socket, $location, $http, $modal){
+
+  socket.on('connect', function(){
+  });
 
   $scope.published = [];
 
-  socket.on('data', function(data){
-    console.log(data);
-
-
-
-    if(data.event == 'processes'){
-      $scope.processes = data.payload;
-    }
-
-
-  });
-
   socket.on('publish', function(data){
-    console.log('1');
 
     console.log(data);
     $scope.published.push(data)
 
   });
-
 
 
 
@@ -131,6 +197,9 @@ function EngineDashboardController($scope, socket, $location, $http, $modal){
 
   $scope.killEngine = function(pid){
     socket.emit('kill', {pid: pid});
+  };
+  $scope.releaseResource = function(rid){
+    socket.emit('release_resource', {requester: rid});
   };
 
 }

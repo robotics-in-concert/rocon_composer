@@ -1,18 +1,67 @@
 var fs = require('fs'),
+  Promise = require('bluebird'),
   request = require('request'),
   zlib = require('zlib'),
   os = require('os'),
   rimraf = require('rimraf'),
+  winston = require('winston'),
   glob = require('glob'),
   tar = require('tar'),
   _ = require('lodash'),
   yaml = require('js-yaml'),
+  UUID = require('node-uuid'),
   Path = require('path');
   
   
 
 
+
+process_send2 = function(data){
+  var reqId = UUID.v4().replace(/-/g, "")
+  data.__request_id = reqId;
+
+
+  return new Promise(function(resolve, reject){
+    process.on('message', function(payload){
+      if(payload.cmd == 'return.'+reqId){
+        resolve(payload.result);
+      };
+    });
+    process.send(data);
+
+  });
+
+
+};
+
 module.exports = {
+  setup_logger: function(options){
+    var defaults = {
+      console: {
+        colorize: true,
+        level: process.env.ROCON_AUTHORING_LOG_LEVEL,
+        prettyPrint: true
+      }
+
+    };
+
+    winston.loggers.add('main', _.defaults(options, defaults));
+    var logger = winston.loggers.get('main')
+    return logger;
+    // logger.cli()
+
+
+    // global.logger = logger;
+    // logger.debug('logger initialized');
+
+// process.on('message', function(data){
+// });
+
+
+
+  },
+
+  process_send2: process_send2,
 
   retry: function(f, cb, n, ms){
     var op = {};

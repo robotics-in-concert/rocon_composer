@@ -1,0 +1,32 @@
+
+<h3>Resource Pool</h3>
+
+<div id="resources">
+  <div classx="panel panel-default" ng-class='{"panel-default":true, panel:true, "panel-success":(res.status == 1)}' ng-repeat="res in pool">
+    <div class="panel-heading">[[res.uri]]</div>
+    <div class="panel-body">
+      <dl class="dl-horizontal2">
+        <dt>owner</dt><dd>[[res.owner.uuid]]</dd>
+        <dt>status</dt><dd>[[res.status]]</dd>
+        <dt>priority</dt><dd>[[res.priority]]</dd>
+        <dt>uri</dt><dd>[[res.uri]]</dd>
+        <dt>rapps</dt>
+        <dd>
+          <ul class="list-inline">
+            <li ng-repeat="rapp in res.rapps">[[rapp]]</li>
+          </ul>
+        </dd>
+      </dl>
+
+
+      <div class="text-right">
+        <button class="btn btn-sm btn-info" ng-click="releaseResource(res.requester)">Info</button>
+      </div>
+
+
+
+
+
+    </div>
+  </div>
+</div>

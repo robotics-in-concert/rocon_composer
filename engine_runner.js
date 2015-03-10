@@ -3,15 +3,16 @@
 var _ = require('lodash'),
   argv = require('minimist')(process.argv.slice(2)),
   winston = require('winston'),
+  utils = require('./utils'),
+  process_send2 = require('./utils').process_send2,
   Engine = require('./engine');
 
 
 process.name = 'rocon-workflow-engine'
-
 $pid = process.pid;
-setupLogger();
 
-console.log('my pid', $pid);
+global.logger = utils.setup_logger({});
+logger.info('pid', $pid);
 
 
 
@@ -27,50 +28,41 @@ $engine.on('status.*', function(){
   _postStatus(en);
 
 });
+
 $engine.on('ros.**', function(payload){
   var tail = _.tail(this.event.split(/\./));
   var action = tail[0];
   var topic = tail[1];
-  process.send({action: action, topic: topic, payload: payload});
+  process_send2({action: action, topic: topic, payload: payload})
+    .then(function(x){
+      console.log('XXXX', x);
+
+    });
 });
+
+
 
 process.on('message', function(data){
-  console.log(data);
+  var cmd = data.action || data.cmd;
+  switch(cmd){
+    case 'run':
+      var items = data.items;
+      $engine.runItems(items);
+      _postStatus('running');
+      break;
+    case 'stop':
+      $engine.clear().then(function(){
+        _postStatus('stopped');
+      });
+      break;
+    case 'clear':
+      $engine.clear().then(function(){
+        _postStatus('stopped');
+      });
+      break;
 
-
-  var action = data.action;
-  console.log(action);
-
-  if(action == 'run'){
-    var items = data.items;
-    $engine.runItems(items);
-    _postStatus('running');
   }
-  if(action == 'clear'){
-    $engine.clear().then(function(){
-      _postStatus('stopped');
-    });
-  }
-
 });
 
-
-function setupLogger(){
-  winston.loggers.add('main', {
-    console: {
-      colorize: true,
-      level: process.env.ROCON_AUTHORING_LOG_LEVEL,
-      prettyPrint: true
-    }
-
-  });
-  var logger = winston.loggers.get('main')
-  // logger.cli()
-
-  global.logger = logger;
-
-  logger.debug('logger initialized');
-
-};
 
 

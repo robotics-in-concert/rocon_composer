@@ -7,12 +7,15 @@ var _ = require('lodash'),
   Future = require('fibers/future'),
   wait = Future.wait,
   Utils = require('./utils'),
+  process_send2 = Utils.process_send2,
   util = require('util'),
   request = require('request'),
   Requester = require('./requester').Requester,
   Resource = require('./requester').Resource,
   UUID = require('node-uuid'),
+  Ros = require('./src/ros'),
   URL = require('url');
+
 
 
 DEBUG = process.env.DEBUG || false
@@ -30,73 +33,23 @@ var Engine = function(opts){
     ros_retry_interval: 1000,
   }, opts);
 
-
-  // this.socket = require('socket.io-client')('ws://localhost:'+this.options.service_port + '/engine');
-  this.socket = null;
-
-
-
-  // this.io = require('socket.io').listen(this.options.socketio_port);
-  // this.log('socketio listen on '+this.options.socketio_port);
-
-
-
-  this.ee = new EventEmitter2();
-  this.executions = [];
-  this.memory = {};
-  var ros = this.ros = new ROSLIB.Ros({encoding: 'utf8'});
   var engine = this;
-  this.topics = [];
   var that = this;
-  this.schedule_requests = {};
-  this.schedule_requests_ref_counts = {};
 
-  this.publish_queue = [];
+  var ros = engine.ros = new Ros(this.options);
+  ros.on('status.**', function(){
+    engine.emit(this.event);
+  });
 
-  var retry_op = Utils.retry(function(){
-    engine.log('trying to connect to ros ' + process.env.ROCON_AUTHORING_ROSBRIDGE_URL);
-    var connected = false;
 
-    var ros = that.ros = new ROSLIB.Ros({encoding: 'utf8'});
+  this.executions = [];
+  this.topics = [];
+  this.my_dynamic_resource_ids = []; // dynamic resources id allocated in this engine.
 
-    ros.on('error', function(e){
-      engine.log('ros error', e);
-      if(!connected){
-        retry_op.retry();
-      }
-    });
-    ros.on('connection', function(){
-      engine.log('ros connected');
-      engine.emit('started');
-      engine.emit('status.started')
-
-      engine.waitForTopicsReady(['/concert/scheduler/requests']).then(function(){
-        engine.emit('ready');
-        engine.emit('status.ready')
-      });
-      connected = true;
-    });
-    ros.on('close', function(){
-      engine.log('ros closed');
-      // retry_op.retry();
-    });
-    ros.connect(process.env.ROCON_AUTHORING_ROSBRIDGE_URL);
-
-  }, function(e){
-    logger.error('ros connection failed', e);
-    engine.emit('start_failed');
-    engine.emit('status.start_failed');
-
-    
-  }, this.options.ros_retries, this.options.ros_retry_interval);
-
-  engine.startPublishLoop();
 
   _.defer(function(){
     // engine.emit('started');
-
   });
-  this.initSocket();
 
 };
 util.inherits(Engine, EventEmitter2);
@@ -104,24 +57,6 @@ util.inherits(Engine, EventEmitter2);
 Engine.prototype.socketBroadcast = function(key, msg){
   this.socket.emit(key, msg);
   this.debug('socket#emit', key, msg);
-};
-
-Engine.prototype.initSocket = function(){
-  // var engine = this;
-  // this.io.of('/engine').on('connection', function(socket){
-    // engine.log('websocket connected');
-  // });
-
-
-  // engine.ee.on('engine:publish', function(data){
-    // engine.io.of('/engine').emit('publish', data);
-
-
-  // });
-
-
-
-
 };
 
 Engine.prototype.socketBroadcast = function(key, msg){
@@ -138,76 +73,18 @@ Engine.prototype.getMessageDetails = function(type, cb){
   });
 };
 
-Engine.prototype.unsubscribe = function(topic){
-  var t = _.remove(this.topics, {name: topic});
-  t = t[0];
-  t.listener.unsubscribe();
-};
-Engine.prototype.unsubscribeAll = function(){
-  var engine = this;
-  this.topics.forEach(function(t){
-    t.listener.unsubscribe();
-    engine.log("topic "+t.name+" unsubscribed");
 
-  });
-  this.topics = [];
-};
-
-Engine.prototype.subscribe = function(topic, type){
-  var engine = this;
-  var listener = new ROSLIB.Topic({
-    ros : this.ros,
-    name : topic,
-    messageType : type
-  });
-
-  listener.subscribe(function(message) {
-    engine.debug('Received message on ' + listener.name + ': ' + message);
-    engine.ee.emit(listener.name, message);
-    engine.emit('ros.subscribe.'+listener.name, message);
-
-  });
-
-  this.topics.push({name: topic, listener: listener});
-
+Engine.prototype.subscribe = function(topic, type, cb){
+  return this.ros.subscribe(topic, type, cb);
 };
 
 
-Engine.prototype.startPublishLoop = function(){
-
-  var engine = this;
-  this.publish_loop_timer = setInterval(function(){
-
-    var data = engine.publish_queue.shift();
-    if(!data){
-      return;
-    }
-
-    var topic = new ROSLIB.Topic({
-      ros : engine.ros,
-      name : data.name,
-      messageType : data.type
-    });
-
-    var msg = new ROSLIB.Message(data.msg);
-
-
-    // And finally, publish.
-    topic.publish(msg);
-    engine.debug("published "+topic.name);
-    engine.ee.emit('engine:publish', {name: data.name, type: data.type, payload: data.msg});
-    engine.emit('ros.publish.' + data.name, {name: data.name, type: data.type, payload: data.msg});
-
-  }, this.options.publish_delay);
-  engine.log('publish loop started');
+Engine.prototype.publish = function(topic, type, msg){
+  return this.pub(topic, type, msg);
 };
-Engine.prototype.stopPublishLoop = function(){
-  clearInterval(this.publish_loop_timer);
-};
-
 
 Engine.prototype.pub = function(topic, type, msg){
-  this.publish_queue.push({name: topic,  type: type, msg: msg});
+  this.ros.publish(topic, type, msg);
   return null;
 };
 
@@ -270,33 +147,7 @@ Engine.prototype.runCode = function(code){
 
 // public - promise version
 Engine.prototype.waitForTopicsReady = function(required_topics){
-  var engine = this;
-  var delay = process.env.rocon_authoring_delay_after_topics || 2000;
-
-
-
-  return new Promise(function(resolve, reject){
-    var timer = setInterval(function(){
-      engine.ros.getTopics(function(topics){
-        var open_topics = _(topics).filter(function(t){ return _.contains(required_topics, t); }).value();
-        console.log('topic count check : ', [open_topics.length, required_topics.length].join("/"), open_topics, required_topics);
-
-        if(open_topics.length >= required_topics.length){
-          clearInterval(timer);
-          setTimeout(function(){ resolve(); }, delay);
-        }
-      });
-
-    }, 1000);
-
-  });
-
-
-
-
-
-
-
+  return this.ros.waitForTopicsReady(required_topics);
 };
 
 
@@ -312,7 +163,7 @@ Engine.prototype._waitForTopicsReadyF = function(required_topics){
 
   var timer = setInterval(function(){
     if(!fiber.stopped){
-      engine.ros.getTopics(function(topics){
+      engine.ros.underlying.getTopics(function(topics){
         var remapped_topics = R.filter(function(t){ return R.contains(t, required_topics); })(topics);
         console.log('topic count check : ', [remapped_topics.length, required_topics.length].join("/"), remapped_topics, required_topics);
 
@@ -343,50 +194,32 @@ Engine.prototype._waitForTopicsReadyF = function(required_topics){
 };
 
 
-
 Engine.prototype.allocateResource = function(rapp, uri, remappings, parameters, options){
 
   var engine = this;
-  
-  var r = new Requester(this);
-  var rid = r.id.toString();
-
-  R.forEach(function(remap){
-    if(R.isEmpty(remap.remap_to)){
-      remap.remap_to = "/" + remap.remap_from + "_" + UUID.v4().replace(/-/g, "")
-    }
-
-  })(remappings);
-
-  var res = new Resource();
-  res.rapp = rapp;
-  res.uri = uri;
-  res.remappings = remappings;
-  res.parameters = parameters;
+  var allocation_type = options.type || 'dynamic';
 
   var future = new Future();
-  engine.schedule_requests[rid] = r;
-  r.send_allocation_request(res, options.timeout).then(function(reqId){
-    engine.schedule_requests_ref_counts[rid] = 0;
-    future.return({req_id: rid, remappings: remappings, parameters: parameters, rapp: rapp, uri: uri, allocation_type: options.type});
-  }).catch(function(e){
-    future.return(null);
-  });
 
-  
+  var key = null;
+  if(allocation_type == 'static'){
+    var key = rapp + uri;
+  }
+  process_send2({action: 'allocate_resource', key: key, rapp: rapp, uri: uri, remappings: remappings, parameters: parameters, options: options})
+    .then(function(ctx){
+
+      if(allocation_type == 'dynamic')
+        engine.my_dynamic_resource_ids.push(ctx.req_id);
+
+      future.return(ctx);
+    });
+
   return future.wait();
 };
 
 Engine.prototype.releaseResource = function(ctx){
-  var requester = this.schedule_requests[ctx.req_id];
-  if(!ctx.allocation_type || ctx.allocation_type == 'dynamic'){
-    this.schedule_requests_ref_counts[ctx.req_id] = this.schedule_requests_ref_counts[ctx.req_id] - 1;
-    if(this.schedule_requests_ref_counts[ctx.req_id] <= 0){
-      var requester = this.schedule_requests[ctx.req_id];
-      requester.cancel_all();
-    }
-  }
-
+  // process_send2({cmd: 'ref_counted_release_resource', ctx: ctx});
+  return process_send2({cmd: 'release_resource', requester_id: ctx.req_id});
 };
 
 Engine.prototype._scheduled = function(rapp, uri, remappings, parameters, topics_count, name, callback){
@@ -394,7 +227,7 @@ Engine.prototype._scheduled = function(rapp, uri, remappings, parameters, topics
   
   var r = new Requester(this);
 
-  this.ros.getTopics(function(topics){
+  this.ros.underlying.getTopics(function(topics){
     engine.log("topics : ", topics);
 
     var res = new Resource();
@@ -411,7 +244,7 @@ Engine.prototype._scheduled = function(rapp, uri, remappings, parameters, topics
       var topics_ready = new Promise(function(resolve, reject){
 
         var timer = setInterval(function(){
-          engine.ros.getTopics(function(topics){
+          engine.ros.underlying.getTopics(function(topics){
 
             
             var remapped_topics = R.filter(R.match("^"+name))(topics);
@@ -437,22 +270,29 @@ Engine.prototype._scheduled = function(rapp, uri, remappings, parameters, topics
 
 };
 
-Engine.prototype.runScheduledAction = function(ctx, name, type, goal, onResult, onFeedback){
 
-  var remapping_kv = R.compose(
-    R.fromPairs,
-    R.map(R.values)
-  )(ctx.remappings);
-  var name = remapping_kv[name];
+Engine.prototype._changeResourceRefCount = function(rid, delta){
+  delta = delta || 1;
+  process_send2({cmd: 'change_resource_ref_count', req_id: rid, delta: delta});
+};
+
+Engine.prototype.incResourceRefCount = function(rid){
+};
+
+Engine.prototype.decResourceRefCount = function(rid){
+};
+
+
+Engine.prototype.runScheduledAction = function(ctx, name, type, goal, onResult, onFeedback){
+  var name = _.detect(ctx.remappings, {remap_from: name}).remap_to;
   var engine = this;
 
-  var required_topics = R.map(R.concat(name+"/"))(["feedback", "result", "status"]);
+  var required_topics = _.map(["feedback", "result", "status"], function(suffix){ return name + "/" + suffix});
   engine.log('action : ', ctx, required_topics, name);
 
 
   engine._waitForTopicsReadyF(required_topics);
-  this.schedule_requests_ref_counts[ctx.req_id] = this.schedule_requests_ref_counts[ctx.req_id] + 1;
-  engine.runAction(name, type, goal, 
+  this.ros.run_action(name, type, goal, 
     function(items){ 
       onResult(items); 
       engine.releaseResource(ctx);
@@ -464,45 +304,15 @@ Engine.prototype.runScheduledAction = function(ctx, name, type, goal, onResult, 
 };
 
 Engine.prototype.scheduledSubscribe = function(ctx, topic, type, callback){
-  var engine = this;
-  var remapping_kv = R.compose(
-    R.fromPairs,
-    R.map(R.values)
-  )(ctx.remappings);
-  var name = remapping_kv[topic];
-
-  // engine._waitForTopicsReadyF([name]);
-  
-  var listener = new ROSLIB.Topic({
-    ros : this.ros,
-    name : name,
-    messageType : type
-  });
-
-  listener.subscribe(function(message) {
-    engine.debug('Received message on ' + listener.name + ': ' + message);
-    callback(message);
-  });
-  this.schedule_requests_ref_counts[ctx.req_id] = this.schedule_requests_ref_counts[ctx.req_id] + 1;
-
-  this.topics.push({name: name, listener: listener});
+  var name = _.detect(ctx.remappings, {remap_from: topic}).remap_to;
+  this.ros.subscribe(name, type, callback);
   
 };
 
 
 Engine.prototype.scheduledPublish = function(ctx, topic, type, msg){
-  var engine = this;
-  var remapping_kv = R.compose(
-    R.fromPairs,
-    R.map(R.values)
-  )(ctx.remappings);
-  var name = remapping_kv[topic];
-  var engine = this;
-
-
-  // engine._waitForTopicsReadyF([name]);
-  engine.pub(name, type, msg);
-  this.schedule_requests_ref_counts[ctx.req_id] = this.schedule_requests_ref_counts[ctx.req_id] + 1;
+  var name = _.detect(ctx.remappings, {remap_from: topic}).remap_to;
+  this.ros.publish(name, type, msg);
 
 };
 
@@ -510,52 +320,7 @@ Engine.prototype.scheduledPublish = function(ctx, topic, type, msg){
 
 
 
-Engine.prototype.runAction = function(name, type, goal, onResult, onFeedback){
-  this.log("run action : " +  name + " " + type + " " + JSON.stringify(goal));
 
-  var ac = new ROSLIB.ActionClient({
-    ros : this.ros,
-    serverName : name,
-    actionName : type
-  });
-
-  var goal = new ROSLIB.Goal({
-    actionClient : ac,
-    goalMessage : goal
-  });
-
-  goal.on('feedback', onFeedback);
-  goal.on('result', onResult);
-
-  goal.send();
-
-};
-
-Engine.prototype.cmdVel = function(options){
-
-  var cmdVel = new ROSLIB.Topic({
-    ros : this.ros,
-    name : '/turtle1/cmd_vel',
-    messageType : 'geometry_msgs/Twist'
-  });
-
-  var twist = new ROSLIB.Message(options);
-
-  cmdVel.publish(twist);
-
-
-};
-
-
-Engine.prototype.publish = function(topic, type, msg){
-  return this.pub(topic, type, msg);
-};
-
-// Engine.prototype.publish = function(event_name, params){
-  // var data = {event: event_name};
-  // _.assign(data, params);
-
-// };
 Engine.prototype.clear = function(){
   var that = this;
 
@@ -565,22 +330,17 @@ Engine.prototype.clear = function(){
   });
   this.executions = [];
 
-  var q_cancels = R.map(function(r){
-    try{ 
-      return r.cancel_all(); 
-    }catch(e){ return null; }
-  })(R.values(this.schedule_requests));
+  var proms = _.map(this.my_dynamic_resource_ids, function(rid){
+    return process_send2({cmd: 'release_resource', requester_id: rid});
 
-  return Promise.all(q_cancels).then(function(){
-    that.ee.removeAllListeners();
-    that.memory = {};
-    that.unsubscribeAll();
+  });
+  return Promise.all(proms).then(function(){
+    // that.unsubscribeAll();
     that.log('engine cleared');
   }).catch(function(e){
     that.log('fail - engine clear ' + e.toString());
     
   });;
-
 
 };
 Engine.prototype.print = function(msg){
@@ -603,8 +363,6 @@ Engine.prototype.itemsToCode = function(items){
 
 
   return js;
-
-
 
 };
 

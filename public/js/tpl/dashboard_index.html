@@ -1,0 +1,88 @@
+<div class="main" ng-controller="engineDashboardController" ng-cloak>
+  <h3>Engines</h3>
+  <div id="engines">
+    <div class="panel panel-default" ng-repeat="proc in processes">
+      <div class="panel-heading">Engine#[[proc.pid]]</div>
+      <div class="panel-body">
+        Status : <span ng-class="{'label-default': true, 'label-success': proc.status=='running', label: true}">[[proc.status]]</span>
+        <div ng-if="proc.status == 'running'">
+          Running Items :
+          <ul>
+            <li ng-repeat="item in proc.running_items">
+              <strong>[[item.title]]</strong>
+            </li>
+          </ul>
+
+        </div>
+        <div class="text-right">
+          <button class="btn btn-sm btn-default" ng-click="run(proc.pid)">Run</button>
+          <button class="btn btn-sm btn-danger" ng-click="killEngine(proc.pid)">Kill</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <button class="btn btn-default" ng-click="run()">Run</button>
+  <button class="btn btn-default" ng-click="start()">Start</button>
+
+
+  <h3>Resources</h3>
+  <div id="resources">
+    <div ng-class="{panel:true, 'panel-default':true, 'panel-success':(res.requests[0].status == 3)}" ng-repeat="res in resources">
+      <div class="panel-heading">[[res.requester]] ([[res.ref_count]])</div>
+      <div class="panel-body">
+        <ul class="list-unstyled">
+          <li ng-repeat="req in res.requests">
+            <dl class="dl-horizontal2">
+              <dt>status</dt><dd><resource-status-label status="[[req.status]]"></resource-status-label></dd>
+
+              <dt>availability</dt><dd>[[req.availability]]</dd>
+              <dt>priority</dt><dd>[[req.priority]]</dd>
+            </dl>
+
+
+            <div ng-repeat="res in req.resources">
+              <dl class="dl-horizontal2">
+                <dt>rapp</dt><dd>[[res.rapp]]</dd>
+                <dt>uri</dt><dd>[[res.uri]]</dd>
+              </dl>
+              <!--
+              Remappings
+              <ul>
+                <li ng-repeat="remap in res.remappings">
+                  <span>[[remap.remap_from]] &rarr; [[remap.remap_to]]</span>
+                </li>
+              </ul>
+              Parameters
+              <ul>
+                <li ng-repeat="param in res.parameters">
+                  <span>[[param.key]] : [[param.value]]</span>
+                </li>
+              </ul>
+              -->
+            </div>
+            <div class="text-right">
+              <button class="btn btn-sm btn-info" ng-click="releaseResource(res.requester)">Release</button>
+            </div>
+
+
+
+
+
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <ul>
+    <li ng-repeat="topic in published">
+      [[topic.name]] ([[topic.type]]) [[topic.payload | json]]
+    </li>
+  </ul>
+
+</div>
+

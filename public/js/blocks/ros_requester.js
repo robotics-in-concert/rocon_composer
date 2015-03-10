@@ -116,9 +116,9 @@ Blockly.JavaScript['ros_requester_allocate_with_block'] = function(block){
     var_name: this.getFieldValue('VAR'),
     rapp: config.rapp, 
     uri: config.uri, 
-    remappings: JSON.stringify(config.remappings),
-    parameters: JSON.stringify(config.parameters),
-    options: JSON.stringify({timeout: config.timeout, type: type}),
+    remappings: angular.toJson(config.remappings),
+    parameters: angular.toJson(config.parameters),
+    options: angular.toJson({timeout: config.timeout, type: type}),
     param: paramNameOnSucess,
     codeSuccess: codeSuccess,
     codeFail: codeFail
