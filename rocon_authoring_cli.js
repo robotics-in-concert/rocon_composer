@@ -12,7 +12,7 @@ function _process(argv){
   if(!argv.a && !argv.d && !argv.l){
     return;
   }
-  var mongo_url = process.env.ROCON_AUTHORING_MONGO_URL;
+  var mongo_url = process.env.ROCON_SERVICE_COMPOSER_BLOCKLY_MONGO_URL;
   if(argv.mongo_url){
     mongo_url = argv.mongo_url;
   }

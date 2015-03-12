@@ -25,13 +25,13 @@ rocon_authoring
 
 ## Required Environment Variables
 
-  - `ROCON_AUTHORING_PORT` : The port to run engine's web interface.
-  - `ROCON_AUTHORING_ROSBRIDGE_URL` : Rosbridge websocket URL (eg. ws://127.0.0.1:9090)
-  - `ROCON_AUTHORING_MONGO_URL` : mongodb connection URL (eg. mongodb://localhost:27017/cento_authoring)
+  - `ROCON_SERVICE_COMPOSER_BLOCKLY_PORT` : The port to run engine's web interface.
+  - `ROCON_SERVICE_COMPOSER_BLOCKLY_ROSBRIDGE_URL` : Rosbridge websocket URL (eg. ws://127.0.0.1:9090)
+  - `ROCON_SERVICE_COMPOSER_BLOCKLY_MONGO_URL` : mongodb connection URL (eg. mongodb://localhost:27017/cento_authoring)
   - `MSG_DATABASE` : message database server address (eg. http://localhost:10000)
-  - `ROCON_AUTHORING_DELAY_AFTER_TOPICS` : delay in milliseconds after required topics are ready (default: 2000)
-  - `ROCON_AUTHORING_PUBLISH_DELAY` : delay in milliseconds betweeb publishs
-  - `ROCON_AUTHORING_LOG_LEVEL` : log level (default, `info`)
+  - `ROCON_SERVICE_COMPOSER_BLOCKLY_DELAY_AFTER_TOPICS` : delay in milliseconds after required topics are ready (default: 2000)
+  - `ROCON_SERVICE_COMPOSER_BLOCKLY_PUBLISH_DELAY` : delay in milliseconds betweeb publishs
+  - `ROCON_SERVICE_COMPOSER_BLOCKLY_LOG_LEVEL` : log level (default, `info`)
 
 ## Run
 
