@@ -39,10 +39,26 @@
 
 <body unresolved>
   <template id="tpl0" is="auto-binding">
-    <div style="height:100%;" horizontal layout>
-      <div style="color: {{color}};">{{foo}}</div>
-      <paper-button flex raised on-tap="{{debug}}">Button Test0</paper-button>
-      <rocon-button flex on-tap="{{debug2}}"></rocon-button>
+    <style>
+      #container {
+        
+
+      }
+
+    </style>
+    <div id="container" style="height:100%;" vertical layout>
+      <div id="container" style="height:100%;" horizontal layout>
+        <div style="color: {{color}};">{{foo}}</div>
+        <rocon-button flex on-tap="{{debug2}}">Button1</rocon-button>
+      </div>
+      <div id="container" style="height:100%;" horizontal layout>
+        <rocon-button flex on-tap="{{debug2}}">Buttonx</rocon-button>
+        <rocon-button flex on-tap="{{debug2}}">Buttonx</rocon-button>
+      </div>
+      <div id="container" style="height:100%;" horizontal layout>
+        <rocon-button flex on-tap="{{debug2}}">Buttony</rocon-button>
+        <rocon-button flex on-tap="{{debug2}}">Buttony</rocon-button>
+      </div>
 
     </div>
   </template>
