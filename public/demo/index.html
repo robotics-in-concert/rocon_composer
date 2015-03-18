@@ -40,9 +40,9 @@
 <body unresolved>
   <template id="tpl0" is="auto-binding">
     <div style="height:100%;" horizontal layout>
-      <div style="color: {{color}}; font-size: 40px;">{{foo}}</div>
+      <div style="color: {{color}};">{{foo}}</div>
       <paper-button flex raised on-tap="{{debug}}">Button Test0</paper-button>
-      <rocon-button flex></rocon-button>
+      <rocon-button flex on-tap="{{debug2}}"></rocon-button>
 
     </div>
   </template>
@@ -59,6 +59,12 @@
     scope.debug = function(e){
       scope.foo = ""+new Date();
       scope.color = "blue";
+
+
+    };
+    scope.debug2 = function(e){
+      scope.foo = ""+new Date();
+      scope.color = "red";
 
 
     };

@@ -3,18 +3,20 @@
 <link rel="import" href="../components/polymer/polymer.html">
 <!-- <link rel="import" href="../components/paper-button/paper-button.html"> -->
 <link rel="import" href="../components/paper-button/paper-button-base.html">
-<polymer-element name="rocon-button" extends="paper-button-base">
+<polymer-element name="rocon-button" role="button">
   <template>
   <style>
     :host {
       display: flex;
+      cursor: pointer;
 
     }
 
 
+
   </style>
-  <div id="layout">
-    Button
+  <div id="layout" horizontal layout center-justified center flex>
+    <div>Button</div>
   </div>
   <!-- <paper-button flex raised>Button</paper-button></div> -->
   </template>
