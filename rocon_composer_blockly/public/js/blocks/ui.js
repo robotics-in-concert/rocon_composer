@@ -66,6 +66,25 @@ Blockly.Blocks['ui_text'] = {
 
 };
 
+Blockly.Blocks['ui_set_attr'] = {
+
+  init: function() {
+    this.setColour(30);
+    this.appendDummyInput().appendField('Set Attribute' + name);
+
+    this.appendDummyInput().appendField('name:')
+      .appendField(new Blockly.FieldTextInput('name', null), 'NAME');
+
+    this.appendValueInput('ATTR').appendField('attr:');
+    this.appendValueInput('VALUE').appendField('value:');
+    this.setInputsInline(true);
+    this.setPreviousStatement(true);
+    return this.setNextStatement(true);
+
+
+  },
+
+};
 Blockly.Blocks['ui_button'] = {
 
   init: function() {
@@ -83,6 +102,22 @@ Blockly.Blocks['ui_button'] = {
 
   },
 
+};
+Blockly.JavaScript['ui_set_attr'] = function(block){
+  var attr = Blockly.JavaScript.valueToCode(block, 'ATTR', Blockly.JavaScript.ORDER_NONE) || "''";
+  var value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_NONE) || "''";
+  var name = block.getFieldValue('NAME');
+
+
+  var data = {
+    rocon_id: name,
+    attr: eval(attr),
+    value: eval(value)
+  };
+  var code = _.template('$engine.publish("to-rocon-ui", "std_msgs/String", {data: <%= data %>});')({
+    data: "'" + JSON.stringify(data) + "'"
+  });
+  return code;
 };
 Blockly.JavaScript['ui_button'] = function(block){
   var text = Blockly.JavaScript.valueToCode(block, 'TEXT', Blockly.JavaScript.ORDER_NONE) || "''";
