@@ -81,7 +81,7 @@ npm install
 1. set environment variables below
 
 <!--
-export ROCON_COMPOSER_BLOCKLY_PORT=9999
+export ROCON_COMPOSER_BLOCKLY_SERVER_PORT=9999
 export ROCON_COMPOSER_BLOCKLY_ROSBRIDGE_URL=ws://127.0.0.1:9090
 export ROCON_COMPOSER_BLOCKLY_MONGO_URL=mongodb://localhost:27017/rocon_authoring
 export MSG_DATABASE=http://localhost:10000
@@ -95,7 +95,7 @@ export ROCON_COMPOSER_BLOCKLY_LOG_LEVEL=info
 
 ### Required Environment Variables
 
-  - `ROCON_COMPOSER_BLOCKLY_PORT` : The port to run web interface.
+  - `ROCON_COMPOSER_BLOCKLY_SERVER_PORT` : The port to run web interface.
   - `ROCON_COMPOSER_BLOCKLY_ROSBRIDGE_URL` : Rosbridge websocket URL (eg. ws://127.0.0.1:9090)
   - `ROCON_COMPOSER_BLOCKLY_MONGO_URL` : mongodb connection URL (eg. mongodb://localhost:27017/rocon_authoring)
   - `MSG_DATABASE` : message database server address (eg. http://localhost:10000)
