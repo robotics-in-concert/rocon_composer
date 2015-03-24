@@ -38,13 +38,13 @@ sudo apt-get install -y git build-essential g++ libxml2-dev libcairo2-dev libjpe
 
 ### Install mongodb
 
-	```
-	$ sudo apt-get install -y mongodb
+```
+$ sudo apt-get install -y mongodb
 
-	# check if mongo is running
-	$ sudo status mongodb
-	mongodb start/running, process 12406
-	```
+# check if mongo is running
+$ sudo status mongodb
+mongodb start/running, process 12406
+```
 
 ### Rosbridge
 
