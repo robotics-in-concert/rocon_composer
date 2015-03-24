@@ -16,7 +16,7 @@ var Ros = function(opts){
   }, opts);
 
   var retry_op = Utils.retry(function(){
-    logger.info('trying to connect to ros ' + process.env.ROCON_AUTHORING_ROSBRIDGE_URL);
+    logger.info('trying to connect to ros ' + process.env.ROCON_SERVICE_COMPOSER_BLOCKLY_ROSBRIDGE_URL);
     var connected = false;
 
     var ros = that.underlying = new ROSLIB.Ros({encoding: 'utf8'});
@@ -40,7 +40,7 @@ var Ros = function(opts){
       logger.info('ros closed');
       // retry_op.retry();
     });
-    ros.connect(process.env.ROCON_AUTHORING_ROSBRIDGE_URL);
+    ros.connect(process.env.ROCON_SERVICE_COMPOSER_BLOCKLY_ROSBRIDGE_URL);
 
   }, function(e){
     logger.error('ros connection failed', e);
