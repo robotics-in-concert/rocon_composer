@@ -1,5 +1,5 @@
-rocon_authoring
-===============
+rocon_composer_blockly
+======================
 
 ## Pre-requisites
 
@@ -10,7 +10,7 @@ rocon_authoring
 
 
 ```
-sudo apt-get install -y git build-essential g++ libxml2-dev libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev
+sudo apt-get install -y git build-essential g++ libxml2-dev
 ```
 
 ### Install node / npm
@@ -46,16 +46,6 @@ $ sudo status mongodb
 mongodb start/running, process 12406
 ```
 
-### Rosbridge
-
-* rosbridge
-    
-    ```
-    > sudo apt-get install ros-<version>-rosbridge-suite
-    ```
-
-
-
 
 ## Installation
 
@@ -70,8 +60,6 @@ git clone https://github.com/robotics-in-concert/rocon_composer.git
 
 ```
 cd $PROJECT_PATH/rocon_composer/rocon_composer_blockly
-npm install canvas@1.2.1
-npm install --ignore-scripts roslib
 npm install
 ```
 
@@ -96,18 +84,10 @@ export ROCON_COMPOSER_BLOCKLY_LOG_LEVEL=info
 ### Required Environment Variables
 
   - `ROCON_COMPOSER_BLOCKLY_SERVER_PORT` : The port to run web interface.
-  - `ROCON_COMPOSER_BLOCKLY_ROSBRIDGE_URL` : Rosbridge websocket URL (eg. ws://127.0.0.1:9090)
   - `ROCON_COMPOSER_BLOCKLY_MONGO_URL` : mongodb connection URL (eg. mongodb://localhost:27017/rocon_authoring)
   - `MSG_DATABASE` : message database server address (eg. http://localhost:10000)
-  - `ROCON_COMPOSER_BLOCKLY_DELAY_AFTER_TOPICS` : delay in milliseconds after required topics are ready (default: 2000)
-  - `ROCON_COMPOSER_BLOCKLY_PUBLISH_DELAY` : delay in milliseconds betweeb publishs
   - `ROCON_COMPOSER_BLOCKLY_LOG_LEVEL` : log level (default, `info`)
 
-
-### Rosbridge
-```
-> roslaunch rosbridge_server rosbridge_websocket.launch --screen
-```
 
 
 <!--
