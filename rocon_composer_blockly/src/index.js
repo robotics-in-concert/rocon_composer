@@ -86,6 +86,7 @@ function checkEnvVars(){
 
   ['ROCON_COMPOSER_BLOCKLY_SERVER_PORT',
     'ROCON_COMPOSER_BLOCKLY_MONGO_URL',
+    'ROCON_COMPOSER_BLOCKLY_ENGINE_SOCKET_URL',
     'MSG_DATABASE'].forEach(function(e){
       var v = process.env[e]
       if(v){

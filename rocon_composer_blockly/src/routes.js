@@ -45,7 +45,10 @@ module.exports = function(app, db){
   };
 
   app.get('/', function(req, res){
-    res.render('index', {msg_database: process.env.MSG_DATABASE});
+    res.render('index', {
+      msg_database: process.env.MSG_DATABASE,
+      engine_socket_url: process.env.ROCON_COMPOSER_BLOCKLY_ENGINE_SOCKET_URL
+    });
   });
   app.get('/prezi', function(req, res){
     res.render('prezi', {socketio_port: $socketio_port});

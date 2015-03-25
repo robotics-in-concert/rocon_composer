@@ -7,13 +7,20 @@
     <link rel="stylesheet" href="/css/styles.css" />
     <script>
       MSG_DATABASE = '{{msg_database}}';
+      ENGINE_SOCKET_URL = '{{engine_socket_url}}';
     </script>
 
 
     <!-- user -->
     <!-- <script type="text/javascript" src="/blockly.js"></script> -->
     <script type="text/javascript" src="/vendor.js"></script>
+
     <script type="text/javascript" src="/bundle.js"></script>
+    <script src="http://cdn.jsdelivr.net/g/socket.io-client"></script>
+    <script>
+      io = io.connect(ENGINE_SOCKET_URL + '/blockly');
+
+    </script>
   </head>
 
   <body ng-controller="RootCtrl">
