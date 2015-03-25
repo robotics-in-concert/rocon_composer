@@ -85,6 +85,7 @@ export ROCON_COMPOSER_BLOCKLY_LOG_LEVEL=info
 
   - `ROCON_COMPOSER_BLOCKLY_SERVER_PORT` : The port to run web interface.
   - `ROCON_COMPOSER_BLOCKLY_MONGO_URL` : mongodb connection URL (eg. mongodb://localhost:27017/rocon_authoring)
+  - `ROCON_COMPOSER_BLOCKLY_ENGINE_SOCKET_URL` : workflow engine's websocket url
   - `MSG_DATABASE` : message database server address (eg. http://localhost:10000)
   - `ROCON_COMPOSER_BLOCKLY_LOG_LEVEL` : log level (default, `info`)
 

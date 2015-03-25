@@ -298,9 +298,8 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
     if(items.length < 1){
       alert('select items to load.');
     }else{
-      $http.post('/api/engine/load', {blocks: $scope.itemSelection}).then(function(){
-        alert('ok');
-      });
+      io.emit('start', {items:$scope.itemSelection})
+      alert('ok')
     }
 
   };
