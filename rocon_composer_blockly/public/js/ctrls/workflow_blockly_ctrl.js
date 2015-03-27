@@ -379,9 +379,12 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
 
 
   $scope.exportItems = function(){
+    console.log($scope.items);
+    console.log($scope.itemSelection);
+
     var pom = document.createElement('a');
     R.map(function(id){
-      var item = R.find(R.propEq('id', id))($scope.items);
+      var item = _.find($scope.items, {title: id});
 
 
       console.log('data:application/json;charset=utf-8,' + JSON.stringify(item));
