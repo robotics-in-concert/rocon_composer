@@ -95,11 +95,42 @@ ServiceStore.prototype.allPackageInfos = function(){
 };
 
 ServiceStore.prototype._commitRepo = function(){
-  // todo 
+  // var index = null;
+
+  return this._withRepo()
+    .then(function(repo){
+      return repo.openIndex()
+        .then(function(index){
+          return index.addAll()
+            .then(function(){
+              index.write();
+            })
+            .then(function(){
+              return index.writeTree();
+            })
+            .then(function(oid){
+
+
+              return nodegit.Reference.nameToId(repo, "HEAD")
+                .then(function(head){
+                  return repo.getCommit(head)
+                })
+                .then(function(parent){
+                  var author = nodegit.Signature.now("Eunsub Kim", "eunsub@gmail.com");
+                  var committer = author;
+                  return repo.createCommit("HEAD", author, committer, "updated "+(new Date()), oid, [parent]);
+                });
+              
+
+            })
+
+        })
+      })
 
 };
 
 ServiceStore.prototype.exportToROS = function(package_name, service_meta, package_name){
+  var that = this;
   return this.allPackageInfos()
     .then(function(packages){ 
       console.log(packages);
@@ -189,6 +220,11 @@ ServiceStore.prototype.exportToROS = function(package_name, service_meta, packag
       return Promise.resolve(true);
     })
     .then(function(ok){
+      return that._commitRepo();
+
+    })
+    .catch(function(e){
+      logger.error(e);
 
     });
 
