@@ -93,8 +93,22 @@ ServiceStore.prototype.allPackageInfos = function(){
     });
 
 };
+ServiceStore.prototype._pushRepo = function(repo){
+  nodegit.Remote.lookup(repo, 'origin')
+    .then(function(origin){
+      return origin.push(
+        ["refs/heads/master:refs/heads/master"],
+        null,
+        repo.defaultSignature(),
+        "Push to master");
+
+
+
+    });
+};
 
 ServiceStore.prototype._commitRepo = function(){
+  var that = this;
   // var index = null;
 
   return this._withRepo()
@@ -119,6 +133,9 @@ ServiceStore.prototype._commitRepo = function(){
                   var author = nodegit.Signature.now("Eunsub Kim", "eunsub@gmail.com");
                   var committer = author;
                   return repo.createCommit("HEAD", author, committer, "updated "+(new Date()), oid, [parent]);
+                })
+                .then(function(){
+                  return that._pushRepo(repo);
                 });
               
 
