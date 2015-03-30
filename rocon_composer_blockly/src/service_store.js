@@ -4,9 +4,11 @@ var  R = require('ramda'),
   fs = Promise.promisifyAll(require('fs')),
   xml2js = Promise.promisifyAll(require('xml2js')),
   libxml = require('libxmljs'),
+  os = require('os'),
   exec = Promise.promisify(require('child_process').exec),
   Path = require('path'),
   yaml = require('js-yaml'),
+  nodegit = require('nodegit'),
   mkdirp = require('mkdirp');
   // ServiceStore = require('./service_store');
   
@@ -27,30 +29,66 @@ var _to_colon_sep = function(obj){
   )(obj);
 };
 
-ServiceStore.prototype.allPackageInfos = function(){
-  return exec("rospack list").spread(function(stdout, stderr){
-    var lines = R.reject(R.isEmpty, stdout.split(/\n/));
-    var packs = R.map(function(l){ return l.split(/\s/)[1] + "/package.xml"; })(lines);
-    console.log(packs);
 
 
-    return Promise.resolve(packs)
-      .map(function(xmlpath){
-        return fs.readFileAsync(xmlpath).then(function(xml){
-          return xml2js.parseStringAsync(xml, {explicitArray: false});
-        })
-        .then(function(item){
-          item = item.package;
-          item.path = xmlpath;
-          return item;
+ServiceStore.prototype._withRepo = function(){
+  var repo_root = Path.join(os.tmpdir(), "service_repository");
+  console.log("tmp repo root", repo_root);
+
+
+
+  return nodegit.Repository.open(repo_root)
+    .catch(function(e){
+
+      return nodegit.Clone(
+        process.env.ROCON_COMPOSER_BLOCKLY_SERVICE_REPO,
+        repo_root,
+        {
+          remoteCallbacks: {
+            certificateCheck: function() {
+              // github will fail cert check on some OSX machines
+              // this overrides that check
+              return 1;
+            }
+          }
+        }).catch(function(e){
+          logger.error('clone failed', e);
+
 
         });
 
-      })
+    });
 
 
-  });
+};
 
+ServiceStore.prototype.allPackageInfos = function(){
+  return this._withRepo()
+    .then(function(repo){
+      var workdir = repo.workdir();
+      return glob(workdir + "/**/*.xml")
+    })
+    .then(function(packs){
+      return Promise.resolve(packs)
+        .map(function(xmlpath){
+          return fs.readFileAsync(xmlpath).then(function(xml){
+            return xml2js.parseStringAsync(xml, {explicitArray: false});
+          })
+          .then(function(item){
+            item = item.package;
+            item.path = xmlpath;
+            return item;
+
+          });
+
+        })
+
+    })
+    // .then(function(re){ logger.debug(re); return re; })
+    .catch(function(e){
+      logger.error(e);
+
+    });
 
 };
 

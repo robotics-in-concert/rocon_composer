@@ -87,6 +87,8 @@ export ROCON_COMPOSER_BLOCKLY_LOG_LEVEL=info
   - `ROCON_COMPOSER_BLOCKLY_MONGO_URL` : mongodb connection URL (eg. mongodb://localhost:27017/rocon_authoring)
   - `ROCON_COMPOSER_BLOCKLY_ENGINE_SOCKET_URL` : workflow engine's websocket url
   - `MSG_DATABASE` : message database server address (eg. http://localhost:10000)
+  - `ROCON_COMPOSER_BLOCKLY_SERVICE_REPO` : service git repository url
+  - `ROCON_COMPOSER_BLOCKLY_GIT_USER` : git user information (eg. Eunsub Kim `<eunsub@gmail.com>`)
   - `ROCON_COMPOSER_BLOCKLY_LOG_LEVEL` : log level (default, `info`)
 
 
