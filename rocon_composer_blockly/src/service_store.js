@@ -20,6 +20,14 @@ var ServiceStore = function(options){
   this.options = options;
   this.repo_root = Path.join(os.tmpdir(), "service_repository");
 
+
+  this.remoteCallbacks = {
+    certificateCheck: function() { return 1; },
+    credentials: function() {
+      return nodegit.Cred.userpassPlaintextNew(process.env.ROCON_COMPOSER_BLOCKLY_GITHUB_TOKEN, "x-oauth-basic");
+    }
+  };
+
 };
 
 
@@ -37,7 +45,7 @@ ServiceStore.prototype._withRepo = function(){
   var repo_root = this.repo_root;
   console.log("tmp repo root", repo_root);
 
-
+  var remoteCallbacks = this.remoteCallbacks;
 
   return nodegit.Repository.open(repo_root)
     .catch(function(e){
@@ -45,15 +53,7 @@ ServiceStore.prototype._withRepo = function(){
       return nodegit.Clone(
         process.env.ROCON_COMPOSER_BLOCKLY_SERVICE_REPO,
         repo_root,
-        {
-          remoteCallbacks: {
-            certificateCheck: function() {
-              // github will fail cert check on some OSX machines
-              // this overrides that check
-              return 1;
-            }
-          }
-        }).catch(function(e){
+        {remoteCallbacks: remoteCallbacks}).catch(function(e){
           logger.error('clone failed', e);
 
 
@@ -94,8 +94,12 @@ ServiceStore.prototype.allPackageInfos = function(){
 
 };
 ServiceStore.prototype._pushRepo = function(repo){
-  nodegit.Remote.lookup(repo, 'origin')
+  var that = this;
+  return nodegit.Remote.lookup(repo, 'origin')
     .then(function(origin){
+      origin.setCallbacks(that.remoteCallbacks);
+
+      logger.info("origin", origin);
       return origin.push(
         ["refs/heads/master:refs/heads/master"],
         null,
@@ -104,6 +108,10 @@ ServiceStore.prototype._pushRepo = function(repo){
 
 
 
+    })
+    .catch(function(e){
+      logger.error('failed to push', e);
+      
     });
 };
 
