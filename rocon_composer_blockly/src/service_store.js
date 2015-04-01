@@ -114,6 +114,16 @@ ServiceStore.prototype._pushRepo = function(repo){
       
     });
 };
+ServiceStore.prototype._createBranch = function(repo){
+  var new_branch_name = 'new-branch-'+(new Date().getTime());
+  var base_commit = null;
+  return repo.getBranchCommit('master')
+    .then(function(commit){
+      return repo.createBranch(new_branch_name, commit);
+      // return repo.createBranch(new_branch_name, commit, 0, 
+                               // repo.defaultSignature(), 'Created new barnch - '+new_branch_name);
+    })
+};
 
 ServiceStore.prototype._commitRepo = function(){
   var that = this;
@@ -121,36 +131,44 @@ ServiceStore.prototype._commitRepo = function(){
 
   return this._withRepo()
     .then(function(repo){
-      return repo.openIndex()
-        .then(function(index){
-          return index.addAll()
-            .then(function(){
-              index.write();
-            })
-            .then(function(){
-              return index.writeTree();
-            })
-            .then(function(oid){
+      that._createBranch(repo)
+        .then(function(branch){
 
 
-              return nodegit.Reference.nameToId(repo, "HEAD")
-                .then(function(head){
-                  return repo.getCommit(head)
-                })
-                .then(function(parent){
-                  var author = nodegit.Signature.now("Eunsub Kim", "eunsub@gmail.com");
-                  var committer = author;
-                  return repo.createCommit("HEAD", author, committer, "updated "+(new Date()), oid, [parent]);
-                })
-                .then(function(){
-                  return that._pushRepo(repo);
+
+          repo.checkoutBranch(branch)
+            .then(function(){
+              return repo.openIndex()
+                .then(function(index){
+                  index.read(1)
+                  return index.addAll()
+                    .then(function(){
+                      index.write();
+                    })
+                    .then(function(){
+                      return index.writeTree();
+                    })
+                    .then(function(oid){
+                      return repo.getBranchCommit('master')
+                        .then(function(commit){
+                          logger.info(branch.toString());
+                          var author = nodegit.Signature.now("Eunsub Kim", "eunsub@gmail.com");
+                          return repo.createCommit(branch.name(), author, author, 
+                                                   "updated "+(new Date()), 
+                                                   oid, [commit])
+                        })
+                    });
+
+
                 });
-              
 
-            })
 
-        })
+
+            });
+
+
       })
+    });
 
 };
 
