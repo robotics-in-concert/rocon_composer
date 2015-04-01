@@ -93,7 +93,12 @@ ServiceStore.prototype.allPackageInfos = function(){
     });
 
 };
-ServiceStore.prototype._pushRepo = function(repo){
+ServiceStore.prototype._pushRepo = function(repo, ref){
+  console.log(ref);
+  console.log(ref+":"+ref);
+
+
+
   var that = this;
   return nodegit.Remote.lookup(repo, 'origin')
     .then(function(origin){
@@ -101,7 +106,7 @@ ServiceStore.prototype._pushRepo = function(repo){
 
       logger.info("origin", origin);
       return origin.push(
-        ["refs/heads/master:refs/heads/master"],
+        [ref+":"+ref],
         null,
         repo.defaultSignature(),
         "Push to master");
@@ -125,50 +130,66 @@ ServiceStore.prototype._createBranch = function(repo){
     })
 };
 
+
+ServiceStore.prototype._addAllToIndex = function(repo){
+  return repo.openIndex()
+    .then(function(index){
+      index.read(1)
+      return index.addAll()
+        .then(function(){
+          index.write();
+        })
+        .then(function(){
+          return index.writeTree();
+        })
+    });
+
+};
+
+
 ServiceStore.prototype._commitRepo = function(){
   var that = this;
   // var index = null;
 
-  return this._withRepo()
-    .then(function(repo){
+  return this._withRepo().then(function(repo){
       that._createBranch(repo)
         .then(function(branch){
 
 
 
-          repo.checkoutBranch(branch)
-            .then(function(){
-              return repo.openIndex()
-                .then(function(index){
-                  index.read(1)
-                  return index.addAll()
-                    .then(function(){
-                      index.write();
-                    })
-                    .then(function(){
-                      return index.writeTree();
-                    })
-                    .then(function(oid){
-                      return repo.getBranchCommit('master')
-                        .then(function(commit){
-                          logger.info(branch.toString());
-                          var author = nodegit.Signature.now("Eunsub Kim", "eunsub@gmail.com");
-                          return repo.createCommit(branch.name(), author, author, 
-                                                   "updated "+(new Date()), 
-                                                   oid, [commit])
-                        })
-                    });
+          repo.checkoutBranch(branch).then(function(){
+            that._addAllToIndex(repo)
+              .then(function(oid){
+                return repo.getBranchCommit('master')
+                  .then(function(commit){
+                    logger.info('1')
+                    logger.info(branch.toString());
+                    var author = nodegit.Signature.now("Eunsub Kim", "eunsub@gmail.com");
 
+                    logger.info('3')
+                    return repo.createCommit(branch.name(), author, author, 
+                                             "updated "+(new Date()), 
+                                             oid, [commit])
 
+                  })
+                  .then(function(){
+                    logger.info('2', branch.name())
+                    return that._pushRepo(repo, branch);
+
+                  });
                 });
+
+              })
+
+
+
+
+
 
 
 
             });
-
-
       })
-    });
 
 };
 
