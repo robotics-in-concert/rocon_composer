@@ -10,6 +10,7 @@ var  R = require('ramda'),
   Path = require('path'),
   yaml = require('js-yaml'),
   nodegit = require('nodegit'),
+  request = require('superagent'),
   mkdirp = require('mkdirp');
   // ServiceStore = require('./service_store');
   
@@ -49,9 +50,11 @@ ServiceStore.prototype._withRepo = function(){
 
   return nodegit.Repository.open(repo_root)
     .catch(function(e){
+      var repo_url = "https://github.com/"+process.env.ROCON_COMPOSER_BLOCKLY_SERVICE_REPO+".git";
+      console.log(repo_url);
 
       return nodegit.Clone(
-        process.env.ROCON_COMPOSER_BLOCKLY_SERVICE_REPO,
+        repo_url,
         repo_root,
         {remoteCallbacks: remoteCallbacks}).catch(function(e){
           logger.error('clone failed', e);
@@ -93,6 +96,35 @@ ServiceStore.prototype.allPackageInfos = function(){
     });
 
 };
+
+
+ServiceStore.prototype._createPullRequest = function(branch_name){
+  logger.info('PR : ', branch_name);
+
+  return new Promise(function(resolve, reject){
+    var data = {title: 'Pull Request Title', head: branch_name, base: 'master'}
+    logger.info('PR : ', data);
+    request.post('https://api.github.com/repos/' + process.env.ROCON_COMPOSER_BLOCKLY_SERVICE_REPO + "/pulls")
+      .set('Authorization', "token "+process.env.ROCON_COMPOSER_BLOCKLY_GITHUB_TOKEN) 
+      .type('json')
+      .send(data)
+      .end(function(e, res){
+        if(e){
+          console.log("PR - E", e);
+
+          reject(e);
+        } else {
+          console.log('PR - OK');
+
+          resolve(res);
+        }
+
+      });
+
+  });
+
+};
+
 ServiceStore.prototype._pushRepo = function(repo, ref){
   console.log(ref);
   console.log(ref+":"+ref);
@@ -174,7 +206,12 @@ ServiceStore.prototype._commitRepo = function(){
                   })
                   .then(function(){
                     logger.info('2', branch.name())
-                    return that._pushRepo(repo, branch);
+                    return that._pushRepo(repo, branch)
+                      .then(function(){
+
+                        return that._createPullRequest(branch.name().split("/")[2]);
+
+                      });
 
                   });
                 });
