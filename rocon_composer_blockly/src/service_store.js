@@ -44,6 +44,7 @@ var _to_colon_sep = function(obj){
 
 ServiceStore.prototype._withRepo = function(){
   var repo_root = this.repo_root;
+  var that = this;
   console.log("tmp repo root", repo_root);
 
   var remoteCallbacks = this.remoteCallbacks;
@@ -61,6 +62,19 @@ ServiceStore.prototype._withRepo = function(){
 
 
         });
+
+    })
+    .then(function(repo){
+      return repo.fetchAll(that.remoteCallbacks)
+        .then(function(){
+          console.log('merge master');
+          return repo.mergeBranches("master", "origin/master");
+        })
+        .then(function(){
+          return repo;
+        });
+
+
 
     });
 
@@ -91,7 +105,8 @@ ServiceStore.prototype.allPackageInfos = function(){
     })
     // .then(function(re){ logger.debug(re); return re; })
     .catch(function(e){
-      logger.error(e);
+
+      logger.error("failed to get packages :", e, e.stack);
 
     });
 
@@ -102,9 +117,10 @@ ServiceStore.prototype._createPullRequest = function(branch_name){
   logger.info('PR : ', branch_name);
 
   return new Promise(function(resolve, reject){
-    var data = {title: 'Pull Request Title', head: branch_name, base: 'master'}
+    var head = process.env.ROCON_COMPOSER_BLOCKLY_SERVICE_REPO.split("/")[0] + ":" + branch_name;
+    var data = {title: 'Pull Request Title', head: head, base: 'master'}
     logger.info('PR : ', data);
-    request.post('https://api.github.com/repos/' + process.env.ROCON_COMPOSER_BLOCKLY_SERVICE_REPO + "/pulls")
+    request.post('https://api.github.com/repos/' + process.env.ROCON_COMPOSER_BLOCKLY_SERVICE_REPO_BASE + "/pulls")
       .set('Authorization', "token "+process.env.ROCON_COMPOSER_BLOCKLY_GITHUB_TOKEN) 
       .type('json')
       .send(data)
