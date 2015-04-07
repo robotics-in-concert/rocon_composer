@@ -37,14 +37,14 @@ Blockly.Blocks['prezi_next'] = {
 Blockly.JavaScript['prezi_next'] = function(block){
   // var key = Blockly.JavaScript.valueToCode(block, 'KEY', Blockly.JavaScript.ORDER_NONE) || "''";
   var data = {action: 'prezi-next'};
-  var code = _.template("$engine.socketBroadcast('message', <%= data %>);")({data: JSON.stringify(data)});
+  var code = _.template("$engine.socketBroadcast('/prezi', 'message', <%= data %>);")({data: JSON.stringify(data)});
   return code;
 
 };
 Blockly.JavaScript['prezi_prev'] = function(block){
   // var key = Blockly.JavaScript.valueToCode(block, 'KEY', Blockly.JavaScript.ORDER_NONE) || "''";
   var data = {action: 'prezi-prev'};
-  var code = _.template("$engine.socketBroadcast('message', <%= data %>);")({data: JSON.stringify(data)});
+  var code = _.template("$engine.socketBroadcast('/prezi', 'message', <%= data %>);")({data: JSON.stringify(data)});
   return code;
 
 };
@@ -104,14 +104,14 @@ Blockly.Blocks['prezi_move_with_channel'] = {
 Blockly.JavaScript['prezi_next_with_channel'] = function(block){
   // var key = Blockly.JavaScript.valueToCode(block, 'KEY', Blockly.JavaScript.ORDER_NONE) || "''";
   var chan = this.getFieldValue('CHANNEL');
-  var code = _.template("$engine.socketBroadcast('prezi:<%= channel %>:next');")({channel: chan});
+  var code = _.template("$engine.socketBroadcast('/prezi', 'prezi:<%= channel %>:next');")({channel: chan});
   return code;
 
 };
 Blockly.JavaScript['prezi_prev_with_channel'] = function(block){
   // var key = Blockly.JavaScript.valueToCode(block, 'KEY', Blockly.JavaScript.ORDER_NONE) || "''";
   var chan = this.getFieldValue('CHANNEL');
-  var code = _.template("$engine.socketBroadcast('prezi:<%= channel %>:prev');")({channel: chan});
+  var code = _.template("$engine.socketBroadcast('/prezi', 'prezi:<%= channel %>:prev');")({channel: chan});
   return code;
 
 };
@@ -119,7 +119,7 @@ Blockly.JavaScript['prezi_move_with_channel'] = function(block){
   // var key = Blockly.JavaScript.valueToCode(block, 'KEY', Blockly.JavaScript.ORDER_NONE) || "''";
   var chan = this.getFieldValue('CHANNEL');
   var step = this.getFieldValue('STEP');
-  var code = _.template("$engine.socketBroadcast('prezi:<%= channel %>:move', {step: <%= step%>});")({channel: chan, step: step});
+  var code = _.template("$engine.socketBroadcast('/prezi', 'prezi:<%= channel %>:move', {step: <%= step%>});")({channel: chan, step: step});
   return code;
 
 };
