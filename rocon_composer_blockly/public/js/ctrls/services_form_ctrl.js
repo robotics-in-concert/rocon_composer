@@ -168,8 +168,10 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 
 
     var v = editor.getValue();
+    var title = $scope.title;
+    var description = $scope.description;
 
-    serviceAuthoring.saveService(v, destPackage).then(function(){
+    serviceAuthoring.saveService(title, description, v, destPackage).then(function(){
       alert('saved');
       $('#modal-package-select').modal('hide');
       
@@ -180,8 +182,10 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
     serviceAuthoring.getPackages().then(function(packs){
       // $scope.packageList = packs;
 
-      // var v = editor.getValue();
+      var v = editor.getValue();
       // serviceAuthoring.saveService(v);
+      $scope.title = v.name;
+      $scope.description = v.description;
 
       $('#modal-package-select').modal();
 

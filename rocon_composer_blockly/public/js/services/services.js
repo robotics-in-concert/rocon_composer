@@ -1,10 +1,11 @@
 
 module.exports = function($http, $q){
 
-  this.saveService = function(serviceMeta, package){
-    return $http.post('/api/services/save', {service: serviceMeta, package: package}).then(function(res){
-      return res.data;
-    });
+  this.saveService = function(title, description, serviceMeta, package){
+    return $http.post('/api/services/save', {service: serviceMeta, package: package, title: title, description: description})
+      .then(function(res){
+        return res.data;
+      });
 
   };
 

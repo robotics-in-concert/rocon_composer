@@ -113,12 +113,12 @@ ServiceStore.prototype.allPackageInfos = function(){
 };
 
 
-ServiceStore.prototype._createPullRequest = function(branch_name){
+ServiceStore.prototype._createPullRequest = function(branch_name, title, description){
   logger.info('PR : ', branch_name);
 
   return new Promise(function(resolve, reject){
     var head = process.env.ROCON_COMPOSER_BLOCKLY_SERVICE_REPO.split("/")[0] + ":" + branch_name;
-    var data = {title: 'Pull Request Title', head: head, base: 'master'}
+    var data = {title: title, head: head, base: 'master', body: description}
     logger.info('PR : ', data);
     request.post('https://api.github.com/repos/' + process.env.ROCON_COMPOSER_BLOCKLY_SERVICE_REPO_BASE + "/pulls")
       .set('Authorization', "token "+process.env.ROCON_COMPOSER_BLOCKLY_GITHUB_TOKEN) 
@@ -195,7 +195,8 @@ ServiceStore.prototype._addAllToIndex = function(repo){
 };
 
 
-ServiceStore.prototype._commitRepo = function(){
+ServiceStore.prototype._commitRepo = function(title, description){
+  logger.info("commit", title, description)
   var that = this;
   // var index = null;
 
@@ -225,7 +226,7 @@ ServiceStore.prototype._commitRepo = function(){
                     return that._pushRepo(repo, branch)
                       .then(function(){
 
-                        return that._createPullRequest(branch.name().split("/")[2]);
+                        return that._createPullRequest(branch.name().split("/")[2], title, description);
 
                       });
 
@@ -246,7 +247,7 @@ ServiceStore.prototype._commitRepo = function(){
 
 };
 
-ServiceStore.prototype.exportToROS = function(package_name, service_meta, package_name){
+ServiceStore.prototype.exportToROS = function(title, description, service_meta, package_name){
   var that = this;
   return this.allPackageInfos()
     .then(function(packages){ 
@@ -337,7 +338,7 @@ ServiceStore.prototype.exportToROS = function(package_name, service_meta, packag
       return Promise.resolve(true);
     })
     .then(function(ok){
-      return that._commitRepo();
+      return that._commitRepo(title, description);
 
     })
     .catch(function(e){

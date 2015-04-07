@@ -2532,8 +2532,10 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 
 
     var v = editor.getValue();
+    var title = $scope.title;
+    var description = $scope.description;
 
-    serviceAuthoring.saveService(v, destPackage).then(function(){
+    serviceAuthoring.saveService(title, description, v, destPackage).then(function(){
       alert('saved');
       $('#modal-package-select').modal('hide');
       
@@ -2544,8 +2546,10 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
     serviceAuthoring.getPackages().then(function(packs){
       // $scope.packageList = packs;
 
-      // var v = editor.getValue();
+      var v = editor.getValue();
       // serviceAuthoring.saveService(v);
+      $scope.title = v.name;
+      $scope.description = v.description;
 
       $('#modal-package-select').modal();
 
@@ -3419,10 +3423,11 @@ module.exports = function($http, $q){
 
 module.exports = function($http, $q){
 
-  this.saveService = function(serviceMeta, package){
-    return $http.post('/api/services/save', {service: serviceMeta, package: package}).then(function(res){
-      return res.data;
-    });
+  this.saveService = function(title, description, serviceMeta, package){
+    return $http.post('/api/services/save', {service: serviceMeta, package: package, title: title, description: description})
+      .then(function(res){
+        return res.data;
+      });
 
   };
 

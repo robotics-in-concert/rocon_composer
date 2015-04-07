@@ -191,7 +191,7 @@ module.exports = function(app, db){
 
   app.post('/api/services/save', function(req, res){
     var ss = new ServiceStore({ros_root: process.env.ROS_PACKAGE_ROOT});
-    ss.exportToROS('package_name', req.body.service, req.body.package).then(function(){
+    ss.exportToROS(req.body.title, req.body.description, req.body.service, req.body.package).then(function(){
       res.send('ok');
     });
 
