@@ -291,25 +291,6 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
   _.defer(loadBlocks);
 
 
-  $scope.engineLoadChecked = function(){
-    var items = $scope.itemSelection;
-    console.log(items);
-
-    if(items.length < 1){
-      alert('select items to load.');
-    }else{
-      io.emit('start', {items:$scope.itemSelection})
-      alert('ok')
-    }
-
-  };
-  $scope.engineReset = function(){
-    $http.post('/api/engine/reset').then(function(){
-      alert('ok');
-    });
-
-  };
-
   /**
    * workspace
    *

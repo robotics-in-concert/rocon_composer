@@ -6,8 +6,6 @@ var _ = require('lodash'),
   swig = require('swig'),
   http = require('http'),
   express = require('express'),
-  socketio = require('socket.io'),
-  socketio_wildcard = require('socketio-wildcard'),
   MongoClient = require('mongodb').MongoClient,
   winston = require('winston'),
   mongoose = require('mongoose');
@@ -31,15 +29,6 @@ function start(){
 
     var app = express(); 
     var server = http.createServer(app);
-    var io = socketio(server);
-    io.use(socketio_wildcard());
-    io.of('/engine/client').use(socketio_wildcard());
-
-    $io = io;
-
-    io.on('connection', function(sock){
-    });
-
 
     app.use(express.static('public'));
     app.use(bodyParser.json({limit: '50mb'}));
