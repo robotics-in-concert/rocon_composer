@@ -1615,8 +1615,17 @@ Blockly.register_message_block = function(type, meta, tooltip){
         //
         this.appendDummyInput().appendField(type);
         _.each(meta.fieldnames, function(fn, idx){
+          var fvals = _.filter(meta.field_values, {name: fn});
 
-          block.appendValueInput(fn.toUpperCase()).appendField(fn);
+
+          input = block.appendValueInput(fn.toUpperCase()).appendField(fn);
+          if(fvals.length){
+            var drops = _.map(fvals, function(fv){ return [fv.const, fv.value]; });
+            var dd = new Blockly.FieldDropdown(drops);
+            input.appendField(dd, 'MODE');
+
+
+          }
 
         });
         // this.setTooltip(tooltip);
@@ -2144,7 +2153,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json":[function(require,module,exports){
-module.exports={
+module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100
@@ -2909,25 +2918,6 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
   _.defer(loadBlocks);
 
 
-  $scope.engineLoadChecked = function(){
-    var items = $scope.itemSelection;
-    console.log(items);
-
-    if(items.length < 1){
-      alert('select items to load.');
-    }else{
-      // io.emit('start', {items:$scope.itemSelection})
-      alert('ok')
-    }
-
-  };
-  $scope.engineReset = function(){
-    $http.post('/api/engine/reset').then(function(){
-      alert('ok');
-    });
-
-  };
-
   /**
    * workspace
    *
@@ -3187,7 +3177,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports={
+module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {

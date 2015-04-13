@@ -12,8 +12,17 @@ Blockly.register_message_block = function(type, meta, tooltip){
         //
         this.appendDummyInput().appendField(type);
         _.each(meta.fieldnames, function(fn, idx){
+          var fvals = _.filter(meta.field_values, {name: fn});
 
-          block.appendValueInput(fn.toUpperCase()).appendField(fn);
+
+          input = block.appendValueInput(fn.toUpperCase()).appendField(fn);
+          if(fvals.length){
+            var drops = _.map(fvals, function(fv){ return [fv.const, fv.value]; });
+            var dd = new Blockly.FieldDropdown(drops);
+            input.appendField(dd, 'MODE');
+
+
+          }
 
         });
         // this.setTooltip(tooltip);
