@@ -18,8 +18,9 @@ Blockly.register_message_block = function(type, meta, tooltip){
           input = block.appendValueInput(fn.toUpperCase()).appendField(fn);
           if(fvals.length){
             var drops = _.map(fvals, function(fv){ return [fv.const, fv.value]; });
+            drops.push(['Custom..', '__'])
             var dd = new Blockly.FieldDropdown(drops);
-            input.appendField(dd, 'MODE');
+            input.appendField(dd, 'SELECT_'+fn.toUpperCase());
 
 
           }
@@ -36,11 +37,15 @@ Blockly.register_message_block = function(type, meta, tooltip){
     };
     Blockly.JavaScript[blockKey] = function(block){
       var msg = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_NONE) || '""';
-      var tpl = '$engine.pub("<%= name %>", "<%= type %>", <%= msg %>);';
       var code = '';
       var kv = [];
       _.each(meta.fieldnames, function(fn, idx){
+        var sel_val = block.getFieldValue('SELECT_' + fn.toUpperCase());
         var v = Blockly.JavaScript.valueToCode(block, fn.toUpperCase(), Blockly.JavaScript.ORDER_NONE) || "''";
+        if(sel_val && sel_val != '__'){
+          v = '"'+sel_val+'"';
+        }
+
         kv.push("\"" + fn + "\":" + v);
 
       });
