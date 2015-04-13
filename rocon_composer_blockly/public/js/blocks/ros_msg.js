@@ -18,7 +18,7 @@ Blockly.register_message_block = function(type, meta, tooltip){
           input = block.appendValueInput(fn.toUpperCase()).appendField(fn);
           if(fvals.length){
             var drops = _.map(fvals, function(fv){ return [fv.const, fv.value]; });
-            drops.push(['Custom..', '__'])
+            drops.unshift(['Select..', '__'])
             var dd = new Blockly.FieldDropdown(drops);
             input.appendField(dd, 'SELECT_'+fn.toUpperCase());
 
