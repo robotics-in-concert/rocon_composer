@@ -149,6 +149,10 @@ module.exports = function(app, db){
     var ss = new ServiceStore({ros_root: process.env.ROS_PACKAGE_ROOT});
     ss.exportToROS(req.body.title, req.body.description, req.body.service, req.body.package).then(function(){
       res.send('ok');
+    }).done(function(){
+      console.log(arguments);
+
+      
     });
 
 

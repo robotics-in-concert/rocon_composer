@@ -11,6 +11,7 @@ var  R = require('ramda'),
   yaml = require('js-yaml'),
   nodegit = require('nodegit'),
   request = require('superagent'),
+  Settings = require('./model').Settings,
   mkdirp = require('mkdirp');
   // ServiceStore = require('./service_store');
   
@@ -249,102 +250,137 @@ ServiceStore.prototype._commitRepo = function(title, description){
 
 ServiceStore.prototype.exportToROS = function(title, description, service_meta, package_name){
   var that = this;
+
+
+
   return this.allPackageInfos()
     .then(function(packages){ 
-      console.log(packages);
 
-      console.log(service_meta);
-      console.log(package_name);
-      console.log('here');
+      return new Promise(function(resolve, reject){
+        Settings.getItems(function(e, workflow_items){
+          if(e){ reject(e); return; }
+          else { resolve(workflow_items); }
+        });
+      })
+      .then(function(workflow_items){
 
-      var pack = _.find(packages, {name: package_name});
-      console.log("PACK", pack);
+        console.log(packages);
+        console.log(service_meta);
+        console.log(package_name);
 
-
-      var name_key = service_meta.name.replace(/\s+/g, "_").toLowerCase();
-      var service_base = Path.join( Path.dirname(pack.path), "services", name_key);
-
-
-      var xml = fs.readFileSync(pack.path)
-      var xmlDoc = libxml.parseXmlString(xml);
-
-      var package = xmlDoc.get('/package');
-
-      var node = package.get('//export');
-      if(!node){
-        node = package.node('export');
-      }
-
-      node.node('concert_service', Path.join('services', name_key, name_key+'.service'));
-
-      var resultXml = xmlDoc.toString(true);
-
-      fs.writeFileSync(pack.path, resultXml);
+        var pack = _.find(packages, {name: package_name});
+        console.log("PACK", pack);
 
 
+        var name_key = service_meta.name.replace(/\s+/g, "_").toLowerCase();
+        var service_base = Path.join( Path.dirname(pack.path), "services", name_key);
+        var workflows_base = Path.join( service_base, "workflows" );
 
 
-      console.log(service_base);
+        var xml = fs.readFileSync(pack.path)
+        var xmlDoc = libxml.parseXmlString(xml);
+
+        var package = xmlDoc.get('/package');
+
+        var node = package.get('//export');
+        if(!node){
+          node = package.node('export');
+        }
+
+        node.node('concert_service', Path.join('services', name_key, name_key+'.service'));
+
+        var resultXml = xmlDoc.toString(true);
+
+        fs.writeFileSync(pack.path, resultXml);
 
 
-      mkdirp.sync(service_base);
-
-      console.log(name_key);
 
 
-      // .parameters
-      var params = R.compose(
-        R.tap(console.log),
-        R.fromPairs,
-        R.map(R.props(['key', 'value']))
-      )(service_meta.parameters);
-      var param_file_content = _to_colon_sep(params);
-      console.log('---------------- .interactions --------------------');
-      R.forEach(function(i){
-        i.parameters = R.fromPairs(R.map(R.values)(i.parameters));
-      })(service_meta.interactions);
+        console.log(service_base);
 
 
-      console.log(yaml.dump(service_meta.interactions));
-
-      console.log('---------------- .parameters --------------------');
-      console.log(param_file_content);
-
-      console.log('---------------- .launcher --------------------');
-      console.log(service_meta.launcher.launcher_body);
-
-      // .service
-      var service_kv = R.pickAll("name description author priority interactions parameters".split(/\s+/), service_meta);
-      service_kv.launcher_type = service_meta.launcher.launcher_type
-      service_kv.launcher = name_key + ".launcher";
-      // service_kv.icon = name_key + ".icon";
-      service_kv.interactions = name_key + ".interactions";
-      service_kv.parameters = name_key + ".parameters";
-      var service_file_content = _to_colon_sep(service_kv);
-      console.log('---------------- .service --------------------');
-      console.log(service_file_content);
+        mkdirp.sync(service_base);
 
 
-      // save icon
+        var all_thens = [];
+        if(service_meta.workflows && service_meta.workflows.length){
+          mkdirp.sync(workflows_base);
 
-      return Promise.all([
-        fs.writeFileAsync(service_base + "/" + name_key + ".parameters", param_file_content),
-        fs.writeFileAsync(service_base + "/" + name_key + ".launcher", service_meta.launcher.launcher_body),
-        fs.writeFileAsync(service_base + "/" + name_key + ".service", service_file_content),
-        fs.writeFileAsync(service_base + "/" + name_key + ".interactions", yaml.dump(service_meta.interactions))
-      ]);
+          var thens = _.map(service_meta.workflows, function(wf_title){
+            var data = _.find(workflow_items, {title: wf_title});
+            return fs.writeFileAsync(workflows_base + "/" + wf_title + ".wf", 
+                                     JSON.stringify(data));
+          });
+
+          all_thens = all_thens.concat(thens);
 
 
-      return Promise.resolve(true);
+        }
+
+        console.log(name_key);
+
+
+        // .parameters
+        var params = R.compose(
+          R.tap(console.log),
+          R.fromPairs,
+          R.map(R.props(['key', 'value']))
+        )(service_meta.parameters);
+        var param_file_content = _to_colon_sep(params);
+        console.log('---------------- .interactions --------------------');
+        R.forEach(function(i){
+          i.parameters = R.fromPairs(R.map(R.values)(i.parameters));
+        })(service_meta.interactions);
+
+
+        console.log(yaml.dump(service_meta.interactions));
+
+        console.log('---------------- .parameters --------------------');
+        console.log(param_file_content);
+
+        console.log('---------------- .launcher --------------------');
+        console.log(service_meta.launcher.launcher_body);
+
+        // .service
+        var service_kv = R.pickAll("name description author priority interactions parameters".split(/\s+/), service_meta);
+        service_kv.launcher_type = service_meta.launcher.launcher_type
+        service_kv.launcher = name_key + ".launcher";
+        // service_kv.icon = name_key + ".icon";
+        service_kv.interactions = name_key + ".interactions";
+        service_kv.parameters = name_key + ".parameters";
+        var service_file_content = _to_colon_sep(service_kv);
+        console.log('---------------- .service --------------------');
+        console.log(service_file_content);
+
+
+        // save icon
+
+        all_thens = all_thens.concat([
+          fs.writeFileAsync(service_base + "/" + name_key + ".parameters", param_file_content),
+          fs.writeFileAsync(service_base + "/" + name_key + ".launcher", service_meta.launcher.launcher_body),
+          fs.writeFileAsync(service_base + "/" + name_key + ".service", service_file_content),
+          fs.writeFileAsync(service_base + "/" + name_key + ".interactions", yaml.dump(service_meta.interactions))
+        ]);
+
+
+        return Promise.all(all_thens);
+
+      });
+
+
+
+      
     })
     .then(function(ok){
       return that._commitRepo(title, description);
+      
 
     })
     .catch(function(e){
       logger.error(e);
 
     });
+
 
 
 
