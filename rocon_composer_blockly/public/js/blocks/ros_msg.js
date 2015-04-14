@@ -43,7 +43,8 @@ Blockly.register_message_block = function(type, meta, tooltip){
         var sel_val = block.getFieldValue('SELECT_' + fn.toUpperCase());
         var v = Blockly.JavaScript.valueToCode(block, fn.toUpperCase(), Blockly.JavaScript.ORDER_NONE) || "''";
         if(sel_val && sel_val != '__'){
-          v = '"'+sel_val+'"';
+          var value_type = _.zipObject(meta.fieldnames, meta.fieldtypes)[fn];
+          v = (value_type == 'string') ? JSON.stringify(sel_val) : sel_val;
         }
 
         kv.push("\"" + fn + "\":" + v);
