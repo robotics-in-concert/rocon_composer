@@ -344,10 +344,10 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
         // .service
         var service_kv = R.pickAll("name description author priority interactions parameters".split(/\s+/), service_meta);
         service_kv.launcher_type = service_meta.launcher.launcher_type
-        service_kv.launcher = name_key + ".launcher";
+        service_kv.launcher = package_name + "/" + name_key;
         // service_kv.icon = name_key + ".icon";
-        service_kv.interactions = name_key + ".interactions";
-        service_kv.parameters = name_key + ".parameters";
+        service_kv.interactions = package_name + "/" + name_key;
+        service_kv.parameters = package_name + "/" + name_key;
         var service_file_content = _to_colon_sep(service_kv);
         console.log('---------------- .service --------------------');
         console.log(service_file_content);
