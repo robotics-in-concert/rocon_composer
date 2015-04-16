@@ -42,7 +42,7 @@
         "launcher_type": {
           "type": "string",
           "enum": [
-            "ros_launcher",
+            "roslaunch",
             "bpel",
             "blockly"
           ]
