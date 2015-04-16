@@ -2404,12 +2404,16 @@ var _interaction_to_json_editor_value = function(i){
   console.log(kv.remappings);
 
 
-  kv.parameters = R.map(function(p){
-    return {
-      key: p.name, 
-      value: (p.default || '')
-    };
-  })(i.parameters);
+  if(i.parameters){
+    kv.parameters = R.map(function(p){
+      return {
+        key: p.name, 
+        value: (p.default || '')
+      };
+    })(i.parameters);
+  }else{
+    kv.parameters = [];
+  }
   return kv;
 
 };
