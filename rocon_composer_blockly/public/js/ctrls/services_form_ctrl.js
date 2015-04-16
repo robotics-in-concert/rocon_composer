@@ -15,12 +15,15 @@ var _interaction_to_json_editor_value = function(i){
 
   };
 
-  kv.remappings = R.map(function(if0){
-    return {
-      remap_to: if0.name,
-      remap_from: "/"+if0.name
-    };
-  })(i.interface);
+
+
+  kv.remappings = _(i.interface)
+    .values()
+    .flatten()
+    .map(function(if0){ return {remap_from: if0.name, remap_to: '/'+if0.name}; })
+    .value();
+
+    console.log("IF", i.interface);
 
   console.log(kv.remappings);
 
