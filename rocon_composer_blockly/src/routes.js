@@ -35,15 +35,6 @@ var load_types = function(types_to_load, load_types_callback){
 
 module.exports = function(app, db){
 
-  var _getItems = function(cb){
-    var col = db.collection('settings');
-    col.findOne({key: 'cento_authoring_items'}, function(e, data){
-      var items = data ? data.value.data : [];
-      cb(e, items);
-    });
-
-  };
-
   app.get('/', function(req, res){
     res.render('index', {
       msg_database: config.rocon_protocols_webserver_address

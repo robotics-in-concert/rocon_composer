@@ -33,15 +33,6 @@ var ServiceStore = function(options){
 };
 
 
-var _to_colon_sep = function(obj){
-  return R.compose(
-    R.join("\n"),
-    R.map(R.join(": ")),
-    R.toPairs
-  )(obj);
-};
-
-
 
 ServiceStore.prototype._withRepo = function(){
   var repo_root = this.repo_root;
@@ -342,13 +333,13 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
         console.log(service_meta.launcher.launcher_body);
 
         // .service
-        var service_kv = R.pickAll("name description author priority interactions parameters".split(/\s+/), service_meta);
+        var service_kv = _.pick(service_meta, "name description author priority interactions parameters".split(/\s+/));
         service_kv.launcher_type = service_meta.launcher.launcher_type
         service_kv.launcher = package_name + "/" + name_key;
         // service_kv.icon = name_key + ".icon";
         service_kv.interactions = package_name + "/" + name_key;
         service_kv.parameters = package_name + "/" + name_key;
-        var service_file_content = _to_colon_sep(service_kv);
+        var service_file_content = yaml.dump(service_kv);
         console.log('---------------- .service --------------------');
         console.log(service_file_content);
 
