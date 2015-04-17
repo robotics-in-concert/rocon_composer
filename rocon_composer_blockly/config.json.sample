@@ -1,0 +1,10 @@
+{
+  "port": 9999,
+  "mongo_url": "mongodb://localhost:27017/rocon_composer",
+  "rocon_protocols_webserver_address" : "http://localhost:10000",
+  "log_level": "info",
+  "service_repo_base": "robotics-in-concert/service_repository",
+  "service_repo": "eskim/service_repository",
+  "github_token": "<github token>"
+}
+

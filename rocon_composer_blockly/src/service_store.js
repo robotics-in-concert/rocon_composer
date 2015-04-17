@@ -26,7 +26,7 @@ var ServiceStore = function(options){
   this.remoteCallbacks = {
     certificateCheck: function() { return 1; },
     credentials: function() {
-      return nodegit.Cred.userpassPlaintextNew(process.env.ROCON_COMPOSER_BLOCKLY_GITHUB_TOKEN, "x-oauth-basic");
+      return nodegit.Cred.userpassPlaintextNew(config.github_token, "x-oauth-basic");
     }
   };
 
@@ -52,7 +52,7 @@ ServiceStore.prototype._withRepo = function(){
 
   return nodegit.Repository.open(repo_root)
     .catch(function(e){
-      var repo_url = "https://github.com/"+process.env.ROCON_COMPOSER_BLOCKLY_SERVICE_REPO+".git";
+      var repo_url = "https://github.com/"+config.service_repo+".git";
       console.log(repo_url);
 
       return nodegit.Clone(
@@ -118,11 +118,11 @@ ServiceStore.prototype._createPullRequest = function(branch_name, title, descrip
   logger.info('PR : ', branch_name);
 
   return new Promise(function(resolve, reject){
-    var head = process.env.ROCON_COMPOSER_BLOCKLY_SERVICE_REPO.split("/")[0] + ":" + branch_name;
+    var head = config.service_repo.split("/")[0] + ":" + branch_name;
     var data = {title: title, head: head, base: 'master', body: description}
     logger.info('PR : ', data);
-    request.post('https://api.github.com/repos/' + process.env.ROCON_COMPOSER_BLOCKLY_SERVICE_REPO_BASE + "/pulls")
-      .set('Authorization', "token "+process.env.ROCON_COMPOSER_BLOCKLY_GITHUB_TOKEN) 
+    request.post('https://api.github.com/repos/' + config.service_repo_base + "/pulls")
+      .set('Authorization', "token "+config.github_token) 
       .type('json')
       .send(data)
       .end(function(e, res){

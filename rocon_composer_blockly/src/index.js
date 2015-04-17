@@ -8,23 +8,37 @@ var _ = require('lodash'),
   express = require('express'),
   MongoClient = require('mongodb').MongoClient,
   winston = require('winston'),
+  fs = require('fs'),
   mongoose = require('mongoose');
+
+
+
+var config = {}
+if(fs.existsSync(__dirname + "/../config.json")){
+  var config = _.defaults(require('../config.json'), {
+    port: 9999,
+    mongo_url: "mongodb://localhost:27017/rocon_composer",
+    rocon_protocols_webserver_address : "http://localhost:10000",
+    log_level: "info"
+  });
+}
+global.config = config;
 
 
 
 module.exports = function(){
   setupLogger();
-  checkEnvVars();
   start();
 };
 
-
 function start(){
+  logger.info('config', config);
 
-  mongoose.connect(process.env.ROCON_COMPOSER_BLOCKLY_MONGO_URL);
+
+  mongoose.connect(config.mongo_url);
 
 
-  MongoClient.connect(process.env.ROCON_COMPOSER_BLOCKLY_MONGO_URL, function(e, db){
+  MongoClient.connect(config.mongo_url, function(e, db){
     if(e) throw e;
 
     var app = express(); 
@@ -43,7 +57,7 @@ function start(){
 
     require('./routes')(app, db);
 
-    server = server.listen(process.env.ROCON_COMPOSER_BLOCKLY_SERVER_PORT, function(){
+    server = server.listen(config.port, function(){
       logger.info('Listening on port %d (%s)', server.address().port, process.env.NODE_ENV);
     });
 
@@ -57,7 +71,7 @@ function setupLogger(){
   winston.loggers.add('main', {
     console: {
       colorize: true,
-      level: process.env.ROCON_COMPOSER_BLOCKLY_LOG_LEVEL,
+      level: config.log_level,
       prettyPrint: true
     }
 
@@ -68,22 +82,6 @@ function setupLogger(){
   global.logger = logger;
 
   logger.debug('logger initialized');
-
-};
-
-function checkEnvVars(){
-
-  ['ROCON_COMPOSER_BLOCKLY_SERVER_PORT',
-    'ROCON_COMPOSER_BLOCKLY_MONGO_URL',
-    'ROCON_COMPOSER_BLOCKLY_ENGINE_SOCKET_URL',
-    'MSG_DATABASE'].forEach(function(e){
-      var v = process.env[e]
-      if(v){
-        logger.info(e, process.env[e].green);
-      }else{
-        logger.info(e, 'null'.red);
-      }
-    });
 
 };
 

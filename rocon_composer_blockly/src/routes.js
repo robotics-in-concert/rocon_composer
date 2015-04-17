@@ -12,7 +12,7 @@ var _ = require('lodash')
   , ServiceStore = require('./service_store');
 
 var _getMessageDetails = function(type, cb){
-  var url = URL.resolve(process.env.MSG_DATABASE, "/api/message_details");
+  var url = URL.resolve(config.rocon_protocols_webserver_address, "/api/message_details");
   request(url, {qs: {type: type}, json: true}, function(e, res, body){
     cb(null, body);
   });
@@ -46,8 +46,7 @@ module.exports = function(app, db){
 
   app.get('/', function(req, res){
     res.render('index', {
-      msg_database: process.env.MSG_DATABASE,
-      engine_socket_url: process.env.ROCON_COMPOSER_BLOCKLY_ENGINE_SOCKET_URL
+      msg_database: config.rocon_protocols_webserver_address
     });
   });
   app.get('/prezi', function(req, res){
@@ -61,13 +60,13 @@ module.exports = function(app, db){
   });
 
   app.get('/api/load_interactions', function(req, res){
-    if(!process.env.MSG_DATABASE){
+    if(!config.rocon_protocols_webserver_address){
       res.send('no rocon protocols web', 500);
       return
     }
 
 
-    var apiPath = URL.resolve(process.env.MSG_DATABASE, "api/hic_app");
+    var apiPath = URL.resolve(config.rocon_protocols_webserver_address, "api/hic_app");
 
     requestP(apiPath, {json: true}).spread(function(res0, data){
       var types_to_load = _.unique(JSONSelect.match('.interface .type', data))
@@ -81,13 +80,14 @@ module.exports = function(app, db){
 
 
   app.post('/api/load_rapp', function(req, res){
-    if(!process.env.MSG_DATABASE){
+    var proto_web = config.rocon_protocols_webserver_address;
+    if(!proto_web){
       res.send('no rocon protocols web', 500);
       return;
     }
 
 
-    var apiPath = URL.resolve(process.env.MSG_DATABASE, "api/rocon_app");
+    var apiPath = URL.resolve(proto_web, "api/rocon_app");
 
     request.get(apiPath, function(e, res0, body){
       if(e){
@@ -137,7 +137,7 @@ module.exports = function(app, db){
 
 
   app.get('/api/packages', function(req, res){
-    var ss = new ServiceStore({ros_root: process.env.ROS_PACKAGE_ROOT});
+    var ss = new ServiceStore();
     ss.allPackageInfos().then(function(rows){
       res.send(rows);
 
@@ -146,7 +146,7 @@ module.exports = function(app, db){
   });
 
   app.post('/api/services/save', function(req, res){
-    var ss = new ServiceStore({ros_root: process.env.ROS_PACKAGE_ROOT});
+    var ss = new ServiceStore();
     ss.exportToROS(req.body.title, req.body.description, req.body.service, req.body.package).then(function(){
       res.send('ok');
     }).done(function(){
