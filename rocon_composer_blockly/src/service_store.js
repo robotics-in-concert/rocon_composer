@@ -355,7 +355,7 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
         // .workflows
         if(service_meta.workflows && service_meta.workflows.length){
           var workflows = _.map(service_meta.workflows, function(wfname){
-            return {workflow: package_name + "/" + wfname};
+            return {workflow: package_name + "/" + wfname + ".wf"};
           });
           var wf_thenable = fs.writeFileAsync(service_base + "/" + name_key + ".workflows", yaml.dump({workflows: workflows}));
           all_thens.push(wf_thenable);
@@ -366,7 +366,7 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
 
         all_thens = all_thens.concat([
           fs.writeFileAsync(service_base + "/" + name_key + ".parameters", param_file_content),
-          fs.writeFileAsync(service_base + "/" + name_key + ".launcher", service_meta.launcher.launcher_body),
+          fs.writeFileAsync(service_base + "/" + name_key + ".launch", service_meta.launcher.launcher_body),
           fs.writeFileAsync(service_base + "/" + name_key + ".service", service_file_content),
           fs.writeFileAsync(service_base + "/" + name_key + ".interactions", yaml.dump(service_meta.interactions))
         ]);
