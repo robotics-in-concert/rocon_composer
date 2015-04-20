@@ -214,7 +214,8 @@ BlockGenerator.prototype.publish_block_dom = function(opts){
   console.log('PUB OPT', opts);
 
   var name = opts.name;
-  if(R.contains(name, this.publish_blocks)){
+  var block_key = name + "-" + opts.client_app_name;
+  if(R.contains(block_key, this.publish_blocks)){
     return false;
   }
   var type = opts.type;
@@ -226,9 +227,9 @@ BlockGenerator.prototype.publish_block_dom = function(opts){
 
 
 
-  this.publish_blocks.push(name);
-  Blockly.register_publish_block(name, opts.type, {client_app_name: opts.client_app_name});
-  var $block = $('<block type="ros_publish_'+name+'"></block>');
+  this.publish_blocks.push(block_key);
+  Blockly.register_publish_block(block_key, name, opts.type, {client_app_name: opts.client_app_name, tooltip: opts.client_app_name});
+  var $block = $('<block type="ros_publish_'+block_key+'"></block>');
   $block.append($valueBlock);
   return $block;
 
@@ -238,12 +239,13 @@ BlockGenerator.prototype.subscribe_block_dom = function(opts){
   console.log("X", opts);
 
   var name = opts.name;
-  if(R.contains(name, this.subscribe_blocks)){
+  var block_key = name + "-" + opts.client_app_name;
+  if(R.contains(block_key, this.subscribe_blocks)){
     return false;
   }
-  this.subscribe_blocks.push(name);
-  Blockly.register_subscribe_block(name, opts.type, {client_app_name: opts.client_app_name});
-  var $block = $('<block type="ros_subscribe_'+name+'"></block>');
+  this.subscribe_blocks.push(block_key);
+  Blockly.register_subscribe_block(block_key, name, opts.type, {client_app_name: opts.client_app_name, tooltip: opts.client_app_name});
+  var $block = $('<block type="ros_subscribe_'+block_key+'"></block>');
   return $block;
 
 

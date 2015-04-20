@@ -435,7 +435,8 @@ BlockGenerator.prototype.publish_block_dom = function(opts){
   console.log('PUB OPT', opts);
 
   var name = opts.name;
-  if(R.contains(name, this.publish_blocks)){
+  var block_key = name + "-" + opts.client_app_name;
+  if(R.contains(block_key, this.publish_blocks)){
     return false;
   }
   var type = opts.type;
@@ -447,9 +448,9 @@ BlockGenerator.prototype.publish_block_dom = function(opts){
 
 
 
-  this.publish_blocks.push(name);
-  Blockly.register_publish_block(name, opts.type, {client_app_name: opts.client_app_name});
-  var $block = $('<block type="ros_publish_'+name+'"></block>');
+  this.publish_blocks.push(block_key);
+  Blockly.register_publish_block(block_key, name, opts.type, {client_app_name: opts.client_app_name, tooltip: opts.client_app_name});
+  var $block = $('<block type="ros_publish_'+block_key+'"></block>');
   $block.append($valueBlock);
   return $block;
 
@@ -459,12 +460,13 @@ BlockGenerator.prototype.subscribe_block_dom = function(opts){
   console.log("X", opts);
 
   var name = opts.name;
-  if(R.contains(name, this.subscribe_blocks)){
+  var block_key = name + "-" + opts.client_app_name;
+  if(R.contains(block_key, this.subscribe_blocks)){
     return false;
   }
-  this.subscribe_blocks.push(name);
-  Blockly.register_subscribe_block(name, opts.type, {client_app_name: opts.client_app_name});
-  var $block = $('<block type="ros_subscribe_'+name+'"></block>');
+  this.subscribe_blocks.push(block_key);
+  Blockly.register_subscribe_block(block_key, name, opts.type, {client_app_name: opts.client_app_name, tooltip: opts.client_app_name});
+  var $block = $('<block type="ros_subscribe_'+block_key+'"></block>');
   return $block;
 
 
@@ -1700,23 +1702,26 @@ Blockly.register_scheduled_publish_block = function(rapp, uri, name, type){
 };
 
 
-Blockly.register_publish_block = function(name, type, extra){
+Blockly.register_publish_block = function(key, name, type, extra){
   
-  Blockly.Blocks['ros_publish_'+name] = {
+  Blockly.Blocks['ros_publish_'+key] = {
     init: function() {
       this.extra = extra;
       this.setColour(ACTION_COLOR);
       this.appendValueInput('VALUE').appendField('[Publish] ' + name);
       this.setInputsInline(true);
       this.setPreviousStatement(true);
+      if(extra && extra.tooltip){
+        this.setTooltip(extra.tooltip);
+      }
       return this.setNextStatement(true);
     }
   };
 
-  Blockly.JavaScript['ros_publish_'+name] = function(block) {
+  Blockly.JavaScript['ros_publish_'+key] = function(block) {
     var msg = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_NONE) || "''";
-    var tpl = '$engine.pub("<%= name %>", "<%= type %>", <%= msg %>);';
-    return _.template(tpl)({name: name, type: type, msg: msg});
+    var tpl = '$engine.pub("{{<%= key %>}}", "<%= type %>", <%= msg %>);';
+    return _.template(tpl)({key: key, name: name, type: type, msg: msg});
   };
 
 };
@@ -1756,18 +1761,18 @@ Blockly.register_scheduled_subscribe_block = function(rapp, uri, name, type, ext
     },
   };
 };
-Blockly.register_subscribe_block = function(name, type, extra){
+Blockly.register_subscribe_block = function(key, name, type, extra){
 
-  Blockly.JavaScript['ros_subscribe_'+name] = function(block) {
+  Blockly.JavaScript['ros_subscribe_'+key] = function(block) {
     var param0 = block.getFieldValue('DO_PARAM');
     var code = Blockly.JavaScript.statementToCode(block, 'DO');
-    var tpl = "$engine.subscribe('<%= name %>', '<%= type %>', function(<%= param0 %>){ <%= code %> });";
+    var tpl = "$engine.subscribe('{{<%= key %>}}', '<%= type %>', function(<%= param0 %>){ <%= code %> });";
 
-    return _.template(tpl)({name: name, code: code, param0: param0, type: type});
+    return _.template(tpl)({key: key, name: name, code: code, param0: param0, type: type});
   };
 
 
-  Blockly.Blocks['ros_subscribe_'+name] = {
+  Blockly.Blocks['ros_subscribe_'+key] = {
     init: function() {
       this.extra = extra;
       this.setColour(10);
@@ -1779,6 +1784,9 @@ Blockly.register_subscribe_block = function(name, type, extra){
         .appendField(new Blockly.FieldVariable('item'), 'DO_PARAM');
 
       this.setPreviousStatement(true);
+      if(extra && extra.tooltip){
+        this.setTooltip(extra.tooltip);
+      }
       return this.setNextStatement(true);
     },
 
