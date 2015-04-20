@@ -9,6 +9,7 @@ var _interaction_to_json_editor_value = function(i){
     display_name: i.defaults.display_name, 
     name: i.defaults.display_name, 
     description: i.defaults.description,
+    key: i.name,
     compatibility: i.compatibility,
     max: -1,
     role: 'Role', 

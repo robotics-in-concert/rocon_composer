@@ -306,7 +306,7 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
             _.each(service_meta.interactions, function(inter){
               _.each(inter.remappings, function(remap){
                 data.js = data.js.replace(
-                  new RegExp(_.escapeRegExp("{{" + remap.remap_from + "-" + inter.name + "}}"), 'g'),
+                  new RegExp(_.escapeRegExp("{{" + remap.remap_from + "-" + inter.key + "}}"), 'g'),
                   remap.remap_to);
 
               });

@@ -88,6 +88,12 @@
           "display_name": {
             "type": "string"
           },
+          "key": {
+            "type": "string",
+            "options": {
+              "hidden": true
+            }
+          },
           "name": {"type": "string"},
           "role": {"type": "string"},
           "compatibility": {
