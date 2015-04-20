@@ -299,6 +299,22 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
 
           var thens = _.map(service_meta.workflows, function(wf_title){
             var data = _.find(workflow_items, {title: wf_title});
+
+            console.log("DATA", data);
+
+
+            _.each(service_meta.interactions, function(inter){
+              _.each(inter.remappings, function(remap){
+                data.js = data.js.replace(
+                  new RegExp(_.escapeRegExp("{{" + remap.remap_from + "-" + inter.name + "}}"), 'g'),
+                  remap.remap_to);
+
+              });
+
+            });
+            console.log("DATA_AFTER", data);
+
+
             return fs.writeFileAsync(workflows_base + "/" + wf_title + ".wf", 
                                      JSON.stringify(data));
           });
