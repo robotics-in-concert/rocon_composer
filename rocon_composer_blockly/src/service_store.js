@@ -342,6 +342,10 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
         })(service_meta.interactions);
 
 
+        service_meta.interactions = _.map(service_meta.interactions, function(inter){
+          return _.omit(inter, 'key');
+        });
+
         console.log(yaml.dump(service_meta.interactions));
 
 
