@@ -5,6 +5,7 @@ var  R = require('ramda'),
   fs = Promise.promisifyAll(require('fs')),
   xml2js = Promise.promisifyAll(require('xml2js')),
   libxml = require('libxmljs'),
+  vkbeautify = require('vkbeautify'),
   os = require('os'),
   exec = Promise.promisify(require('child_process').exec),
   Path = require('path'),
@@ -268,19 +269,29 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
         var workflows_base = Path.join( service_base, "workflows" );
 
 
+
+
+
         var xml = fs.readFileSync(pack.path)
         var xmlDoc = libxml.parseXmlString(xml);
-
         var package = xmlDoc.get('/package');
 
         var node = package.get('//export');
         if(!node){
-          node = package.node('export');
+         node = package.node('export');
+        }
+        var node_val = Path.join('services', name_key, name_key+'.service');
+        var exists = node.get("//concert_service[text()='"+node_val+"']")
+        if(!exists){
+          node.node('concert_service', node_val);
         }
 
-        node.node('concert_service', Path.join('services', name_key, name_key+'.service'));
 
         var resultXml = xmlDoc.toString(true);
+        resultXml = vkbeautify.xml(resultXml);
+
+        console.log('XML', resultXml);
+
 
         fs.writeFileSync(pack.path, resultXml);
 
@@ -382,7 +393,7 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
 
         return Promise.all(all_thens);
 
-      });
+      })
 
 
 
