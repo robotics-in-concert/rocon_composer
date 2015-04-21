@@ -70,7 +70,7 @@
       "type": "array",
       "title": "Interactions",
       "options": {
-        "disable_array_add": true,
+        "disable_array_add": false,
         "collapsed": false
 
       },
