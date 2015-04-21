@@ -5,7 +5,7 @@ Blockly.Blocks['ros_requester_allocate'] = {
   configable: true,
   init: function() {
     var block = this;
-    this.setColour(77);
+    this.setColour(BLOCK_COLOR.ros);
     this.appendDummyInput().appendField("Allocate Resource");
     this.setPreviousStatement(false);
     this.setNextStatement(false);
@@ -36,7 +36,7 @@ Blockly.Blocks['ros_requester_allocate2'] = {
   configable: true,
   init: function() {
     var block = this;
-    this.setColour(77);
+    this.setColour(BLOCK_COLOR.ros);
     this.appendDummyInput().appendField("Allocate Resource");
     this.appendDummyInput().appendField('type').appendField(new Blockly.FieldDropdown([['dynamic', 'dynamic'], ['static', 'static']]), 'TYPE');
     this.appendDummyInput().appendField('var').appendField(new Blockly.FieldTextInput('resource', null), 'VAR')
@@ -79,7 +79,7 @@ Blockly.Blocks['ros_requester_allocate_with_block'] = {
   configable: true,
   init: function() {
     var block = this;
-    this.setColour(77);
+    this.setColour(BLOCK_COLOR.ros);
     this.appendDummyInput().appendField("Allocate Resource");
     this.appendDummyInput().appendField('type').appendField(new Blockly.FieldDropdown([['dynamic', 'dynamic'], ['static', 'static']]), 'TYPE');
       this.appendStatementInput('ON_SUCCESS')
@@ -135,7 +135,7 @@ Blockly.JavaScript['ros_requester_allocate_with_block'] = function(block){
 Blockly.Blocks['ros_requester_release'] = {
   init: function() {
     var block = this;
-    this.setColour(77);
+    this.setColour(BLOCK_COLOR.ros);
     this.appendValueInput('CTX').appendField("Release Resource");
     this.setPreviousStatement(true);
     return this.setNextStatement(true);

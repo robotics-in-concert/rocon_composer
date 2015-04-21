@@ -6,7 +6,7 @@ Blockly.register_scheduled_publish_block = function(rapp, uri, name, type){
   Blockly.Blocks['ros_scheduled_publish_'+name] = {
 
     init: function() {
-      this.setColour(ACTION_COLOR);
+      this.setColour(BLOCK_COLOR.ros_pub);
       this.appendDummyInput()
         .appendField(new Blockly.FieldImage('/img/icon/PUB.png', 15, 15, '*'))
         .appendField('pub ' + name);
@@ -32,7 +32,7 @@ Blockly.register_publish_block = function(key, name, type, extra){
   Blockly.Blocks['ros_publish_'+key] = {
     init: function() {
       this.extra = extra;
-      this.setColour(ACTION_COLOR);
+      this.setColour(BLOCK_COLOR.ros_pub);
       this.appendValueInput('VALUE')
         .appendField(new Blockly.FieldImage('/img/icon/PUB.png', 15, 15, '*'))
         .appendField('pub ' + name);
@@ -70,7 +70,7 @@ Blockly.register_scheduled_subscribe_block = function(rapp, uri, name, type, ext
 
     init: function() {
       this.extra = extra;
-      this.setColour(10);
+      this.setColour(BLOCK_COLOR.ros_sub);
       this.appendDummyInput()
         .appendField(new Blockly.FieldImage('/img/icon/SUB.png', 15, 15, '*'))
         .appendField('sub ' + name);
@@ -104,7 +104,7 @@ Blockly.register_subscribe_block = function(key, name, type, extra){
   Blockly.Blocks['ros_subscribe_'+key] = {
     init: function() {
       this.extra = extra;
-      this.setColour(10);
+      this.setColour(BLOCK_COLOR.ros_sub);
       this.appendDummyInput()
         .appendField(new Blockly.FieldImage('/img/icon/SUB.png', 15, 15, '*'))
         .appendField('sub' + name);
@@ -129,7 +129,7 @@ Blockly.register_subscribe_block = function(key, name, type, extra){
 
 Blockly.Blocks['ros_subscribe'] = {
   init: function() {
-    this.setColour(10);
+    this.setColour(BLOCK_COLOR.ros_sub);
     this.appendValueInput('NAME')
       .appendField(new Blockly.FieldImage('/img/icon/SUB.png', 15, 15, '*'))
       .appendField('sub ');
@@ -162,7 +162,7 @@ Blockly.JavaScript['ros_subscribe'] = function(block) {
 
 Blockly.Blocks['ros_publish'] = {
   init: function() {
-    this.setColour(ACTION_COLOR);
+    this.setColour(BLOCK_COLOR.ros_pub);
     this.appendValueInput('NAME')
       .appendField(new Blockly.FieldImage('/img/icon/PUB.png', 15, 15, '*'))
       .appendField('pub ');
@@ -186,7 +186,7 @@ Blockly.JavaScript['ros_publish'] = function(block) {
 
 Blockly.Blocks['ros_publish2'] = {
   init: function() {
-    this.setColour(ACTION_COLOR);
+    this.setColour(BLOCK_COLOR.ros_pub);
     this.appendValueInput('VALUE').appendField('xxxxxxxxxxxxx xx xoijqweofij qwoefij ');
     this.setInputsInline(true);
     this.setPreviousStatement(true);

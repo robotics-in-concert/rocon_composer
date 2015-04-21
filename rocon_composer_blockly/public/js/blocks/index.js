@@ -2,6 +2,7 @@ var _ = require('lodash');
 var DESTINATION_COLOR, declare_event;
 
 var ACTION_COLOR = require('../config').action_color;
+BLOCK_COLOR = require('../config').block_color;
 
 DESTINATION_COLOR = 3;
 

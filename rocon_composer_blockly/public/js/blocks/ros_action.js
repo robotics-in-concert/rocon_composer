@@ -46,7 +46,7 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
   Blockly.Blocks['ros_scheduled_action_'+name] = {
 
     init: function() {
-      this.setColour(260);
+      this.setColour(BLOCK_COLOR.ros_act);
       this.appendDummyInput()
         .appendField(new Blockly.FieldImage('/img/icon/ACT.png', 15, 15, '*'))
         .appendField('act ' + name);
@@ -120,7 +120,7 @@ Blockly.register_action_block = function(name, type){
      * @this Blockly.Block
      */
     init: function() {
-      this.setColour(260);
+      this.setColour(BLOCK_COLOR.ros_act);
       this.appendValueInput('GOAL')
         .appendField(new Blockly.FieldImage('/img/icon/ACT.png', 15, 15, '*'))
         .appendField('act ' + name);
@@ -230,7 +230,7 @@ Blockly.Blocks['ros_action'] = {
    * @this Blockly.Block
    */
   init: function() {
-    this.setColour(260);
+    this.setColour(BLOCK_COLOR.ros_act);
     this.appendValueInput('NAME')
       .appendField(new Blockly.FieldImage('/img/icon/ACT.png', 15, 15, '*'))
       .appendField('act ');

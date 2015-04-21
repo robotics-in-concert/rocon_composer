@@ -4,7 +4,7 @@ var ACTION_COLOR = require('../config').action_color;
 
 Blockly.Blocks['ros_service'] = {
   init: function() {
-    this.setColour(ACTION_COLOR);
+    this.setColour(BLOCK_COLOR.ros_svc);
     this.appendValueInput('NAME')
       .appendField(new Blockly.FieldImage('/img/icon/SER.png', 15, 15, '*'))
       .appendField('svc ');

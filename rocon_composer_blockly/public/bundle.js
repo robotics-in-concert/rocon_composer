@@ -553,6 +553,7 @@ var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined
 var DESTINATION_COLOR, declare_event;
 
 var ACTION_COLOR = require('../config').action_color;
+BLOCK_COLOR = require('../config').block_color;
 
 DESTINATION_COLOR = 3;
 
@@ -1395,7 +1396,7 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
   Blockly.Blocks['ros_scheduled_action_'+name] = {
 
     init: function() {
-      this.setColour(260);
+      this.setColour(BLOCK_COLOR.ros_act);
       this.appendDummyInput()
         .appendField(new Blockly.FieldImage('/img/icon/ACT.png', 15, 15, '*'))
         .appendField('act ' + name);
@@ -1469,7 +1470,7 @@ Blockly.register_action_block = function(name, type){
      * @this Blockly.Block
      */
     init: function() {
-      this.setColour(260);
+      this.setColour(BLOCK_COLOR.ros_act);
       this.appendValueInput('GOAL')
         .appendField(new Blockly.FieldImage('/img/icon/ACT.png', 15, 15, '*'))
         .appendField('act ' + name);
@@ -1579,7 +1580,7 @@ Blockly.Blocks['ros_action'] = {
    * @this Blockly.Block
    */
   init: function() {
-    this.setColour(260);
+    this.setColour(BLOCK_COLOR.ros_act);
     this.appendValueInput('NAME')
       .appendField(new Blockly.FieldImage('/img/icon/ACT.png', 15, 15, '*'))
       .appendField('act ');
@@ -1619,7 +1620,7 @@ Blockly.register_message_block = function(type, meta, tooltip){
     Blockly.Blocks[blockKey] = {
       init: function() {
         var block = this;
-        this.setColour(77);
+        this.setColour(BLOCK_COLOR.ros_msg);
         //
         this.appendDummyInput().appendField(type);
         _.each(meta.fieldnames, function(fn, idx){
@@ -1689,7 +1690,7 @@ Blockly.register_scheduled_publish_block = function(rapp, uri, name, type){
   Blockly.Blocks['ros_scheduled_publish_'+name] = {
 
     init: function() {
-      this.setColour(ACTION_COLOR);
+      this.setColour(BLOCK_COLOR.ros_pub);
       this.appendDummyInput()
         .appendField(new Blockly.FieldImage('/img/icon/PUB.png', 15, 15, '*'))
         .appendField('pub ' + name);
@@ -1715,7 +1716,7 @@ Blockly.register_publish_block = function(key, name, type, extra){
   Blockly.Blocks['ros_publish_'+key] = {
     init: function() {
       this.extra = extra;
-      this.setColour(ACTION_COLOR);
+      this.setColour(BLOCK_COLOR.ros_pub);
       this.appendValueInput('VALUE')
         .appendField(new Blockly.FieldImage('/img/icon/PUB.png', 15, 15, '*'))
         .appendField('pub ' + name);
@@ -1753,7 +1754,7 @@ Blockly.register_scheduled_subscribe_block = function(rapp, uri, name, type, ext
 
     init: function() {
       this.extra = extra;
-      this.setColour(10);
+      this.setColour(BLOCK_COLOR.ros_sub);
       this.appendDummyInput()
         .appendField(new Blockly.FieldImage('/img/icon/SUB.png', 15, 15, '*'))
         .appendField('sub ' + name);
@@ -1787,7 +1788,7 @@ Blockly.register_subscribe_block = function(key, name, type, extra){
   Blockly.Blocks['ros_subscribe_'+key] = {
     init: function() {
       this.extra = extra;
-      this.setColour(10);
+      this.setColour(BLOCK_COLOR.ros_sub);
       this.appendDummyInput()
         .appendField(new Blockly.FieldImage('/img/icon/SUB.png', 15, 15, '*'))
         .appendField('sub' + name);
@@ -1812,7 +1813,7 @@ Blockly.register_subscribe_block = function(key, name, type, extra){
 
 Blockly.Blocks['ros_subscribe'] = {
   init: function() {
-    this.setColour(10);
+    this.setColour(BLOCK_COLOR.ros_sub);
     this.appendValueInput('NAME')
       .appendField(new Blockly.FieldImage('/img/icon/SUB.png', 15, 15, '*'))
       .appendField('sub ');
@@ -1845,7 +1846,7 @@ Blockly.JavaScript['ros_subscribe'] = function(block) {
 
 Blockly.Blocks['ros_publish'] = {
   init: function() {
-    this.setColour(ACTION_COLOR);
+    this.setColour(BLOCK_COLOR.ros_pub);
     this.appendValueInput('NAME')
       .appendField(new Blockly.FieldImage('/img/icon/PUB.png', 15, 15, '*'))
       .appendField('pub ');
@@ -1869,7 +1870,7 @@ Blockly.JavaScript['ros_publish'] = function(block) {
 
 Blockly.Blocks['ros_publish2'] = {
   init: function() {
-    this.setColour(ACTION_COLOR);
+    this.setColour(BLOCK_COLOR.ros_pub);
     this.appendValueInput('VALUE').appendField('xxxxxxxxxxxxx xx xoijqweofij qwoefij ');
     this.setInputsInline(true);
     this.setPreviousStatement(true);
@@ -1888,7 +1889,7 @@ Blockly.Blocks['ros_requester_allocate'] = {
   configable: true,
   init: function() {
     var block = this;
-    this.setColour(77);
+    this.setColour(BLOCK_COLOR.ros);
     this.appendDummyInput().appendField("Allocate Resource");
     this.setPreviousStatement(false);
     this.setNextStatement(false);
@@ -1919,7 +1920,7 @@ Blockly.Blocks['ros_requester_allocate2'] = {
   configable: true,
   init: function() {
     var block = this;
-    this.setColour(77);
+    this.setColour(BLOCK_COLOR.ros);
     this.appendDummyInput().appendField("Allocate Resource");
     this.appendDummyInput().appendField('type').appendField(new Blockly.FieldDropdown([['dynamic', 'dynamic'], ['static', 'static']]), 'TYPE');
     this.appendDummyInput().appendField('var').appendField(new Blockly.FieldTextInput('resource', null), 'VAR')
@@ -1962,7 +1963,7 @@ Blockly.Blocks['ros_requester_allocate_with_block'] = {
   configable: true,
   init: function() {
     var block = this;
-    this.setColour(77);
+    this.setColour(BLOCK_COLOR.ros);
     this.appendDummyInput().appendField("Allocate Resource");
     this.appendDummyInput().appendField('type').appendField(new Blockly.FieldDropdown([['dynamic', 'dynamic'], ['static', 'static']]), 'TYPE');
       this.appendStatementInput('ON_SUCCESS')
@@ -2018,7 +2019,7 @@ Blockly.JavaScript['ros_requester_allocate_with_block'] = function(block){
 Blockly.Blocks['ros_requester_release'] = {
   init: function() {
     var block = this;
-    this.setColour(77);
+    this.setColour(BLOCK_COLOR.ros);
     this.appendValueInput('CTX').appendField("Release Resource");
     this.setPreviousStatement(true);
     return this.setNextStatement(true);
@@ -2042,7 +2043,7 @@ var ACTION_COLOR = require('../config').action_color;
 
 Blockly.Blocks['ros_service'] = {
   init: function() {
-    this.setColour(ACTION_COLOR);
+    this.setColour(BLOCK_COLOR.ros_svc);
     this.appendValueInput('NAME')
       .appendField(new Blockly.FieldImage('/img/icon/SER.png', 15, 15, '*'))
       .appendField('svc ');
@@ -2187,10 +2188,18 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
-  "undo_max_size": 100
+  "undo_max_size": 100,
+  "block_color": {
+    "ros": 225,
+    "ros_act": 225,
+    "ros_pub": 225,
+    "ros_sub": 225,
+    "ros_msg": 225,
+    "ros_svc": 225
+  }
 }
 
 },{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/config_ctrl.js":[function(require,module,exports){
@@ -3219,7 +3228,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {

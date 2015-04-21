@@ -8,7 +8,7 @@ Blockly.register_message_block = function(type, meta, tooltip){
     Blockly.Blocks[blockKey] = {
       init: function() {
         var block = this;
-        this.setColour(77);
+        this.setColour(BLOCK_COLOR.ros_msg);
         //
         this.appendDummyInput().appendField(type);
         _.each(meta.fieldnames, function(fn, idx){
