@@ -5,7 +5,9 @@ var ACTION_COLOR = require('../config').action_color;
 Blockly.Blocks['ros_service'] = {
   init: function() {
     this.setColour(ACTION_COLOR);
-    this.appendValueInput('NAME').appendField('[ROS] call service :');
+    this.appendValueInput('NAME')
+      .appendField(new Blockly.FieldImage('/img/icon/SER.png', 15, 15, '*'))
+      .appendField('svc ');
     this.appendValueInput('TYPE').appendField('type :');
     this.appendValueInput('VALUE').appendField('message :');
 

@@ -47,7 +47,9 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
 
     init: function() {
       this.setColour(260);
-      this.appendDummyInput().appendField('[Action] ' + name);
+      this.appendDummyInput()
+        .appendField(new Blockly.FieldImage('/img/icon/ACT.png', 15, 15, '*'))
+        .appendField('act ' + name);
       this.appendValueInput('CTX').appendField('context :');
       this.appendValueInput('GOAL').appendField('goal :');
 
@@ -119,7 +121,9 @@ Blockly.register_action_block = function(name, type){
      */
     init: function() {
       this.setColour(260);
-      this.appendValueInput('GOAL').appendField('[Action] ' + name);
+      this.appendValueInput('GOAL')
+        .appendField(new Blockly.FieldImage('/img/icon/ACT.png', 15, 15, '*'))
+        .appendField('act ' + name);
 
       this.setInputsInline(true);
 
@@ -227,7 +231,9 @@ Blockly.Blocks['ros_action'] = {
    */
   init: function() {
     this.setColour(260);
-    this.appendValueInput('NAME').appendField('[ROS] action name :');
+    this.appendValueInput('NAME')
+      .appendField(new Blockly.FieldImage('/img/icon/ACT.png', 15, 15, '*'))
+      .appendField('act ');
     this.appendValueInput('TYPE').appendField('type :');
     this.appendValueInput('GOAL').appendField("goal :").setAlign(Blockly.ALIGN_RIGHT)
 
