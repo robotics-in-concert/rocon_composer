@@ -217,7 +217,7 @@ app.directive("roconSelect2", ["$interval", function($interval) {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./blocks/index":4,"./ctrls/root_ctrl":16,"./ctrls/services_form_ctrl":17,"./ctrls/services_index_ctrl":18,"./ctrls/workflow_blockly_ctrl":19,"./ctrls/workflow_index_ctrl":20,"./directives/json-editor":21,"./services/blocks":23,"./services/services":24,"./utils":27}],2:[function(require,module,exports){
+},{"./blocks/index":4,"./ctrls/root_ctrl":17,"./ctrls/services_form_ctrl":18,"./ctrls/services_index_ctrl":19,"./ctrls/workflow_blockly_ctrl":20,"./ctrls/workflow_index_ctrl":21,"./directives/json-editor":22,"./services/blocks":24,"./services/services":25,"./utils":28}],2:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
   $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
@@ -871,11 +871,12 @@ require('./ros_msg');
 require('./ros_pubsub');
 require('./ros_requester');
 require('./ros_service');
+require('./ros_misc');
 require('./utils.js');
 require('./prezi.js');
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../config":14,"./lodash":5,"./object":6,"./prezi.js":7,"./ros_action":8,"./ros_msg":9,"./ros_pubsub":10,"./ros_requester":11,"./ros_service":12,"./utils.js":13}],5:[function(require,module,exports){
+},{"../config":15,"./lodash":5,"./object":6,"./prezi.js":7,"./ros_action":8,"./ros_misc":9,"./ros_msg":10,"./ros_pubsub":11,"./ros_requester":12,"./ros_service":13,"./utils.js":14}],5:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
@@ -1611,6 +1612,32 @@ Blockly.Blocks['ros_action'] = {
 (function (global){
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
+var ACTION_COLOR = require('../config').action_color;
+
+Blockly.Blocks['ros_parameter'] = {
+  init: function() {
+    this.setColour(BLOCK_COLOR.ros);
+    this.appendDummyInput().appendField('Parameter').appendField(new Blockly.FieldTextInput('key', null), 'KEY')
+    this.setInputsInline(true);
+    this.setOutput(true);
+  }
+};
+
+Blockly.JavaScript['ros_parameter'] = function(block) {
+  var key = this.getFieldValue('KEY');
+
+  var tpl = '($engine.getParameter("<%= key %>"))';
+  var code =_.template(tpl)({key: key});
+  return [code, Blockly.JavaScript.ORDER_NONE];
+};
+
+
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../config":15}],10:[function(require,module,exports){
+(function (global){
+var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
+var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 
 var msg_registered = [];
 Blockly.register_message_block = function(type, meta, tooltip){
@@ -1679,7 +1706,7 @@ Blockly.register_message_block = function(type, meta, tooltip){
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
@@ -1877,7 +1904,7 @@ Blockly.Blocks['ros_publish2'] = {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../config":14}],11:[function(require,module,exports){
+},{"../config":15}],12:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
@@ -2032,7 +2059,7 @@ Blockly.JavaScript['ros_requester_release'] = function(block){
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 (function (global){
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
@@ -2064,7 +2091,7 @@ Blockly.JavaScript['ros_service'] = function(block) {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../config":14}],13:[function(require,module,exports){
+},{"../config":15}],14:[function(require,module,exports){
 (function (global){
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null),
   _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
@@ -2183,7 +2210,7 @@ Blockly.JavaScript['defer'] = function(block) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../config":14}],14:[function(require,module,exports){
+},{"../config":15}],15:[function(require,module,exports){
 module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
@@ -2198,7 +2225,7 @@ module.exports={
   }
 }
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 
                                             
                                             
@@ -2324,7 +2351,7 @@ function ConfigCtrl($scope, $rootScope, blocksStore, $http, $modalInstance, rapp
 
 module.exports = ConfigCtrl;
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 
@@ -2408,7 +2435,7 @@ module.exports = function($scope, blocksStore, $http, $state, $rootScope) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 (function (global){
 var R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null)
   $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
@@ -2671,13 +2698,13 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../schema/service_form":22,"../utils":27}],18:[function(require,module,exports){
+},{"../schema/service_form":23,"../utils":28}],19:[function(require,module,exports){
 
 module.exports = function ServicesIndex($scope, blocksStore){
 
 };
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
   $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
@@ -3115,7 +3142,7 @@ module.exports = WorkflowBlocklyCtrl;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../block_gen":2,"../blocks/blocks_defaults":3,"../undo_manager":26,"../utils":27,"./config_ctrl":15}],20:[function(require,module,exports){
+},{"../block_gen":2,"../blocks/blocks_defaults":3,"../undo_manager":27,"../utils":28,"./config_ctrl":16}],21:[function(require,module,exports){
 (function (global){
 var R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null);
 
@@ -3134,7 +3161,7 @@ module.exports = function($scope, blocksStore) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 (function (global){
 var R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null);
 
@@ -3230,7 +3257,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 module.exports={
   "title": "Create Service",
   "type": "object",
@@ -3410,7 +3437,7 @@ module.exports={
   }
 }
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 
 module.exports = function($http, $q){
 
@@ -3469,7 +3496,7 @@ module.exports = function($http, $q){
 
 };
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 
 module.exports = function($http, $q){
 
@@ -3493,7 +3520,7 @@ module.exports = function($http, $q){
 
 
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 /*jslint onevar: false, plusplus: false */
 /*
 
@@ -4637,7 +4664,7 @@ if (typeof exports !== "undefined")
 
 module.exports = js_beautify;
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 var Utils = require('./utils'),
   config = require('./config');
   
@@ -4696,7 +4723,7 @@ UndoManager.prototype.undo = function(){
 
 module.exports = UndoManager;
 
-},{"./config":14,"./utils":27}],27:[function(require,module,exports){
+},{"./config":15,"./utils":28}],28:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
   R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null),
@@ -4775,4 +4802,4 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./tools/beautify":25}]},{},[1]);
+},{"./tools/beautify":26}]},{},[1]);

@@ -320,5 +320,6 @@ require('./ros_msg');
 require('./ros_pubsub');
 require('./ros_requester');
 require('./ros_service');
+require('./ros_misc');
 require('./utils.js');
 require('./prezi.js');
