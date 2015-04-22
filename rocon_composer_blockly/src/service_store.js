@@ -58,10 +58,11 @@ ServiceStore.prototype._withRepo = function(){
 
     })
     .then(function(repo){
+      var bra = config.service_repo_branch;
       return repo.fetchAll(that.remoteCallbacks)
         .then(function(){
-          console.log('merge master');
-          return repo.mergeBranches("master", "origin/master");
+          console.log('merge ', bra);
+          return repo.mergeBranches(bra, "origin/" + bra);
         })
         .then(function(){
           return repo;
@@ -136,7 +137,7 @@ ServiceStore.prototype._createPullRequest = function(branch_name, title, descrip
 
   return new Promise(function(resolve, reject){
     var head = config.service_repo.split("/")[0] + ":" + branch_name;
-    var data = {title: title, head: head, base: 'master', body: description}
+    var data = {title: title, head: head, base: config.service_repo_branch, body: description}
     logger.info('PR : ', data);
     request.post('https://api.github.com/repos/' + config.service_repo_base + "/pulls")
       .set('Authorization', "token "+config.github_token) 
@@ -175,7 +176,7 @@ ServiceStore.prototype._pushRepo = function(repo, ref){
         [ref+":"+ref],
         null,
         repo.defaultSignature(),
-        "Push to master");
+        "Push");
 
 
 
@@ -188,7 +189,7 @@ ServiceStore.prototype._pushRepo = function(repo, ref){
 ServiceStore.prototype._createBranch = function(repo){
   var new_branch_name = 'new-branch-'+(new Date().getTime());
   var base_commit = null;
-  return repo.getBranchCommit('master')
+  return repo.getBranchCommit(config.service_repo_branch)
     .then(function(commit){
       return repo.createBranch(new_branch_name, commit);
       // return repo.createBranch(new_branch_name, commit, 0, 
@@ -227,7 +228,7 @@ ServiceStore.prototype._commitRepo = function(title, description){
           repo.checkoutBranch(branch).then(function(){
             that._addAllToIndex(repo)
               .then(function(oid){
-                return repo.getBranchCommit('master')
+                return repo.getBranchCommit(config.service_repo_branch)
                   .then(function(commit){
                     logger.info('1')
                     logger.info(branch.toString());
