@@ -171,6 +171,13 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
     $scope.packageList = packs;
   });
 
+
+  $scope.newPackage = function(){
+    $scope.new_package = {};
+    $('#modal-new-package').modal();
+
+  };
+
   $scope.exportOk = function(){
     var destPackage = $scope.value.destPackage;
 
