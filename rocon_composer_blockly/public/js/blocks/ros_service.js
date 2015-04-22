@@ -6,8 +6,7 @@ Blockly.Blocks['ros_service'] = {
   init: function() {
     this.setColour(BLOCK_COLOR.ros_svc);
     this.appendValueInput('NAME')
-      .appendField(new Blockly.FieldImage('/img/icon/SER.png', 15, 15, '*'))
-      .appendField('svc ');
+      .appendField(new Blockly.FieldImage('/img/icon/SER.png', 60, 15, '*'))
     this.appendValueInput('TYPE').appendField('type :');
     this.appendValueInput('VALUE').appendField('message :');
 

@@ -1398,8 +1398,8 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
     init: function() {
       this.setColour(BLOCK_COLOR.ros_act);
       this.appendDummyInput()
-        .appendField(new Blockly.FieldImage('/img/icon/ACT.png', 15, 15, '*'))
-        .appendField('act ' + name);
+        .appendField(new Blockly.FieldImage('/img/icon/ACT.png', 61, 15, '*'))
+        .appendField(name);
       this.appendValueInput('CTX').appendField('context :');
       this.appendValueInput('GOAL').appendField('goal :');
 
@@ -1472,8 +1472,8 @@ Blockly.register_action_block = function(name, type){
     init: function() {
       this.setColour(BLOCK_COLOR.ros_act);
       this.appendValueInput('GOAL')
-        .appendField(new Blockly.FieldImage('/img/icon/ACT.png', 15, 15, '*'))
-        .appendField('act ' + name);
+        .appendField(new Blockly.FieldImage('/img/icon/ACT.png', 61, 15, '*'))
+        .appendField(name);
 
       this.setInputsInline(true);
 
@@ -1582,8 +1582,7 @@ Blockly.Blocks['ros_action'] = {
   init: function() {
     this.setColour(BLOCK_COLOR.ros_act);
     this.appendValueInput('NAME')
-      .appendField(new Blockly.FieldImage('/img/icon/ACT.png', 15, 15, '*'))
-      .appendField('act ');
+      .appendField(new Blockly.FieldImage('/img/icon/ACT.png', 61, 15, '*'))
     this.appendValueInput('TYPE').appendField('type :');
     this.appendValueInput('GOAL').appendField("goal :").setAlign(Blockly.ALIGN_RIGHT)
 
@@ -1692,8 +1691,8 @@ Blockly.register_scheduled_publish_block = function(rapp, uri, name, type){
     init: function() {
       this.setColour(BLOCK_COLOR.ros_pub);
       this.appendDummyInput()
-        .appendField(new Blockly.FieldImage('/img/icon/PUB.png', 15, 15, '*'))
-        .appendField('pub ' + name);
+        .appendField(new Blockly.FieldImage('/img/icon/PUB.png', 60, 15, '*'))
+        .appendField(name);
       this.appendValueInput('CTX').appendField('context : ');
       this.appendValueInput('VALUE').appendField('value : ');
       this.setInputsInline(true);
@@ -1718,8 +1717,8 @@ Blockly.register_publish_block = function(key, name, type, extra){
       this.extra = extra;
       this.setColour(BLOCK_COLOR.ros_pub);
       this.appendValueInput('VALUE')
-        .appendField(new Blockly.FieldImage('/img/icon/PUB.png', 15, 15, '*'))
-        .appendField('pub ' + name);
+        .appendField(new Blockly.FieldImage('/img/icon/PUB.png', 60, 15, '*'))
+        .appendField(name);
       this.setInputsInline(true);
       this.setPreviousStatement(true);
       if(extra && extra.tooltip){
@@ -1756,8 +1755,8 @@ Blockly.register_scheduled_subscribe_block = function(rapp, uri, name, type, ext
       this.extra = extra;
       this.setColour(BLOCK_COLOR.ros_sub);
       this.appendDummyInput()
-        .appendField(new Blockly.FieldImage('/img/icon/SUB.png', 15, 15, '*'))
-        .appendField('sub ' + name);
+        .appendField(new Blockly.FieldImage('/img/icon/SUB.png', 60, 15, '*'))
+        .appendField(name);
       this.appendValueInput('CTX').appendField('context : ');
       this.setInputsInline(true);
 
@@ -1790,8 +1789,8 @@ Blockly.register_subscribe_block = function(key, name, type, extra){
       this.extra = extra;
       this.setColour(BLOCK_COLOR.ros_sub);
       this.appendDummyInput()
-        .appendField(new Blockly.FieldImage('/img/icon/SUB.png', 15, 15, '*'))
-        .appendField('sub' + name);
+        .appendField(new Blockly.FieldImage('/img/icon/SUB.png', 60, 15, '*'))
+        .appendField(name);
       this.setInputsInline(true);
 
       this.appendStatementInput('DO')
@@ -1815,8 +1814,7 @@ Blockly.Blocks['ros_subscribe'] = {
   init: function() {
     this.setColour(BLOCK_COLOR.ros_sub);
     this.appendValueInput('NAME')
-      .appendField(new Blockly.FieldImage('/img/icon/SUB.png', 15, 15, '*'))
-      .appendField('sub ');
+      .appendField(new Blockly.FieldImage('/img/icon/SUB.png', 60, 15, '*'))
     this.appendValueInput('TYPE').appendField('type :');
     this.setInputsInline(true);
 
@@ -1848,8 +1846,7 @@ Blockly.Blocks['ros_publish'] = {
   init: function() {
     this.setColour(BLOCK_COLOR.ros_pub);
     this.appendValueInput('NAME')
-      .appendField(new Blockly.FieldImage('/img/icon/PUB.png', 15, 15, '*'))
-      .appendField('pub ');
+      .appendField(new Blockly.FieldImage('/img/icon/PUB.png', 60, 15, '*'))
     this.appendValueInput('TYPE').appendField('type :');
     this.appendValueInput('VALUE').appendField('message :');
     this.setInputsInline(true);
@@ -2045,8 +2042,7 @@ Blockly.Blocks['ros_service'] = {
   init: function() {
     this.setColour(BLOCK_COLOR.ros_svc);
     this.appendValueInput('NAME')
-      .appendField(new Blockly.FieldImage('/img/icon/SER.png', 15, 15, '*'))
-      .appendField('svc ');
+      .appendField(new Blockly.FieldImage('/img/icon/SER.png', 60, 15, '*'))
     this.appendValueInput('TYPE').appendField('type :');
     this.appendValueInput('VALUE').appendField('message :');
 
