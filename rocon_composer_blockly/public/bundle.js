@@ -2190,11 +2190,11 @@ module.exports={
   "undo_max_size": 100,
   "block_color": {
     "ros": 225,
-    "ros_act": 225,
-    "ros_pub": 225,
+    "ros_act": 255,
+    "ros_pub": 210,
     "ros_sub": 225,
     "ros_msg": 225,
-    "ros_svc": 225
+    "ros_svc": 240
   }
 }
 
