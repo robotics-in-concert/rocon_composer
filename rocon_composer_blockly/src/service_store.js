@@ -347,6 +347,7 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
         console.log('---------------- .interactions --------------------');
         R.forEach(function(i){
           i.parameters = R.fromPairs(R.map(R.values)(i.parameters));
+          delete i._id;
         })(service_meta.interactions);
 
 
