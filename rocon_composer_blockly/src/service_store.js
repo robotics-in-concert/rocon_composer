@@ -73,6 +73,31 @@ ServiceStore.prototype._withRepo = function(){
 
 
 };
+ServiceStore.prototype.createPackage = function(package_meta){
+  return this._withRepo()
+    .then(function(repo){
+      var workdir = repo.workdir();
+
+      var content_cmakelist = _.template("cmake_minimum_required(VERSION 2.8.3)\n" + 
+        "project(<%= name %>)   # <%= name %>\n" +
+        "\n" + 
+        "find_package(catkin REQUIRED)\n" +
+        "catkin_package()\n")(package_meta);
+
+      var content_packagexml = _.template("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"+
+        "<package>\n"+
+        "  <name><%= name %></name> <!-- <%= name %> -->\n"+
+        "  <version>0.0.0</version>\n"+
+        "  <description><%= description %></description>\n"+
+        "  <maintainer email=\"<%= maintainer_email %>\"><%= maintainer %></maintainer> <!-- uploader -->\n"+
+        "  <license>BSD</license>\n"+
+        "  <buildtool_depend>catkin</buildtool_depend>\n"+
+        "</package>")(package_meta);
+
+    })
+
+};
+
 
 ServiceStore.prototype.allPackageInfos = function(){
   return this._withRepo()
