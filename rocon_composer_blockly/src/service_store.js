@@ -62,10 +62,22 @@ ServiceStore.prototype._withRepo = function(){
       return repo.fetchAll(that.remoteCallbacks)
         .then(function(){
           console.log('merge ', bra);
-          return repo.mergeBranches(bra, "origin/" + bra);
+          // return repo.mergeBranches(bra, "origin/" + bra);
+          // return repo.mergeBranches("master", "origin/" + bra);
+
+          return repo.getBranchCommit('origin/'+bra);
+          // return true;
         })
-        .then(function(){
+        .then(function(commit){
+          console.log(commit.sha());
+
+
+          return repo.createBranch(bra, commit, 1, repo.defaultSignature(), "new branch");
+
+          // return repo;
+        }).then(function(){
           return repo;
+          
         });
 
 
