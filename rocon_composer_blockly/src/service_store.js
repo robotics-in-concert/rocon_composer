@@ -54,7 +54,15 @@ ServiceStore.prototype._withRepo = function(){
           logger.error('clone failed', e);
 
 
-        });
+        })
+        .then(function(repo){
+           return nodegit.Remote.create(repo, "upstream",
+                "https://github.com/"+config.service_repo_base+".git")
+               .then(function(){
+                 return repo;
+               });
+              
+            })
 
     })
     .then(function(repo){
@@ -62,17 +70,16 @@ ServiceStore.prototype._withRepo = function(){
       return repo.fetchAll(that.remoteCallbacks)
         .then(function(){
           console.log('merge ', bra);
-          // return repo.mergeBranches(bra, "origin/" + bra);
-          // return repo.mergeBranches("master", "origin/" + bra);
-
-          return repo.getBranchCommit('origin/'+bra);
-          // return true;
+          return repo.getBranchCommit('upstream/'+bra);
         })
         .then(function(commit){
           console.log(commit.sha());
-
-
+          if(bra == "master"){
+            return repo.mergeBranches("master", "upstream/master");
+          }
           return repo.createBranch(bra, commit, 1, repo.defaultSignature(), "new branch");
+
+
 
           // return repo;
         }).then(function(){
