@@ -1,4 +1,4 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/app2.js":[function(require,module,exports){
 (function (global){
 var angular = (typeof window !== "undefined" ? window.angular : typeof global !== "undefined" ? global.angular : null),
   Mousetrap = (typeof window !== "undefined" ? window.Mousetrap : typeof global !== "undefined" ? global.Mousetrap : null),
@@ -217,7 +217,7 @@ app.directive("roconSelect2", ["$interval", function($interval) {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./blocks/index":4,"./ctrls/root_ctrl":17,"./ctrls/services_form_ctrl":18,"./ctrls/services_index_ctrl":19,"./ctrls/workflow_blockly_ctrl":20,"./ctrls/workflow_index_ctrl":21,"./directives/json-editor":22,"./services/blocks":24,"./services/services":25,"./utils":28}],2:[function(require,module,exports){
+},{"./blocks/index":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/index.js","./ctrls/root_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/root_ctrl.js","./ctrls/services_form_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/services_form_ctrl.js","./ctrls/services_index_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/services_index_ctrl.js","./ctrls/workflow_blockly_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/workflow_blockly_ctrl.js","./ctrls/workflow_index_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/workflow_index_ctrl.js","./directives/json-editor":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/directives/json-editor.js","./services/blocks":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/services/blocks.js","./services/services":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/services/services.js","./utils":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/utils.js"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/block_gen.js":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
   $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
@@ -476,7 +476,7 @@ BlockGenerator.prototype.subscribe_block_dom = function(opts){
 module.exports = BlockGenerator;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],3:[function(require,module,exports){
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/blocks_defaults.js":[function(require,module,exports){
 (function (global){
 var R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null),
   angular = (typeof window !== "undefined" ? window.angular : typeof global !== "undefined" ? global.angular : null);
@@ -547,7 +547,7 @@ var ros_block_override = function(){
 module.exports = ros_block_override;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],4:[function(require,module,exports){
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/index.js":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 var DESTINATION_COLOR, declare_event;
@@ -876,7 +876,7 @@ require('./utils.js');
 require('./prezi.js');
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../config":15,"./lodash":5,"./object":6,"./prezi.js":7,"./ros_action":8,"./ros_misc":9,"./ros_msg":10,"./ros_pubsub":11,"./ros_requester":12,"./ros_service":13,"./utils.js":14}],5:[function(require,module,exports){
+},{"../config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json","./lodash":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/lodash.js","./object":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/object.js","./prezi.js":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/prezi.js","./ros_action":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/ros_action.js","./ros_misc":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/ros_misc.js","./ros_msg":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/ros_msg.js","./ros_pubsub":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/ros_pubsub.js","./ros_requester":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/ros_requester.js","./ros_service":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/ros_service.js","./utils.js":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/utils.js"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/lodash.js":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
@@ -929,7 +929,7 @@ Blockly.JavaScript['lodash_find'] = function(block){
 // }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],6:[function(require,module,exports){
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/object.js":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
@@ -1214,7 +1214,7 @@ Blockly.Blocks['object_create_with_container'] = {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],7:[function(require,module,exports){
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/prezi.js":[function(require,module,exports){
 (function (global){
 
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
@@ -1347,7 +1347,7 @@ Blockly.JavaScript['prezi_move_with_channel'] = function(block){
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],8:[function(require,module,exports){
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/ros_action.js":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
@@ -1608,7 +1608,7 @@ Blockly.Blocks['ros_action'] = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],9:[function(require,module,exports){
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/ros_misc.js":[function(require,module,exports){
 (function (global){
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
@@ -1634,7 +1634,7 @@ Blockly.JavaScript['ros_parameter'] = function(block) {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../config":15}],10:[function(require,module,exports){
+},{"../config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/ros_msg.js":[function(require,module,exports){
 (function (global){
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
@@ -1706,7 +1706,7 @@ Blockly.register_message_block = function(type, meta, tooltip){
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],11:[function(require,module,exports){
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/ros_pubsub.js":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
@@ -1904,7 +1904,7 @@ Blockly.Blocks['ros_publish2'] = {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../config":15}],12:[function(require,module,exports){
+},{"../config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/ros_requester.js":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
@@ -2059,7 +2059,7 @@ Blockly.JavaScript['ros_requester_release'] = function(block){
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],13:[function(require,module,exports){
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/ros_service.js":[function(require,module,exports){
 (function (global){
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
@@ -2091,7 +2091,7 @@ Blockly.JavaScript['ros_service'] = function(block) {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../config":15}],14:[function(require,module,exports){
+},{"../config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/utils.js":[function(require,module,exports){
 (function (global){
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null),
   _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
@@ -2210,7 +2210,7 @@ Blockly.JavaScript['defer'] = function(block) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../config":15}],15:[function(require,module,exports){
+},{"../config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json":[function(require,module,exports){
 module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
@@ -2225,7 +2225,7 @@ module.exports={
   }
 }
 
-},{}],16:[function(require,module,exports){
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/config_ctrl.js":[function(require,module,exports){
 
                                             
                                             
@@ -2351,7 +2351,7 @@ function ConfigCtrl($scope, $rootScope, blocksStore, $http, $modalInstance, rapp
 
 module.exports = ConfigCtrl;
 
-},{}],17:[function(require,module,exports){
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/root_ctrl.js":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 
@@ -2435,7 +2435,7 @@ module.exports = function($scope, blocksStore, $http, $state, $rootScope) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],18:[function(require,module,exports){
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/services_form_ctrl.js":[function(require,module,exports){
 (function (global){
 var R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null)
   $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
@@ -2488,6 +2488,12 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
    $scope.select2Options = {
      allowClear:true
    };
+
+
+
+
+
+   $scope.current = {};
 
 
 
@@ -2698,13 +2704,13 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../schema/service_form":23,"../utils":28}],19:[function(require,module,exports){
+},{"../schema/service_form":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/schema/service_form.json","../utils":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/utils.js"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/services_index_ctrl.js":[function(require,module,exports){
 
 module.exports = function ServicesIndex($scope, blocksStore){
 
 };
 
-},{}],20:[function(require,module,exports){
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/workflow_blockly_ctrl.js":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
   $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
@@ -3142,7 +3148,7 @@ module.exports = WorkflowBlocklyCtrl;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../block_gen":2,"../blocks/blocks_defaults":3,"../undo_manager":27,"../utils":28,"./config_ctrl":16}],21:[function(require,module,exports){
+},{"../block_gen":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/block_gen.js","../blocks/blocks_defaults":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/blocks_defaults.js","../undo_manager":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/undo_manager.js","../utils":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/utils.js","./config_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/config_ctrl.js"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/workflow_index_ctrl.js":[function(require,module,exports){
 (function (global){
 var R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null);
 
@@ -3161,7 +3167,7 @@ module.exports = function($scope, blocksStore) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],22:[function(require,module,exports){
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/directives/json-editor.js":[function(require,module,exports){
 (function (global){
 var R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null);
 
@@ -3257,7 +3263,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],23:[function(require,module,exports){
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/schema/service_form.json":[function(require,module,exports){
 module.exports={
   "title": "Create Service",
   "type": "object",
@@ -3437,7 +3443,7 @@ module.exports={
   }
 }
 
-},{}],24:[function(require,module,exports){
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/services/blocks.js":[function(require,module,exports){
 
 module.exports = function($http, $q){
 
@@ -3496,7 +3502,7 @@ module.exports = function($http, $q){
 
 };
 
-},{}],25:[function(require,module,exports){
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/services/services.js":[function(require,module,exports){
 
 module.exports = function($http, $q){
 
@@ -3520,7 +3526,7 @@ module.exports = function($http, $q){
 
 
 
-},{}],26:[function(require,module,exports){
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/tools/beautify.js":[function(require,module,exports){
 /*jslint onevar: false, plusplus: false */
 /*
 
@@ -4664,7 +4670,7 @@ if (typeof exports !== "undefined")
 
 module.exports = js_beautify;
 
-},{}],27:[function(require,module,exports){
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/undo_manager.js":[function(require,module,exports){
 var Utils = require('./utils'),
   config = require('./config');
   
@@ -4723,7 +4729,7 @@ UndoManager.prototype.undo = function(){
 
 module.exports = UndoManager;
 
-},{"./config":15,"./utils":28}],28:[function(require,module,exports){
+},{"./config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json","./utils":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/utils.js"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/utils.js":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
   R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null),
@@ -4802,4 +4808,4 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./tools/beautify":26}]},{},[1]);
+},{"./tools/beautify":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/tools/beautify.js"}]},{},["/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/app2.js"]);

@@ -52,6 +52,12 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 
 
 
+
+
+   $scope.current = {};
+
+
+
    // $scope.blockConfigs = {};
    // $scope.currentBlockConfig = '';
    $scope.value = {};
