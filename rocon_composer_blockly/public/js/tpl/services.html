@@ -78,6 +78,9 @@
     </div>
 
 
+    <h2>
+      <img src="/img/logo1.png" height="32"> Create Service
+    </h2>
     <form>
         <div class="form-group">
         	<label for="">Name</label>
@@ -120,25 +123,31 @@
           <label style="font-weight: normal; font-size: 14px;">xo01<input type="checkbox" style="display: inline-block; width: auto; position: relative; float: left;"></label>
         </div>
 
-        <h3>interactions</h3>
+        <h3>
+          interactions
+        </h3>
 
-        <div style="margin-left:10px;">
-          <h3>Some Title</h3>
+        <div class="well well" ng-repeat="interaction in current.interactions">
+          <h3>[[interaction.display_name || "Interaction"]] <button class="btn btn-default" ng-click="deleteItem(current.interactions, interaction)">Delete</button></h3>
           <div class="form-group">
-            <label for="">Name</label>
-            <input class="form-control" type="" ng-model="current.name">
+            <label for="">display_name</label>
+            <input class="form-control" type="" ng-model="interaction.display_name">
           </div>
           <div class="form-group">
-            <label for="">Description</label>
-            <input class="form-control" type="" ng-model="current.description">
+            <label for="">name</label>
+            <input class="form-control" type="" ng-model="interaction.name">
           </div>
           <div class="form-group">
-            <label for="">Author</label>
-            <input class="form-control" type="" ng-model="current.author">
+            <label for="">role</label>
+            <input class="form-control" type="" ng-model="interaction.role">
           </div>
           <div class="form-group">
-            <label for="">Priority</label>
-            <input class="form-control" type="" ng-model="current.priority">
+            <label for="">description</label>
+            <input class="form-control" type="" ng-model="interaction.description">
+          </div>
+          <div class="form-group">
+            <label for="">max</label>
+            <input class="form-control" type="" ng-model="interaction.max">
           </div>
           <h4>Remappings</h4>
           <table class="table table-bordered" style="width: auto;">
@@ -148,37 +157,57 @@
               <th></th>
             </tr>
             </tr>
-            <tr>
-              <td><input type="text" class="form-control"></td>
-              <td><input type="text" class="form-control"></td>
-              <td><button class="btn btn-default">Delete</button></td>
+            <tr ng-repeat="remap in interaction.remappings">
+              <td><input type="text" class="form-control" ng-model="remap.remap_from"></td>
+              <td><input type="text" class="form-control" ng-model="remap.remap_to"></td>
+              <td><button class="btn btn-default" ng-click="deleteItem(interaction.remappings, remap)">Delete</button></td>
             </tr>
           </table>
           <div>
-            <button class="btn btn-default">Add Remapping</button>
-
+            <button class="btn btn-default" ng-click="addItem(interaction.remappings, {remap_from:null, remap_to:null})">Add Remapping</button>
           </div>
           <h4>Parameters</h4>
           <table class="table table-bordered" style="width: auto;">
             <tr class="">
-              <th>remap_from</th>
-              <th>remap_to</th>
+              <th>key</th>
+              <th>value</th>
               <th></th>
             </tr>
             </tr>
-            <tr>
-              <td><input type="text" class="form-control"></td>
-              <td><input type="text" class="form-control"></td>
-              <td><button class="btn btn-default">Delete</button></td>
+            <tr ng-repeat="param in interaction.parameters">
+              <td><input type="text" class="form-control" ng-model="param.key"></td>
+              <td><input type="text" class="form-control" ng-model="param.value"></td>
+              <td><button class="btn btn-default" ng-click="deleteItem(interaction.parameters, param)">Delete</button></td>
             </tr>
           </table>
           <div>
-            <button class="btn btn-default">Add Remapping</button>
+            <button class="btn btn-default" ng-click="addItem(interaction.parameters, {key: null, value: null})">Add Parameter</button>
 
           </div>
         </div>
+        <button class="btn btn-default" ng-click="addInteraction()">Add Interaction</button>
+
+        <h3>Parameters</h3>
+        <table class="table table-bordered" style="width: auto;">
+          <tr class="">
+            <th>key</th>
+            <th>value</th>
+            <th></th>
+          </tr>
+          </tr>
+          <tr ng-repeat="param in current.parameters">
+            <td><input type="text" class="form-control" ng-model="param.key"></td>
+            <td><input type="text" class="form-control" ng-model="param.value"></td>
+            <td><button class="btn btn-default" ng-click="deleteItem(interaction.parameters, param)">Delete</button></td>
+          </tr>
+        </table>
+        <div>
+          <button class="btn btn-default" ng-click="addItem(current.parameters, {key: null, value: null})">Add Parameter</button>
+
+        </div>
 
     </form>
+    <pre>[[current | json]]</pre>
 
     <form>
       <div id="service-editor"></div>

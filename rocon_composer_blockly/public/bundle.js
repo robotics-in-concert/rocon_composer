@@ -2211,7 +2211,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json":[function(require,module,exports){
-module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100,
@@ -2493,8 +2493,24 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 
 
 
-   $scope.current = {};
+   $scope.current = {parameters: []};
 
+   $scope.addInteraction = function(){
+     if(!$scope.current.interactions){
+       $scope.current.interactions = [];
+     }
+     $scope.current.interactions.push({remappings: [], parameters: []});
+   };
+
+   $scope.addItem = function(lst, item){
+     console.log(lst);
+     lst.push(item);
+   }
+   $scope.deleteItem = function(lst, item){
+     console.log(lst, item);
+
+     _.pull(lst, item);
+   }
 
 
    // $scope.blockConfigs = {};
@@ -3264,7 +3280,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {

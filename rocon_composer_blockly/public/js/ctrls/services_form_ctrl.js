@@ -54,8 +54,24 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 
 
 
-   $scope.current = {};
+   $scope.current = {parameters: []};
 
+   $scope.addInteraction = function(){
+     if(!$scope.current.interactions){
+       $scope.current.interactions = [];
+     }
+     $scope.current.interactions.push({remappings: [], parameters: []});
+   };
+
+   $scope.addItem = function(lst, item){
+     console.log(lst);
+     lst.push(item);
+   }
+   $scope.deleteItem = function(lst, item){
+     console.log(lst, item);
+
+     _.pull(lst, item);
+   }
 
 
    // $scope.blockConfigs = {};
