@@ -75,13 +75,26 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
        interactions = interactions.data;
 
        $scope.workflows = _.map(rows, function(row){ 
+
+
+         // hic_app
          var xml = row.xml;
          var extras = $(xml).find('mutation[extra]').map(function(){
            var extra = $(this).attr('extra');  
            return JSON.parse(extra);
          }).toArray();
          var client_app_names = _(extras).pluck('client_app_name').uniq().value();
-         return {title: row.title, selected: false, client_app_names: client_app_names}; 
+
+
+
+
+         // parameters
+         var parameter_keys = $(xml).find('block[type=ros_parameter] field[name=KEY]').map(function(){
+           return $(this).text();
+         }).toArray();
+
+
+         return {title: row.title, selected: false, client_app_names: client_app_names, parameter_keys: parameter_keys}; 
        });
        // console.log(titles);
        // schema.properties.workflows.items.enum = titles;
@@ -110,6 +123,16 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
          $scope.current.interactions = $scope.current.interactions.concat(
            _.map(used_interactions, _interaction_to_json_editor_value)
          );
+
+
+         if(wf.parameter_keys.length){
+           _.each(wf.parameter_keys, function(pkey){
+             if(!_.find($scope.current.parameters, {key: pkey})){
+               $scope.current.parameters.push({key: pkey, value: null});
+             }
+           });
+
+         }
        };
 
 
