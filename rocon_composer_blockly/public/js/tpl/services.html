@@ -195,12 +195,20 @@
         <h3>Parameters</h3>
         <table class="table table-bordered" style="width: auto;">
           <tr class="">
+            <th></th>
             <th>key</th>
             <th>value</th>
             <th></th>
           </tr>
           </tr>
           <tr ng-repeat="param in current.parameters">
+            <td>
+             <div class="checkbox">
+              <label>
+                <input type="checkbox" ng-model="param.export">
+              </label>
+            </div> 
+            </td>
             <td><input type="text" class="form-control" ng-model="param.key"></td>
             <td><input type="text" class="form-control" ng-model="param.value"></td>
             <td><button class="btn btn-default" ng-click="deleteItem(interaction.parameters, param)">Delete</button></td>
