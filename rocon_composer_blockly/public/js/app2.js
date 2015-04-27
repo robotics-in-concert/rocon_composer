@@ -46,6 +46,9 @@ Mousetrap.bind('ctrl+alt+y', function(){
 
 });
 
+Mousetrap.bind('ctrl+alt+0', function() { 
+  $('.debug').toggle();
+});
 
 Mousetrap.bind('ctrl+alt+d', function() { 
   var sel = Blockly.selected;

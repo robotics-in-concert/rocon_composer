@@ -187,44 +187,37 @@
         </div>
         <button class="btn btn-default" ng-click="addInteraction()">Add Interaction</button>
 
-        <h3>Parameters</h3>
-        <table class="table table-bordered" style="width: auto;">
-          <tr class="">
-            <th></th>
-            <th>key</th>
-            <th>value</th>
-            <th></th>
-          </tr>
-          </tr>
-          <tr ng-repeat="param in current.parameters">
-            <td>
-             <div class="checkbox">
-              <label>
-                <input type="checkbox" ng-model="param.export">
-              </label>
-            </div> 
-            </td>
-            <td><input type="text" class="form-control" ng-model="param.key"></td>
-            <td><input type="text" class="form-control" ng-model="param.value"></td>
-            <td><button class="btn btn-default" ng-click="deleteItem(interaction.parameters, param)">Delete</button></td>
-          </tr>
-        </table>
-        <div>
+        <div style="margin-bottom: 20px;">
+          <h3>Parameters</h3>
+          <table class="table table-bordered" style="width: auto;">
+            <tr class="">
+              <th></th>
+              <th>key</th>
+              <th>value</th>
+              <th></th>
+            </tr>
+            </tr>
+            <tr ng-repeat="param in current.parameters">
+              <td>
+               <div class="checkbox">
+                <label>
+                  <input type="checkbox" ng-model="param.export">
+                </label>
+              </div> 
+              </td>
+              <td><input type="text" class="form-control" ng-model="param.key"></td>
+              <td><input type="text" class="form-control" ng-model="param.value"></td>
+              <td><button class="btn btn-default" ng-click="deleteItem(current.parameters, param)">Delete</button></td>
+            </tr>
+          </table>
           <button class="btn btn-default" ng-click="addItem(current.parameters, {key: null, value: null})">Add Parameter</button>
-
         </div>
+        <button type="submit" ng-click="save()" class="btn btn-primary">Save</button>
+        <button type="submit" ng-click="export()" class="btn btn-primary">Export</button>
 
     </form>
 
-    <div>
-    <pre>[[current | json]]</pre>
-    </div>
-
-    <form>
-      <div id="service-editor"></div>
-      <button type="submit" ng-click="save()" class="btn btn-primary">Save</button>
-      <button type="submit" ng-click="export()" class="btn btn-primary">Export</button>
-    </form>
+    <pre class="debug" style="position: fixed; top: 0; right: 0; width: 400px; height: 400px; overflow: auto; display: none;">[[current | json]]</pre>
 
 
 
