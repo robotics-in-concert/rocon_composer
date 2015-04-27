@@ -162,7 +162,8 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
     var destPackage = $scope.value.destPackage;
 
 
-    var v = editor.getValue();
+    var v = _.clone($scope.current);
+    v.workflows = _($scope.workflows).filter({selected: true}).pluck('title').value();
     var title = $scope.title;
     var description = $scope.description;
 
@@ -177,7 +178,9 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
     serviceAuthoring.getPackages().then(function(packs){
       // $scope.packageList = packs;
 
-      var v = editor.getValue();
+
+      var v = _.clone($scope.current);
+      v.workflows = _($scope.workflows).filter({selected: true}).pluck('title').value();
       // serviceAuthoring.saveService(v);
       $scope.title = v.name;
       $scope.description = v.description;

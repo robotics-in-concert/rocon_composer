@@ -2214,7 +2214,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100,
@@ -2604,7 +2604,8 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
     var destPackage = $scope.value.destPackage;
 
 
-    var v = editor.getValue();
+    var v = _.clone($scope.current);
+    v.workflows = _($scope.workflows).filter({selected: true}).pluck('title').value();
     var title = $scope.title;
     var description = $scope.description;
 
@@ -2619,7 +2620,9 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
     serviceAuthoring.getPackages().then(function(packs){
       // $scope.packageList = packs;
 
-      var v = editor.getValue();
+
+      var v = _.clone($scope.current);
+      v.workflows = _($scope.workflows).filter({selected: true}).pluck('title').value();
       // serviceAuthoring.saveService(v);
       $scope.title = v.name;
       $scope.description = v.description;
@@ -3225,7 +3228,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {

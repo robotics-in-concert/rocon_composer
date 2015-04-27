@@ -422,17 +422,17 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
 
 
         console.log('---------------- .launcher --------------------');
-        console.log(service_meta.launcher.launcher_body);
+        console.log(service_meta.launcher_body);
 
+        console.log('---------------- .service --------------------');
         // .service
         var service_kv = _.pick(service_meta, "name description author priority interactions parameters".split(/\s+/));
-        service_kv.launcher_type = service_meta.launcher.launcher_type
+        service_kv.launcher_type = service_meta.launcher_type
         service_kv.launcher = package_name + "/" + name_key;
         // service_kv.icon = name_key + ".icon";
         service_kv.interactions = package_name + "/" + name_key;
         service_kv.parameters = package_name + "/" + name_key;
         var service_file_content = yaml.dump(service_kv);
-        console.log('---------------- .service --------------------');
         console.log(service_file_content);
 
         // .workflows
@@ -449,7 +449,7 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
 
         all_thens = all_thens.concat([
           fs.writeFileAsync(service_base + "/" + name_key + ".parameters", param_file_content),
-          fs.writeFileAsync(service_base + "/" + name_key + ".launch", service_meta.launcher.launcher_body),
+          fs.writeFileAsync(service_base + "/" + name_key + ".launch", service_meta.launcher_body),
           fs.writeFileAsync(service_base + "/" + name_key + ".service", service_file_content),
           fs.writeFileAsync(service_base + "/" + name_key + ".interactions", yaml.dump(service_meta.interactions))
         ]);
@@ -464,8 +464,8 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
       
     })
     .then(function(ok){
-      return that._commitRepo(title, description);
-      // return true;
+      // return that._commitRepo(title, description);
+      return true;
       
 
     })
