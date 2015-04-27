@@ -2211,7 +2211,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100,
@@ -2485,14 +2485,6 @@ var _interaction_to_json_editor_value = function(i){
 
 
 module.exports = function($scope, blocksStore, $http, serviceAuthoring, $stateParams, $state) {
-   $scope.select2Options = {
-     allowClear:true
-   };
-
-
-
-
-
    $scope.current = {interactions: [], parameters: []};
 
    $scope.addInteraction = function(){
@@ -2514,8 +2506,6 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 
 
 
-   // $scope.blockConfigs = {};
-   // $scope.currentBlockConfig = '';
    $scope.value = {};
    $scope.destPackage = null;
 
@@ -2523,7 +2513,15 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
      blocksStore.loadInteractions().then(function(interactions){
        interactions = interactions.data;
 
-       $scope.workflows = _.map(rows, function(row){ return {title: row.title, selected: false}; });
+       $scope.workflows = _.map(rows, function(row){ 
+         var xml = row.xml;
+         var extras = $(xml).find('mutation[extra]').map(function(){
+           var extra = $(this).attr('extra');  
+           return JSON.parse(extra);
+         }).toArray();
+         var client_app_names = _(extras).pluck('client_app_name').uniq().value();
+         return {title: row.title, selected: false, client_app_names: client_app_names}; 
+       });
        // console.log(titles);
        // schema.properties.workflows.items.enum = titles;
 
@@ -2539,22 +2537,11 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 
        var selected_workflows = 0;
 
-       $scope.checksChanged = function(wf, selected){
-         if(!selected) return;
+       $scope.checksChanged = function(wf){
+         if(!wf.selected) return;
          
-         var rs = _.find(rows, {title: wf});
-         var xml = rs.xml;
-         var extras = $(xml).find('mutation[extra]').map(function(){
-           var extra = $(this).attr('extra');  
-           return JSON.parse(extra);
-         }).toArray();
-
-         client_app_names = _(extras).pluck('client_app_name').uniq().value();
-         console.log(client_app_names);
-
-
          var used_interactions  = _.filter(interactions, function(it){
-           return _.contains(client_app_names, it.name) && 
+           return _.contains(wf.client_app_names, it.name) && 
             !_.contains(_.pluck($scope.current.interactions, '_id'), it._id)
          });
 
@@ -3212,7 +3199,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {
