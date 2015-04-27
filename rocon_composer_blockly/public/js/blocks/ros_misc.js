@@ -14,7 +14,7 @@ Blockly.Blocks['ros_parameter'] = {
 Blockly.JavaScript['ros_parameter'] = function(block) {
   var key = this.getFieldValue('KEY');
 
-  var tpl = '($engine.getParameter("<%= key %>"))';
+  var tpl = '({{parameter:<%= key %>}})';
   var code =_.template(tpl)({key: key});
   return [code, Blockly.JavaScript.ORDER_NONE];
 };

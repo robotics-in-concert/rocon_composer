@@ -367,6 +367,24 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
               }
             });
 
+            _.each(service_meta.parameters, function(param){
+              if(param.expose){
+                data.js = data.js.replace(
+                  new RegExp(_.escapeRegExp("{{parameter:" + param.key + "}}"), 'g'),
+                  _.template("$engine.getServiceParameter('<%= service_name %>', '<%= param %>')")({service: name_key, param: param.value})
+                );
+              }else{
+                data.js = data.js.replace(
+                  new RegExp(_.escapeRegExp("{{parameter:" + param.key + "}}"), 'g'),
+                  param.value);
+              }
+
+              
+
+            });
+
+
+
 
             return fs.writeFileAsync(workflows_base + "/" + wf_title + ".wf", 
                                      JSON.stringify(data));
@@ -447,6 +465,7 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
     })
     .then(function(ok){
       return that._commitRepo(title, description);
+      // return true;
       
 
     })
