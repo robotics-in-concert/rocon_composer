@@ -129,6 +129,72 @@ Blockly.JavaScript['ros_requester_allocate_with_block'] = function(block){
 
 };
 
+Blockly.Blocks['ros_requester_allocate_with_block2'] = {
+  configable: true,
+  init: function() {
+    var block = this;
+    this.setColour(BLOCK_COLOR.ros);
+    this.appendDummyInput().appendField("Allocate Resource");
+    this.appendDummyInput().appendField('type').appendField(new Blockly.FieldDropdown([['dynamic', 'dynamic'], ['static', 'static']]), 'TYPE');
+    this.appendValueInput('TIMEOUT_ALLOC').appendField('timeout(alloc)');
+    this.appendValueInput('TIMEOUT_RUN').appendField('timeout(run)');
+    this.appendStatementInput('ON_SUCCESS')
+      .appendField("Success")
+      .appendField(new Blockly.FieldVariable('resource'), 'ON_SUCCESS_PARAM');
+
+    this.appendStatementInput('ON_FAIL')
+      .appendField("Fail")
+    this.setInputsInline(false);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    // this.setOutput(true);
+    return this;
+  },
+
+  getVars: function(){
+    return [this.getFieldValue('ON_SUCCESS_PARAM')];
+
+  }
+  
+};
+Blockly.JavaScript['ros_requester_allocate_with_block2'] = function(block){
+  // return "requester.cancel_all();";
+  var config = block.extra_config;
+  var type = block.getFieldValue('TYPE');
+
+  var timeout_alloc = +Blockly.JavaScript.valueToCode(block, 'TIMEOUT_ALLOC', Blockly.JavaScript.ORDER_ATOMIC) || -1;
+  var timeout_run = +Blockly.JavaScript.valueToCode(block, 'TIMEOUT_RUN', Blockly.JavaScript.ORDER_ATOMIC) || -1;
+
+
+  console.log(timeout_alloc);
+  console.log({type: type, timeout_run: timeout_run, timeout_alloc: timeout_alloc });
+
+
+
+  var codeSuccess = Blockly.JavaScript.statementToCode(block, 'ON_SUCCESS');
+  var codeFail = Blockly.JavaScript.statementToCode(block, 'ON_FAIL');
+  var paramNameOnSucess = block.getFieldValue('ON_SUCCESS_PARAM');
+
+
+  var tpl = '(function(<%= param %>){ if(<%= param %>){ <%= codeSuccess %> }else{ <%= codeFail %>} })'+
+    '($engine.allocateResource("<%= rapp %>", "<%= uri %>", <%= remappings %>, <%= parameters %>, <%= options %>));';
+
+  var code = _.template(tpl)({
+    var_name: this.getFieldValue('VAR'),
+    rapp: config.rapp, 
+    uri: config.uri, 
+    remappings: angular.toJson(config.remappings),
+    parameters: angular.toJson(config.parameters),
+    options: angular.toJson({type: type, timeout_run: timeout_run, timeout_alloc: timeout_alloc }),
+    param: paramNameOnSucess,
+    codeSuccess: codeSuccess,
+    codeFail: codeFail
+  });
+  console.log(code);
+
+  return code;
+
+};
 
 
 
