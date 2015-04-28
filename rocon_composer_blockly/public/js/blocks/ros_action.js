@@ -169,6 +169,69 @@ Blockly.register_action_block = function(name, type){
 
 // }
 
+Blockly.JavaScript['ros_action_timeout'] = function(block){
+  // var name = block.getFieldValue('NAME');
+  // var type = block.getFieldValue('TYPE');
+  var name = Blockly.JavaScript.valueToCode(block, 'NAME', Blockly.JavaScript.ORDER_NONE) || "''";
+  var type = Blockly.JavaScript.valueToCode(block, 'TYPE', Blockly.JavaScript.ORDER_NONE) || "''";
+  var codeOnResult = Blockly.JavaScript.statementToCode(block, 'ON_RESULT');
+  var paramNameOnResult = block.getFieldValue('ON_RESULT_PARAM');
+  var codeOnFeedback = Blockly.JavaScript.statementToCode(block, 'ON_FEEDBACK');
+  var paramNameOnFeedback = block.getFieldValue('ON_FEEDBACK_PARAM');
+  var codeOnTimeout = Blockly.JavaScript.statementToCode(block, 'ON_TIMEOUT');
+
+  var goal = Blockly.JavaScript.valueToCode(block, 'GOAL', Blockly.JavaScript.ORDER_NONE) || "''";
+
+  var tpl = '$engine.runAction(<%= name %>, <%= type %>, <%= goal %>, ';
+  tpl += 'function(<%= param1 %>){ <%=code1%>}, function(<%= param2 %>){ <%=code2%>}, function(){ <%= code3 %> }, <%= options %>);';
+
+  var code = _.template(tpl)({name: name, type: type, goal: goal, 
+    param1: paramNameOnResult, param2: paramNameOnFeedback,
+    code1: codeOnResult, code2: codeOnFeedback,
+    code3: codeOnTimeout,
+    options: angular.toJson({})
+  });
+  return code;
+
+}
+
+Blockly.Blocks['ros_action_timeout'] = {
+  /**
+   * Block for creating a list with any number of elements of any type.
+   * @this Blockly.Block
+   */
+  init: function() {
+    this.setColour(BLOCK_COLOR.ros_act);
+    this.appendValueInput('NAME')
+      .appendField(new Blockly.FieldImage('/img/icon/ACT.png', 61, 15, '*'))
+    this.appendValueInput('TYPE').appendField('type :');
+    this.appendValueInput('TIMEOUT').appendField('timeout :');
+    this.appendValueInput('GOAL').appendField("goal :").setAlign(Blockly.ALIGN_RIGHT)
+
+    this.setInputsInline(true);
+
+    this.appendStatementInput('ON_RESULT')
+      .appendField("Result")
+      .appendField(new Blockly.FieldVariable('item'), 'ON_RESULT_PARAM');
+
+    this.appendStatementInput('ON_FEEDBACK')
+      .appendField("Feedback")
+      .appendField(new Blockly.FieldVariable('item'), 'ON_FEEDBACK_PARAM');
+
+    this.appendStatementInput('ON_TIMEOUT')
+      .appendField("Timeout")
+
+    this.setPreviousStatement(true);
+    return this.setNextStatement(true);
+  },
+
+  getVars: function(){
+    return [this.getFieldValue('ON_RESULT_PARAM'), this.getFieldValue('ON_FEEDBACK_PARAM')];
+
+  }
+
+};
+
 Blockly.JavaScript['ros_action'] = function(block){
   // var name = block.getFieldValue('NAME');
   // var type = block.getFieldValue('TYPE');
@@ -189,38 +252,6 @@ Blockly.JavaScript['ros_action'] = function(block){
     code1: codeOnResult, code2: codeOnFeedback
   });
   return code;
-
-
-  // return [name, type, codeOnResult, paramNameOnResult, codeOnFeedback, paramNameOnFeedback].join("\n\n");
-  //
-
-  // // The ActionClient
-  // // ----------------
-
-  // var fibonacciClient = new ROSLIB.ActionClient({
-    // ros : ros,
-    // serverName : '/fibonacci',
-    // actionName : 'actionlib_tutorials/FibonacciAction'
-  // });
-
-  // // Create a goal.
-  // var goal = new ROSLIB.Goal({
-    // actionClient : fibonacciClient,
-    // goalMessage : {
-      // order : 7
-    // }
-  // });
-
-  // // Print out their output into the terminal.
-  // goal.on('feedback', function(feedback) {
-    // console.log('Feedback: ' + feedback.sequence);
-  // });
-  // goal.on('result', function(result) {
-    // console.log('Final Result: ' + result.sequence);
-  // });
-
-  // // Send the goal to the action server.
-  // goal.send();
 
 }
 
@@ -245,6 +276,7 @@ Blockly.Blocks['ros_action'] = {
     this.appendStatementInput('ON_FEEDBACK')
       .appendField("Feedback")
       .appendField(new Blockly.FieldVariable('item'), 'ON_FEEDBACK_PARAM');
+
     this.setPreviousStatement(true);
     return this.setNextStatement(true);
   },
