@@ -136,8 +136,7 @@ Blockly.Blocks['ros_requester_allocate_with_block2'] = {
     this.setColour(BLOCK_COLOR.ros);
     this.appendDummyInput().appendField("Allocate Resource");
     this.appendDummyInput().appendField('type').appendField(new Blockly.FieldDropdown([['dynamic', 'dynamic'], ['static', 'static']]), 'TYPE');
-    this.appendValueInput('TIMEOUT_ALLOC').appendField('timeout(alloc)');
-    this.appendValueInput('TIMEOUT_RUN').appendField('timeout(run)');
+    this.appendValueInput('TIMEOUT_ALLOC').appendField('timeout');
     this.appendStatementInput('ON_SUCCESS')
       .appendField("Success")
       .appendField(new Blockly.FieldVariable('resource'), 'ON_SUCCESS_PARAM');
@@ -163,7 +162,6 @@ Blockly.JavaScript['ros_requester_allocate_with_block2'] = function(block){
   var type = block.getFieldValue('TYPE');
 
   var timeout_alloc = +Blockly.JavaScript.valueToCode(block, 'TIMEOUT_ALLOC', Blockly.JavaScript.ORDER_ATOMIC) || -1;
-  var timeout_run = +Blockly.JavaScript.valueToCode(block, 'TIMEOUT_RUN', Blockly.JavaScript.ORDER_ATOMIC) || -1;
 
 
   console.log(timeout_alloc);
@@ -185,7 +183,7 @@ Blockly.JavaScript['ros_requester_allocate_with_block2'] = function(block){
     uri: config.uri, 
     remappings: angular.toJson(config.remappings),
     parameters: angular.toJson(config.parameters),
-    options: angular.toJson({type: type, timeout_run: timeout_run, timeout_alloc: timeout_alloc }),
+    options: angular.toJson({type: type, timeout: timeout_alloc}),
     param: paramNameOnSucess,
     codeSuccess: codeSuccess,
     codeFail: codeFail
