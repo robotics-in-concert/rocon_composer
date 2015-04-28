@@ -2214,7 +2214,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports={
+module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100,
@@ -3228,7 +3228,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports=module.exports={
+module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {

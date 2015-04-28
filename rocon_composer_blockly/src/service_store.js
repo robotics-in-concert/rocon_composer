@@ -1,5 +1,4 @@
-var  R = require('ramda'),
-  _ = require('lodash'),
+var _ = require('lodash'),
   Promise = require('bluebird'),
   glob = Promise.promisify(require('glob')),
   fs = Promise.promisifyAll(require('fs')),
@@ -301,7 +300,7 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
       })
       .then(function(workflow_items){
 
-        console.log(packages);
+        logger.debug("packages", _.pluck(packages, 'name'));
         console.log(service_meta);
         console.log(package_name);
 
@@ -353,7 +352,7 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
         if(service_meta.workflows && service_meta.workflows.length){
           mkdirp.sync(workflows_base);
 
-          var thens = _.map(service_meta.workflows, function(wf_title){
+          _.reduce(service_meta.workflows, function(thens, wf_title){
             var data = _.find(workflow_items, {title: wf_title});
 
             _.each(service_meta.interactions, function(inter){
@@ -371,7 +370,7 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
               if(param.expose){
                 data.js = data.js.replace(
                   new RegExp(_.escapeRegExp("{{parameter:" + param.key + "}}"), 'g'),
-                  _.template("$engine.getServiceParameter('<%= service_name %>', '<%= param %>')")({service: name_key, param: param.value})
+                  _.template("$engine.getServiceParameter('<%= service_name %>', '<%= param %>')")({service_name: name_key, param: param.key})
                 );
               }else{
                 data.js = data.js.replace(
@@ -384,14 +383,9 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
             });
 
 
-
-
-            return fs.writeFileAsync(workflows_base + "/" + wf_title + ".wf", 
-                                     JSON.stringify(data));
-          });
-
-          all_thens = all_thens.concat(thens);
-
+            return thens.concat(fs.writeFileAsync(workflows_base + "/" + wf_title + ".wf", 
+                                     JSON.stringify(data)));
+          }, all_thens);
 
         }
 
@@ -408,11 +402,10 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
         console.log(param_file_content);
 
         console.log('---------------- .interactions --------------------');
-        R.forEach(function(i){
-          i.parameters = R.fromPairs(R.map(R.values)(i.parameters));
+        _.each(service_meta.interactions, function(i){
+          i.parameters = _(i.parameters).indexBy('key').mapValues('value').value();
           delete i._id;
-        })(service_meta.interactions);
-
+        });
 
         service_meta.interactions = _.map(service_meta.interactions, function(inter){
           return _.omit(inter, 'key');
@@ -426,10 +419,8 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
 
         console.log('---------------- .service --------------------');
         // .service
-        var service_kv = _.pick(service_meta, "name description author priority interactions parameters".split(/\s+/));
-        service_kv.launcher_type = service_meta.launcher_type
+        var service_kv = _.pick(service_meta, "name description author priority interactions parameters launcher_type".split(/\s+/));
         service_kv.launcher = package_name + "/" + name_key;
-        // service_kv.icon = name_key + ".icon";
         service_kv.interactions = package_name + "/" + name_key;
         service_kv.parameters = package_name + "/" + name_key;
         var service_file_content = yaml.dump(service_kv);
