@@ -112,10 +112,16 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
        var selected_workflows = 0;
 
        $scope.checksChanged = function(wf){
-         if(!wf.selected) return;
-         
+
+
+         var client_app_names = _($scope.workflows).filter({selected: true}).map('client_app_names').flatten().uniq().value();
+         console.log("Clinet app names : ", client_app_names);
+
+
+
+         $scope.current.interactions = [];
          var used_interactions  = _.filter(interactions, function(it){
-           return _.contains(wf.client_app_names, it.name) && 
+           return _.contains(client_app_names, it.name) && 
             !_.contains(_.pluck($scope.current.interactions, '_id'), it._id)
          });
 

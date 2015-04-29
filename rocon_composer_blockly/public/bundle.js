@@ -2310,7 +2310,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100,
@@ -2650,10 +2650,16 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
        var selected_workflows = 0;
 
        $scope.checksChanged = function(wf){
-         if(!wf.selected) return;
-         
+
+
+         var client_app_names = _($scope.workflows).filter({selected: true}).map('client_app_names').flatten().uniq().value();
+         console.log("Clinet app names : ", client_app_names);
+
+
+
+         $scope.current.interactions = [];
          var used_interactions  = _.filter(interactions, function(it){
-           return _.contains(wf.client_app_names, it.name) && 
+           return _.contains(client_app_names, it.name) && 
             !_.contains(_.pluck($scope.current.interactions, '_id'), it._id)
          });
 
@@ -3324,7 +3330,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {
