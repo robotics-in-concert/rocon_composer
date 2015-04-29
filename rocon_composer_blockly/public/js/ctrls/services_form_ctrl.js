@@ -104,6 +104,14 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
          var s = _.find($scope.services, {id: $stateParams.service_id});
          form_v = s;
 
+
+         _.each(s.workflows, function(wfn){
+           var x = _.find($scope.workflows, {title: wfn})
+           if(x){ x.selected = true; }
+
+
+         });
+
        }
        $scope.current = _.defaults(form_v, {parameters: [], interactions: []});
 
@@ -201,6 +209,8 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
     console.log('save');
 
     var v = $scope.current;
+    var wfs = _($scope.workflows).filter({selected: true}).map('title').value();
+    v.workflows = wfs;
 
     console.log("save data : ", v);
 
