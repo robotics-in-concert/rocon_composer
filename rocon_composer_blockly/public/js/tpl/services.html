@@ -78,12 +78,148 @@
     </div>
 
 
-
+    <h2>
+      <img src="/img/logo1.png" height="32"> Create Service
+    </h2>
     <form>
-      <div id="service-editor"></div>
-      <button type="submit" ng-click="save()" class="btn btn-primary">Save</button>
-      <button type="submit" ng-click="export()" class="btn btn-primary">Export</button>
+        <div class="form-group">
+        	<label for="">Name</label>
+        	<input class="form-control" type="" ng-model="current.name">
+        </div>
+        <div class="form-group">
+        	<label for="">Description</label>
+        	<input class="form-control" type="" ng-model="current.description">
+        </div>
+        <div class="form-group">
+        	<label for="">Author</label>
+        	<input class="form-control" type="" ng-model="current.author">
+        </div>
+        <div class="form-group">
+        	<label for="">Priority</label>
+        	<input class="form-control" type="" ng-model="current.priority">
+        </div>
+
+        <h3>launcher</h3>
+
+        <div class="form-group">
+        	<label for="">launcher_type</label>
+          <select ng-model="current.launcher_type" class="form-control">
+            <option>roslaunch</option>
+            <option>bpel</option>
+            <option>blockly</option>
+          </select>
+        </div>
+        <div class="form-group">
+        	<label for="">launcher_body</label>
+          <textarea class="form-control" type="" ng-model="current.launcher_body"></textarea>
+        </div>
+
+        <h3>workflows</h3>
+
+        <ul class="list-inline">
+          <li ng-repeat="wf in workflows" style="margin-right: 20px; margin-bottom: 10px;">
+            <input type="checkbox" ng-change="checksChanged(wf)" value="[[wf.title]]" ng-model="wf.selected">
+            [[wf.title]]
+          </li>
+        </ul>
+
+        <h3>
+          interactions
+        </h3>
+
+        <div class="well well" ng-repeat="interaction in current.interactions">
+          <h3>[[interaction.display_name || "Interaction"]] <button class="btn btn-default" ng-click="deleteItem(current.interactions, interaction)">Delete</button></h3>
+          <div class="form-group">
+            <label for="">display_name</label>
+            <input class="form-control" type="" ng-model="interaction.display_name">
+          </div>
+          <div class="form-group">
+            <label for="">name</label>
+            <input class="form-control" type="" ng-model="interaction.name">
+          </div>
+          <div class="form-group">
+            <label for="">role</label>
+            <input class="form-control" type="" ng-model="interaction.role">
+          </div>
+          <div class="form-group">
+            <label for="">description</label>
+            <input class="form-control" type="" ng-model="interaction.description">
+          </div>
+          <div class="form-group">
+            <label for="">max</label>
+            <input class="form-control" type="" ng-model="interaction.max">
+          </div>
+          <h4>Remappings</h4>
+          <table class="table table-bordered" style="width: auto;">
+            <tr class="">
+              <th>remap_from</th>
+              <th>remap_to</th>
+              <th></th>
+            </tr>
+            </tr>
+            <tr ng-repeat="remap in interaction.remappings">
+              <td><input type="text" class="form-control" ng-model="remap.remap_from"></td>
+              <td><input type="text" class="form-control" ng-model="remap.remap_to"></td>
+              <td><button class="btn btn-default" ng-click="deleteItem(interaction.remappings, remap)">Delete</button></td>
+            </tr>
+          </table>
+          <div>
+            <button class="btn btn-default" ng-click="addItem(interaction.remappings, {remap_from:null, remap_to:null})">Add Remapping</button>
+          </div>
+          <h4>Parameters</h4>
+          <table class="table table-bordered" style="width: auto;">
+            <tr class="">
+              <th>key</th>
+              <th>value</th>
+              <th></th>
+            </tr>
+            </tr>
+            <tr ng-repeat="param in interaction.parameters">
+              <td><input type="text" class="form-control" ng-model="param.key"></td>
+              <td><input type="text" class="form-control" ng-model="param.value"></td>
+              <td><button class="btn btn-default" ng-click="deleteItem(interaction.parameters, param)">Delete</button></td>
+            </tr>
+          </table>
+          <div>
+            <button class="btn btn-default" ng-click="addItem(interaction.parameters, {key: null, value: null})">Add Parameter</button>
+
+          </div>
+        </div>
+        <button class="btn btn-default" ng-click="addInteraction()">Add Interaction</button>
+
+        <div style="margin-bottom: 20px;">
+          <h3>Parameters</h3>
+          <table class="table table-bordered" style="width: auto;">
+            <tr class="">
+              <th>export</th>
+              <th>key</th>
+              <th>value</th>
+              <th></th>
+            </tr>
+            </tr>
+            <tr ng-repeat="param in current.parameters">
+              <td>
+               <div class="checkbox">
+                <label>
+                  <input type="checkbox" ng-model="param.expose">
+                </label>
+              </div> 
+              </td>
+              <td><input type="text" class="form-control" ng-model="param.key"></td>
+              <td><input type="text" class="form-control" ng-model="param.value"></td>
+              <td><button class="btn btn-default" ng-click="deleteItem(current.parameters, param)">Delete</button></td>
+            </tr>
+          </table>
+          <button class="btn btn-default" ng-click="addItem(current.parameters, {key: null, value: null, expose: true})">Add Parameter</button>
+        </div>
+        <button type="submit" ng-click="save()" class="btn btn-primary">Save</button>
+        <button type="submit" ng-click="export()" class="btn btn-primary">Export</button>
+
     </form>
+
+    <pre class="debug" style="position: fixed; top: 0; right: 0; width: 400px; height: 400px; overflow: auto; display: none;">[[current | json]]</pre>
+
+
 
   </div>
 </div>

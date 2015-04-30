@@ -186,6 +186,23 @@
         </block>
       </value>
     </block>
+    <block type="ros_action_timeout">
+      <value name="NAME">
+        <block type="text">
+          <field name="TEXT">name</field>
+        </block>
+      </value>
+      <value name="TIMEOUT">
+        <block type="math_number">
+          <field name="NUM">-1</field>
+        </block>
+      </value>
+      <value name="TYPE">
+        <block type="text">
+          <field name="TEXT">type</field>
+        </block>
+      </value>
+    </block>
     <block type="ros_action">
       <value name="NAME">
         <block type="text">
@@ -214,6 +231,7 @@
     <block type="ros_requester_allocate" />
     <block type="ros_requester_allocate2" />
     <block type="ros_requester_allocate_with_block" />
+    <block type="ros_requester_allocate_with_block2" />
     <block type="ros_requester_release" />
   </category>
   <category name="Logic">

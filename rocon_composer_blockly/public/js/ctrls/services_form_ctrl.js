@@ -46,116 +46,110 @@ var _interaction_to_json_editor_value = function(i){
 
 
 module.exports = function($scope, blocksStore, $http, serviceAuthoring, $stateParams, $state) {
-   $scope.select2Options = {
-     allowClear:true
+   $scope.current = {interactions: [], parameters: []};
+
+   $scope.addInteraction = function(){
+     if(!$scope.current.interactions){
+       $scope.current.interactions = [];
+     }
+     $scope.current.interactions.push({remappings: [], parameters: []});
    };
 
+   $scope.addItem = function(lst, item){
+     console.log(lst);
+     lst.push(item);
+   }
+   $scope.deleteItem = function(lst, item){
+     console.log(lst, item);
+
+     _.pull(lst, item);
+   }
 
 
-   // $scope.blockConfigs = {};
-   // $scope.currentBlockConfig = '';
+
    $scope.value = {};
    $scope.destPackage = null;
+
    blocksStore.getParam(ITEMS_PARAM_KEY).then(function(rows){
      blocksStore.loadInteractions().then(function(interactions){
        interactions = interactions.data;
 
+       $scope.workflows = _.map(rows, function(row){ 
 
-       var titles = R.pluck('title')(rows);
-       console.log(titles);
-       schema.properties.workflows.items.enum = titles;
 
-       var editor = window.editor =$scope.editor = new JSONEditor($('#service-editor').get(0), {
-         disable_array_reorder: true,
-         disable_collapse: true,
-         disable_edit_json: true,
-         disable_properties: true,
-         schema: schema,
-         ajax: true
+         // hic_app
+         var xml = row.xml;
+         var extras = $(xml).find('mutation[extra]').map(function(){
+           var extra = $(this).attr('extra');  
+           return JSON.parse(extra);
+         }).toArray();
+         var client_app_names = _(extras).pluck('client_app_name').uniq().value();
 
+
+
+
+         // parameters
+         var parameter_keys = $(xml).find('block[type=ros_parameter] field[name=KEY]').map(function(){
+           return $(this).text();
+         }).toArray();
+
+
+         return {title: row.title, selected: false, client_app_names: client_app_names, parameter_keys: parameter_keys}; 
        });
+       // console.log(titles);
+       // schema.properties.workflows.items.enum = titles;
 
-       editor.on('ready', function(){
-         console.log('ready');
-
-
-       });
-
-
-       var form_v = editor.getValue();
+       var form_v = $scope.current;
        if($stateParams.service_id){
-         var vv = R.find(R.propEq('id', $stateParams.service_id))($scope.services);
-         form_v = vv;
+         var s = _.find($scope.services, {id: $stateParams.service_id});
+         form_v = s;
 
-         console.log("FORM V", form_v);
 
+         _.each(s.workflows, function(wfn){
+           var x = _.find($scope.workflows, {title: wfn})
+           if(x){ x.selected = true; }
+
+
+         });
 
        }
-       if($stateParams.new_name){
-         form_v.name = $stateParams.new_name;
-       }
-       editor.setValue(form_v);
-       var e0 = editor.getEditor('root.parameters');
+       $scope.current = _.defaults(form_v, {parameters: [], interactions: []});
 
 
 
        var selected_workflows = 0;
 
+       $scope.checksChanged = function(wf){
 
-       editor.on('change', function(){
-         var propIn = R.useWith(R.compose, R.flip(R.contains), R.prop);
-         console.log('editor changed');
 
-         var cur = editor.getValue();
-         console.log('current value', cur);
-         var curlen = cur.workflows.length;
-         if(selected_workflows !== curlen){
-
-           var rows_selected = R.filter(propIn(cur.workflows, 'title'))(rows);
+         var client_app_names = _($scope.workflows).filter({selected: true}).map('client_app_names').flatten().uniq().value();
+         console.log("Clinet app names : ", client_app_names);
 
 
 
-           if(rows_selected.length == 0){
-             var v = editor.getValue();
-             v.interactions = [];
-             editor.setValue(v);
-           }
+         $scope.current.interactions = [];
+         var used_interactions  = _.filter(interactions, function(it){
+           return _.contains(client_app_names, it.name) && 
+            !_.contains(_.pluck($scope.current.interactions, '_id'), it._id)
+         });
 
 
-           R.map(function(rs){
-             var xml = rs.xml;
-             var extras = $(xml).find('mutation[extra]').map(function(){
-               var extra = $(this).attr('extra');  
-               return JSON.parse(extra);
-             }).toArray();
-
-             client_app_names = R.uniq(R.pluck('client_app_name', extras));
-
-             var v = editor.getValue();
-             console.log(v.interactions);
-
-             var used_interactions = R.compose(
-               R.reject(propIn(R.pluck('_id')(v.interactions), '_id')),
-               R.filter(propIn(client_app_names, 'name'))
-             )(interactions);
-             console.log("used interactions :", used_interactions);
+         $scope.current.interactions = $scope.current.interactions.concat(
+           _.map(used_interactions, _interaction_to_json_editor_value)
+         );
 
 
-             v.interactions = v.interactions.concat( R.map(_interaction_to_json_editor_value)(used_interactions) );
-             editor.setValue(v);
+         if(wf.parameter_keys.length){
+           _.each(wf.parameter_keys, function(pkey){
+             if(!_.find($scope.current.parameters, {key: pkey})){
+               $scope.current.parameters.push({key: pkey, value: null});
+             }
+           });
+
+         }
+       };
 
 
-
-
-
-           })(rows_selected);
-
-
-
-
-           selected_workflows = curlen;
-         };
-       });
 
      });
 
@@ -182,7 +176,8 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
     var destPackage = $scope.value.destPackage;
 
 
-    var v = editor.getValue();
+    var v = _.clone($scope.current);
+    v.workflows = _($scope.workflows).filter({selected: true}).pluck('title').value();
     var title = $scope.title;
     var description = $scope.description;
 
@@ -197,7 +192,9 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
     serviceAuthoring.getPackages().then(function(packs){
       // $scope.packageList = packs;
 
-      var v = editor.getValue();
+
+      var v = _.clone($scope.current);
+      v.workflows = _($scope.workflows).filter({selected: true}).pluck('title').value();
       // serviceAuthoring.saveService(v);
       $scope.title = v.name;
       $scope.description = v.description;
@@ -211,29 +208,15 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
   $scope.save = function(){
     console.log('save');
 
-    var v = editor.getValue();
+    var v = $scope.current;
+    var wfs = _($scope.workflows).filter({selected: true}).map('title').value();
+    v.workflows = wfs;
 
     console.log("save data : ", v);
 
     if(v.id){
-      console.log($scope.services);
-
-      var idx = -1;
-      for(var i = 0; i<$scope.services.length; i++){
-        if($scope.services[i].id == v.id){
-          idx = i;
-          break;
-        }
-
-      }
-      if(idx >= 0){
-        console.log('x');
-
-         $scope.services[idx] = v;
-
-      }
-
-
+      var s = _.find($scope.services, {id: v.id});
+      _.assign(s, v);
 
     }else{
       v.id = Utils.uuid();
