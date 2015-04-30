@@ -393,7 +393,7 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
 
 
         // .parameters
-        var params = _(service_meta.parameters).indexBy('key').mapValues('value').value()
+        var params = _(service_meta.parameters).filter({expose: true}).indexBy('key').mapValues('value').value()
         if(service_meta.workflows && service_meta.workflows.length){
           params.workflows = package_name + "/" + name_key + ".workflows";
         }
