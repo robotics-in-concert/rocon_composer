@@ -165,9 +165,6 @@ Blockly.JavaScript['ros_requester_allocate_with_block2'] = function(block){
 
 
   console.log(timeout_alloc);
-  console.log({type: type, timeout_run: timeout_run, timeout_alloc: timeout_alloc });
-
-
 
   var codeSuccess = Blockly.JavaScript.statementToCode(block, 'ON_SUCCESS');
   var codeFail = Blockly.JavaScript.statementToCode(block, 'ON_FAIL');
