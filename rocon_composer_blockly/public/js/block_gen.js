@@ -156,6 +156,20 @@ BlockGenerator.prototype.scheduled_action_block_dom = function(rapp_name, uri, n
   Blockly.register_scheduled_action_block(rapp_name, uri, name, type);
   var $block = $('<block type="ros_scheduled_action_'+name+'"></block>');
   $block.append($valueBlock);
+
+  return $block;
+
+
+};
+BlockGenerator.prototype.scheduled_action_t_block_dom = function(rapp_name, uri, name, type){
+  var typeBlock = this.type_blocks[type];
+  var $valueBlock = $('<value name="GOAL"></value>');
+  $valueBlock.append($(typeBlock).clone());
+
+  Blockly.register_scheduled_action_block(rapp_name, uri, name, type);
+  var $block = $('<block type="ros_scheduled_action_t_'+name+'"></block>');
+  $block.append($valueBlock);
+
   return $block;
 
 

@@ -231,6 +231,7 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
 
           })([
             [meta.action_servers, generator.scheduled_action_block_dom.bind(generator)],
+            [meta.action_servers, generator.scheduled_action_t_block_dom.bind(generator)],
             [meta.publishers, generator.scheduled_subscribe_block_dom.bind(generator)],
             [meta.subscribers, generator.scheduled_publish_block_dom.bind(generator)]
           ]);

@@ -380,6 +380,20 @@ BlockGenerator.prototype.scheduled_action_block_dom = function(rapp_name, uri, n
   Blockly.register_scheduled_action_block(rapp_name, uri, name, type);
   var $block = $('<block type="ros_scheduled_action_'+name+'"></block>');
   $block.append($valueBlock);
+
+  return $block;
+
+
+};
+BlockGenerator.prototype.scheduled_action_t_block_dom = function(rapp_name, uri, name, type){
+  var typeBlock = this.type_blocks[type];
+  var $valueBlock = $('<value name="GOAL"></value>');
+  $valueBlock.append($(typeBlock).clone());
+
+  Blockly.register_scheduled_action_block(rapp_name, uri, name, type);
+  var $block = $('<block type="ros_scheduled_action_t_'+name+'"></block>');
+  $block.append($valueBlock);
+
   return $block;
 
 
@@ -1356,6 +1370,84 @@ var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
 
 Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
+  Blockly.JavaScript['ros_scheduled_action_t_' + name] = function(block){
+    var extraConfig = block.extra_config;
+
+    // var name = block.getFieldValue('NAME');
+    // var type = block.getFieldValue('TYPE');
+
+    var codeOnResult = Blockly.JavaScript.statementToCode(block, 'ON_RESULT');
+    var paramNameOnResult = block.getFieldValue('ON_RESULT_PARAM');
+    var codeOnFeedback = Blockly.JavaScript.statementToCode(block, 'ON_FEEDBACK');
+    var paramNameOnFeedback = block.getFieldValue('ON_FEEDBACK_PARAM');
+    var codeOnTimeout = Blockly.JavaScript.statementToCode(block, 'ON_TIMEOUT');
+
+    var goal = Blockly.JavaScript.valueToCode(block, 'GOAL', Blockly.JavaScript.ORDER_NONE) || "''";
+    var ctx = Blockly.JavaScript.valueToCode(block, 'CTX', Blockly.JavaScript.ORDER_NONE) || "''";
+
+    var timeout = +(Blockly.JavaScript.valueToCode(block, 'TIMEOUT', Blockly.JavaScript.ORDER_NONE) || "-1");
+
+
+    // var remappings = R.pipe(
+        // R.map(function(v, k){ return {remap_from: k, remap_to: v}; }),
+        // R.values
+    // )(extraConfig.remappings);
+
+
+    var tpl = '$engine.runScheduledAction(<%= ctx %>, "<%= name %>", "<%= type %>", <%= goal %>, ';
+    tpl += 'function(<%= param1 %>){ <%=code1%>}, function(<%= param2 %>){ <%=code2%>}, function(){<%= codeTimeout %>}, <%= options %>);';
+
+    var code = _.template(tpl)({
+      rapp: rapp,
+      uri: uri,
+      name: name,
+      type: type,
+      goal: goal, 
+      ctx: ctx, 
+      param1: paramNameOnResult,
+      param2: paramNameOnFeedback,
+      code1: codeOnResult, code2: codeOnFeedback,
+      codeTimeout: codeOnTimeout,
+      options: JSON.stringify({timeout: timeout})
+    });
+    return code;
+
+
+  }
+
+  Blockly.Blocks['ros_scheduled_action_t_'+name] = {
+
+    init: function() {
+      this.setColour(BLOCK_COLOR.ros_act);
+      this.appendDummyInput()
+        .appendField(new Blockly.FieldImage('/img/icon/ACT.png', 61, 15, '*'))
+        .appendField(name);
+      this.appendValueInput('CTX').appendField('context :');
+      this.appendValueInput('GOAL').appendField('goal :');
+      this.appendValueInput('TIMEOUT').appendField('timeout :');
+
+      this.setInputsInline(true);
+
+      this.appendStatementInput('ON_RESULT')
+        .appendField("Result")
+        .appendField(new Blockly.FieldVariable('item'), 'ON_RESULT_PARAM');
+
+      this.appendStatementInput('ON_FEEDBACK')
+        .appendField("Feedback")
+        .appendField(new Blockly.FieldVariable('item'), 'ON_FEEDBACK_PARAM');
+
+      this.appendStatementInput('ON_TIMEOUT')
+        .appendField("Timeout")
+
+      this.setPreviousStatement(true);
+      return this.setNextStatement(true);
+    },
+    getVars: function(){
+      return [this.getFieldValue('ON_RESULT_PARAM'), this.getFieldValue('ON_FEEDBACK_PARAM')];
+
+    },
+
+  };
   Blockly.JavaScript['ros_scheduled_action_' + name] = function(block){
     var extraConfig = block.extra_config;
 
@@ -2307,7 +2399,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100,
@@ -3018,6 +3110,7 @@ function WorkflowBlocklyCtrl($scope, blocksStore, $http, $rootScope, $stateParam
 
           })([
             [meta.action_servers, generator.scheduled_action_block_dom.bind(generator)],
+            [meta.action_servers, generator.scheduled_action_t_block_dom.bind(generator)],
             [meta.publishers, generator.scheduled_subscribe_block_dom.bind(generator)],
             [meta.subscribers, generator.scheduled_publish_block_dom.bind(generator)]
           ]);
@@ -3337,7 +3430,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {
