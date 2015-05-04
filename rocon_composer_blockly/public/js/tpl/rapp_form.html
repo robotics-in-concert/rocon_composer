@@ -42,13 +42,15 @@
           </tr>
           </tr>
           <tr ng-repeat="if in current.interfaces">
-            <select ng-model="if.if" class="form-control">
-              <option>subscribers</option>
-              <option>publishers</option>
-              <option>services</option>
-              <option>action_clients</option>
-              <option>action_servers</option>
-            </select>
+            <td>
+              <select ng-model="if.if" class="form-control">
+                <option>subscribers</option>
+                <option>publishers</option>
+                <option>services</option>
+                <option>action_clients</option>
+                <option>action_servers</option>
+              </select>
+            </td>
             <td><input type="text" class="form-control" ng-model="if.name"></td>
             <td><input type="text" class="form-control" ng-model="if.type"></td>
             <td><button class="btn btn-default" ng-click="deleteItem(current.interfaces, if)">Delete</button></td>
@@ -56,8 +58,10 @@
         </table>
         <button class="btn btn-default" ng-click="addItem(current.interfaces, {})">Add Interface</button>
 
-        <button type="submit" ng-click="save()" class="btn btn-primary">Save</button>
-        <button type="submit" ng-click="export()" class="btn btn-primary">Export</button>
+        <div class="toolbar">
+          <button type="submit" ng-click="save()" class="btn btn-primary">Save</button>
+          <button type="submit" ng-click="export()" class="btn btn-primary">Export</button>
+        </div>
 
     </form>
 
