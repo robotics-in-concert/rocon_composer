@@ -1,0 +1,73 @@
+<div class="container">
+
+    <h2>
+      <img src="/img/logo1.png" height="32"> HIC App
+    </h2>
+
+    <form>
+        <div class="form-group">
+        	<label for="">Name</label>
+        	<input class="form-control" type="" ng-model="current.name">
+        </div>
+        <div class="form-group">
+        	<label for="">Compatibility</label>
+        	<input class="form-control" type="" ng-model="current.compatibility">
+        </div>
+
+        <h3>Defaults</h3>
+        <div class="form-group">
+        	<label for="">Display Name</label>
+        	<input class="form-control" type="" ng-model="current.defaults.display">
+        </div>
+        <div class="form-group">
+        	<label for="">Description</label>
+        	<input class="form-control" type="" ng-model="current.defaults.description">
+        </div>
+
+        <div class="form-group">
+        	<label for="">Max</label>
+          <input type="text" class="form-control" ng-model="current.defaults.max">
+        </div>
+
+
+        <h3>Interfaces</h3>
+
+
+        <table class="table table-bordered" style="width: auto;">
+          <tr class="">
+            <th>Interface</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th></th>
+          </tr>
+          </tr>
+          <tr ng-repeat="if in current.interfaces">
+            <td>
+              <select ng-model="if.if" class="form-control">
+                <option>subscribers</option>
+                <option>publishers</option>
+                <option>services</option>
+                <option>action_clients</option>
+                <option>action_servers</option>
+              </select>
+            </td>
+            <td><input type="text" class="form-control" ng-model="if.name"></td>
+            <td><input type="text" class="form-control" ng-model="if.type"></td>
+            <td><button class="btn btn-default" ng-click="deleteItem(current.interfaces, if)">Delete</button></td>
+          </tr>
+        </table>
+        <button class="btn btn-default" ng-click="addItem(current.interfaces, {})">Add Interface</button>
+
+        <div class="toolbar">
+          <button type="submit" ng-click="save()" class="btn btn-primary">Save</button>
+          <button type="submit" ng-click="export()" class="btn btn-primary">Export</button>
+        </div>
+
+    </form>
+
+    <pre class="debug" style="position: fixed; top: 0; right: 0; width: 400px; height: 400px; overflow: auto; display: none;">[[current | json]]</pre>
+
+
+
+</div>
+

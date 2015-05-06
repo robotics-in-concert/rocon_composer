@@ -177,6 +177,11 @@ app.config(function(uiSelectConfig, $stateProvider, $interpolateProvider) {
       controller: require('./ctrls/rapp_form_ctrl'),
       templateUrl: '/js/tpl/rapp_form.html'
     })
+    .state('hic_apps_form', {
+      url: '/hic_apps_form',
+      controller: require('./ctrls/hic_app_form_ctrl'),
+      templateUrl: '/js/tpl/hic_app_form.html'
+    })
     .state('services_edit', {
       url: '/services/:service_id',
       controller: require('./ctrls/services_form_ctrl'),

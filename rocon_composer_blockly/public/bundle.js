@@ -179,6 +179,11 @@ app.config(function(uiSelectConfig, $stateProvider, $interpolateProvider) {
       controller: require('./ctrls/rapp_form_ctrl'),
       templateUrl: '/js/tpl/rapp_form.html'
     })
+    .state('hic_apps_form', {
+      url: '/hic_apps_form',
+      controller: require('./ctrls/hic_app_form_ctrl'),
+      templateUrl: '/js/tpl/hic_app_form.html'
+    })
     .state('services_edit', {
       url: '/services/:service_id',
       controller: require('./ctrls/services_form_ctrl'),
@@ -225,7 +230,7 @@ app.directive("roconSelect2", ["$interval", function($interval) {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./blocks/index":4,"./ctrls/rapp_form_ctrl":17,"./ctrls/root_ctrl":18,"./ctrls/services_form_ctrl":19,"./ctrls/services_index_ctrl":20,"./ctrls/workflow_blockly_ctrl":21,"./ctrls/workflow_index_ctrl":22,"./directives/json-editor":23,"./services/blocks":25,"./services/services":26,"./utils":29}],2:[function(require,module,exports){
+},{"./blocks/index":4,"./ctrls/hic_app_form_ctrl":17,"./ctrls/rapp_form_ctrl":18,"./ctrls/root_ctrl":19,"./ctrls/services_form_ctrl":20,"./ctrls/services_index_ctrl":21,"./ctrls/workflow_blockly_ctrl":22,"./ctrls/workflow_index_ctrl":23,"./directives/json-editor":24,"./services/blocks":26,"./services/services":27,"./utils":30}],2:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
   $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
@@ -2552,6 +2557,28 @@ module.exports = ConfigCtrl;
 
 },{}],17:[function(require,module,exports){
 (function (global){
+
+var $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
+  Utils = require('../utils')
+
+module.exports = function($scope, blocksStore, $http, serviceAuthoring, $stateParams, $state) {
+  $scope.current = {interfaces: []};
+
+ $scope.addItem = function(lst, item){
+   console.log(lst);
+   lst.push(item);
+ }
+ $scope.deleteItem = function(lst, item){
+   console.log(lst, item);
+
+   _.pull(lst, item);
+ }
+
+};
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../utils":30}],18:[function(require,module,exports){
+(function (global){
 var $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
   Utils = require('../utils')
 
@@ -2572,7 +2599,7 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../utils":29}],18:[function(require,module,exports){
+},{"../utils":30}],19:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 
@@ -2656,7 +2683,7 @@ module.exports = function($scope, blocksStore, $http, $state, $rootScope) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 (function (global){
 var R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null)
   $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
@@ -2901,13 +2928,13 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../schema/service_form":24,"../utils":29}],20:[function(require,module,exports){
+},{"../schema/service_form":25,"../utils":30}],21:[function(require,module,exports){
 
 module.exports = function ServicesIndex($scope, blocksStore){
 
 };
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
   $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
@@ -3346,7 +3373,7 @@ module.exports = WorkflowBlocklyCtrl;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../block_gen":2,"../blocks/blocks_defaults":3,"../undo_manager":28,"../utils":29,"./config_ctrl":16}],22:[function(require,module,exports){
+},{"../block_gen":2,"../blocks/blocks_defaults":3,"../undo_manager":29,"../utils":30,"./config_ctrl":16}],23:[function(require,module,exports){
 (function (global){
 var R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null);
 
@@ -3365,7 +3392,7 @@ module.exports = function($scope, blocksStore) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 (function (global){
 var R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null);
 
@@ -3461,7 +3488,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 module.exports={
   "title": "Create Service",
   "type": "object",
@@ -3641,7 +3668,7 @@ module.exports={
   }
 }
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 
 module.exports = function($http, $q){
 
@@ -3700,7 +3727,7 @@ module.exports = function($http, $q){
 
 };
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 
 module.exports = function($http, $q){
 
@@ -3724,7 +3751,7 @@ module.exports = function($http, $q){
 
 
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /*jslint onevar: false, plusplus: false */
 /*
 
@@ -4868,7 +4895,7 @@ if (typeof exports !== "undefined")
 
 module.exports = js_beautify;
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 var Utils = require('./utils'),
   config = require('./config');
   
@@ -4927,7 +4954,7 @@ UndoManager.prototype.undo = function(){
 
 module.exports = UndoManager;
 
-},{"./config":15,"./utils":29}],29:[function(require,module,exports){
+},{"./config":15,"./utils":30}],30:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
   R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null),
@@ -5006,4 +5033,4 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./tools/beautify":27}]},{},[1]);
+},{"./tools/beautify":28}]},{},[1]);
