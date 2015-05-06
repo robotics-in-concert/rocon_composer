@@ -14,10 +14,17 @@ var _ = require('lodash'),
   request = require('superagent'),
   Settings = require('./model').Settings,
   mkdirp = require('mkdirp');
-  // GithubStore = require('./service_store');
-  
 
+/* options
+ *
+ * repo_root
+ * working_repo
+ * base_repo
+ * working_branch
+ * github_token
+ */
 var GithubStore = function(options){
+
   this.options = options;
 
 
@@ -32,17 +39,17 @@ var GithubStore = function(options){
 
 
 
-GithubStore.prototype._withRepo = function(){
-  var repo_root = this.repo_root;
+GithubStore.prototype._inRepo = function(){
+  var repo_root = this.options.repo_root;
   var that = this;
+  var options = this.options
   console.log("tmp repo root", repo_root);
 
   var remoteCallbacks = this.remoteCallbacks;
 
   return nodegit.Repository.open(repo_root)
     .catch(function(e){
-      var repo_url = "https://github.com/"+config.service_repo+".git";
-      console.log(repo_url);
+      var repo_url = "https://github.com/"+options.working_repo+".git";
 
       return nodegit.Clone(
         repo_url,
@@ -63,7 +70,7 @@ GithubStore.prototype._withRepo = function(){
 
     })
     .then(function(repo){
-      var bra = config.service_repo_branch;
+      var bra = options.working_branch;
       return repo.fetchAll(that.remoteCallbacks)
         .then(function(){
           console.log('merge ', bra);
@@ -91,15 +98,16 @@ GithubStore.prototype._withRepo = function(){
 
 };
 
-GithubStore.prototype._createPullRequest = function(branch_name, title, description){
+GithubStore.prototype.createPullRequest = function(branch_name, title, description){
   logger.info('PR : ', branch_name);
+  var opt = this.options;
 
   return new Promise(function(resolve, reject){
-    var head = config.service_repo.split("/")[0] + ":" + branch_name;
-    var data = {title: title, head: head, base: config.service_repo_branch, body: description}
+    var head = opt.working_repo.split("/")[0] + ":" + branch_name;
+    var data = {title: title, head: head, base: opt.working_branch, body: description}
     logger.info('PR : ', data);
-    request.post('https://api.github.com/repos/' + config.service_repo_base + "/pulls")
-      .set('Authorization', "token "+config.github_token) 
+    request.post('https://api.github.com/repos/' + opt.base_repo + "/pulls")
+      .set('Authorization', "token "+opt.github_token) 
       .type('json')
       .send(data)
       .end(function(e, res){
@@ -119,7 +127,7 @@ GithubStore.prototype._createPullRequest = function(branch_name, title, descript
 
 };
 
-GithubStore.prototype._pushRepo = function(repo, ref){
+GithubStore.prototype.pushRepo = function(repo, ref){
   console.log(ref);
   console.log(ref+":"+ref);
 
@@ -145,7 +153,7 @@ GithubStore.prototype._pushRepo = function(repo, ref){
       
     });
 };
-GithubStore.prototype._createBranch = function(repo){
+GithubStore.prototype.createBranch = function(repo){
   var new_branch_name = 'new-branch-'+(new Date().getTime());
   var base_commit = null;
   return repo.getBranchCommit(config.service_repo_branch)
@@ -173,7 +181,7 @@ GithubStore.prototype._addAllToIndex = function(repo){
 };
 
 
-GithubStore.prototype._commitRepo = function(title, description){
+GithubStore.prototype.commitRepo = function(title, description){
   logger.info("commit", title, description)
   var that = this;
   // var index = null;
