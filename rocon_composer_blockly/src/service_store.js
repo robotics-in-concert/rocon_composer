@@ -455,8 +455,8 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
       
     })
     .then(function(ok){
-      // return that._commitRepo(title, description);
-      return true;
+      return that._commitRepo(title, description);
+  
       
 
     })
