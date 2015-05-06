@@ -222,18 +222,17 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
       v.id = Utils.uuid();
       v.created_at = new Date().getTime();
       $scope.services.push(v);
-      $state.go('services_edit', {service_id: v.id});
 
       
     }
     
 
-
-    // serviceAuthoring.saveService(v, $scope.destPackage[0].name).then(function(){
-      // alert('saved');
-      
-    // });
-    $('#modal-package-select').modal('hide');
+    blocksStore.setParam(SERVICES_PARAM_KEY, $scope.services).then(function(res){
+      alert('saved');
+      // $('#modal-package-select').modal('hide');
+      $state.go('services_edit', {service_id: v.id});
+        
+    });
 
 
   };

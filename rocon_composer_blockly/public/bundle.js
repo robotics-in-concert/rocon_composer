@@ -2399,7 +2399,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100,
@@ -2602,18 +2602,18 @@ module.exports = function($scope, blocksStore, $http, $state, $rootScope) {
       $scope.services = rows;
       // $scope.recents = R.take(5, R.sort(function(a, b){ return b.id - a.id; }, rows));
     }
-    $scope.$watch('services', function(newValue, oldValue) {
-      console.log('services watched');
-      if (!_.isEqual(newValue, oldValue)) {
-        console.log(oldValue, "->", newValue);
+    // $scope.$watch('services', function(newValue, oldValue) {
+      // console.log('services watched');
+      // if (!_.isEqual(newValue, oldValue)) {
+        // console.log(oldValue, "->", newValue);
 
-        blocksStore.setParam(SERVICES_PARAM_KEY, newValue).then(function(res){
-          console.log('services saved', newValue, res);
+        // blocksStore.setParam(SERVICES_PARAM_KEY, newValue).then(function(res){
+          // console.log('services saved', newValue, res);
 
-        });
+        // });
           
-      }
-    }, true);
+      // }
+    // }, true);
   });
 
   $scope.searchCompare = function(v, keyword){ 
@@ -2849,18 +2849,17 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
       v.id = Utils.uuid();
       v.created_at = new Date().getTime();
       $scope.services.push(v);
-      $state.go('services_edit', {service_id: v.id});
 
       
     }
     
 
-
-    // serviceAuthoring.saveService(v, $scope.destPackage[0].name).then(function(){
-      // alert('saved');
-      
-    // });
-    $('#modal-package-select').modal('hide');
+    blocksStore.setParam(SERVICES_PARAM_KEY, $scope.services).then(function(res){
+      alert('saved');
+      // $('#modal-package-select').modal('hide');
+      $state.go('services_edit', {service_id: v.id});
+        
+    });
 
 
   };
@@ -3430,7 +3429,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {
