@@ -153,19 +153,22 @@ GithubStore.prototype.pushRepo = function(repo, ref){
       
     });
 };
+
+GithubStore.prototype._createBranch = function(base, branch_name){
+  return repo.getBranchCommit(base)
+    .then(function(commit){
+      return repo.createBranch(branch_name, commit);
+    })
+
+};
+
 GithubStore.prototype.createBranch = function(repo){
   var new_branch_name = 'new-branch-'+(new Date().getTime());
-  var base_commit = null;
-  return repo.getBranchCommit(config.service_repo_branch)
-    .then(function(commit){
-      return repo.createBranch(new_branch_name, commit);
-      // return repo.createBranch(new_branch_name, commit, 0, 
-                               // repo.defaultSignature(), 'Created new barnch - '+new_branch_name);
-    })
+  return this._createBranch(this.options.working_branch, new_branch_name);
 };
 
 
-GithubStore.prototype._addAllToIndex = function(repo){
+GithubStore.prototype.addAllToIndex = function(repo){
   return repo.openIndex()
     .then(function(index){
       index.read(1)
