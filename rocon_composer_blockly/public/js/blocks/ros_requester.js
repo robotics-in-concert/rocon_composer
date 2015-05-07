@@ -161,7 +161,7 @@ Blockly.JavaScript['ros_requester_allocate_with_block2'] = function(block){
   var config = block.extra_config;
   var type = block.getFieldValue('TYPE');
 
-  var timeout_alloc = +Blockly.JavaScript.valueToCode(block, 'TIMEOUT_ALLOC', Blockly.JavaScript.ORDER_ATOMIC) || -1;
+  var timeout_alloc = Blockly.JavaScript.valueToCode(block, 'TIMEOUT_ALLOC', Blockly.JavaScript.ORDER_ATOMIC) || -1;
 
 
   console.log(timeout_alloc);

@@ -17,7 +17,7 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
     var goal = Blockly.JavaScript.valueToCode(block, 'GOAL', Blockly.JavaScript.ORDER_NONE) || "''";
     var ctx = Blockly.JavaScript.valueToCode(block, 'CTX', Blockly.JavaScript.ORDER_NONE) || "''";
 
-    var timeout = +(Blockly.JavaScript.valueToCode(block, 'TIMEOUT', Blockly.JavaScript.ORDER_NONE) || "-1");
+    var timeout = (Blockly.JavaScript.valueToCode(block, 'TIMEOUT', Blockly.JavaScript.ORDER_NONE) || "-1");
 
 
     // var remappings = R.pipe(
