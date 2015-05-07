@@ -1380,6 +1380,7 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
     var paramNameOnResult = block.getFieldValue('ON_RESULT_PARAM');
     var codeOnFeedback = Blockly.JavaScript.statementToCode(block, 'ON_FEEDBACK');
     var paramNameOnFeedback = block.getFieldValue('ON_FEEDBACK_PARAM');
+    var paramNameOnTimeout = block.getFieldValue('ON_TIMEOUT_PARAM');
     var codeOnTimeout = Blockly.JavaScript.statementToCode(block, 'ON_TIMEOUT');
 
     var goal = Blockly.JavaScript.valueToCode(block, 'GOAL', Blockly.JavaScript.ORDER_NONE) || "''";
@@ -1395,7 +1396,7 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
 
 
     var tpl = '$engine.runScheduledAction(<%= ctx %>, "<%= name %>", "<%= type %>", <%= goal %>, ';
-    tpl += 'function(<%= param1 %>){ <%=code1%>}, function(<%= param2 %>){ <%=code2%>}, function(){<%= codeTimeout %>}, <%= options %>);';
+    tpl += 'function(<%= param1 %>){ <%=code1%>}, function(<%= param2 %>){ <%=code2%>}, function(<%=param3%>){<%= codeTimeout %>}, <%= options %>);';
 
     var code = _.template(tpl)({
       rapp: rapp,
@@ -1406,6 +1407,7 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
       ctx: ctx, 
       param1: paramNameOnResult,
       param2: paramNameOnFeedback,
+      param3: paramNameOnTimeout,
       code1: codeOnResult, code2: codeOnFeedback,
       codeTimeout: codeOnTimeout,
       options: JSON.stringify({timeout: timeout})
@@ -1438,6 +1440,7 @@ Blockly.register_scheduled_action_block = function(rapp, uri, name, type){
 
       this.appendStatementInput('ON_TIMEOUT')
         .appendField("Timeout")
+        .appendField(new Blockly.FieldVariable('item'), 'ON_TIMEOUT_PARAM');
 
       this.setPreviousStatement(true);
       return this.setNextStatement(true);
@@ -1624,16 +1627,18 @@ Blockly.JavaScript['ros_action_timeout'] = function(block){
   var paramNameOnResult = block.getFieldValue('ON_RESULT_PARAM');
   var codeOnFeedback = Blockly.JavaScript.statementToCode(block, 'ON_FEEDBACK');
   var paramNameOnFeedback = block.getFieldValue('ON_FEEDBACK_PARAM');
+  var paramNameOnTimeout = block.getFieldValue('ON_TIMEOUT_PARAM');
   var codeOnTimeout = Blockly.JavaScript.statementToCode(block, 'ON_TIMEOUT');
 
   var goal = Blockly.JavaScript.valueToCode(block, 'GOAL', Blockly.JavaScript.ORDER_NONE) || "''";
 
   var tpl = '$engine.runAction(<%= name %>, <%= type %>, <%= goal %>, ';
-  tpl += 'function(<%= param1 %>){ <%=code1%>}, function(<%= param2 %>){ <%=code2%>}, function(){ <%= code3 %> }, <%= options %>);';
+  tpl += 'function(<%= param1 %>){ <%=code1%>}, function(<%= param2 %>){ <%=code2%>}, function(<%= param3 %>){ <%= code3 %> }, <%= options %>);';
 
   var code = _.template(tpl)({name: name, type: type, goal: goal, 
     param1: paramNameOnResult, param2: paramNameOnFeedback,
     code1: codeOnResult, code2: codeOnFeedback,
+    param3: paramNameOnTimeout,
     code3: codeOnTimeout,
     options: angular.toJson({})
   });
@@ -1666,6 +1671,7 @@ Blockly.Blocks['ros_action_timeout'] = {
 
     this.appendStatementInput('ON_TIMEOUT')
       .appendField("Timeout")
+      .appendField(new Blockly.FieldVariable('item'), 'ON_TIMEOUT_PARAM');
 
     this.setPreviousStatement(true);
     return this.setNextStatement(true);
@@ -2399,7 +2405,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100,
@@ -3429,7 +3435,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {
