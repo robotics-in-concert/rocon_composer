@@ -22,6 +22,8 @@ var _ = require('lodash'),
  * base_repo
  * working_branch
  * github_token
+ * signature_name (optional)
+ * signature_email (optional)
  */
 var GithubStore = function(options){
 
@@ -99,7 +101,6 @@ GithubStore.prototype._inRepo = function(){
 };
 
 GithubStore.prototype.createPullRequest = function(branch_name, title, description){
-  logger.info('PR : ', branch_name);
   var opt = this.options;
 
   return new Promise(function(resolve, reject){
@@ -111,16 +112,7 @@ GithubStore.prototype.createPullRequest = function(branch_name, title, descripti
       .type('json')
       .send(data)
       .end(function(e, res){
-        if(e){
-          console.log("PR - E", e);
-
-          reject(e);
-        } else {
-          console.log('PR - OK');
-
-          resolve(res);
-        }
-
+        e ? reject(e) : resolve(res);
       });
 
   });
@@ -184,55 +176,49 @@ GithubStore.prototype.addAllToIndex = function(repo){
 };
 
 
-GithubStore.prototype.commitRepo = function(title, description){
+GithubStore.prototype.commitRepo = function(repo, title, description){
   logger.info("commit", title, description)
   var that = this;
+  var opts = this.options;
   // var index = null;
 
-  return this._withRepo().then(function(repo){
-      that._createBranch(repo)
-        .then(function(branch){
+  that._createBranch(repo)
+    .then(function(branch){
 
+      repo.checkoutBranch(branch).then(function(){
+        that._addAllToIndex(repo)
+          .then(function(oid){
+            return repo.getBranchCommit(config.service_repo_branch)
+              .then(function(commit){
+                logger.info(branch.toString());
+                var author = nodegit.Signature.now(opts.signature_name, opts.signature_email);
 
-
-          repo.checkoutBranch(branch).then(function(){
-            that._addAllToIndex(repo)
-              .then(function(oid){
-                return repo.getBranchCommit(config.service_repo_branch)
-                  .then(function(commit){
-                    logger.info('1')
-                    logger.info(branch.toString());
-                    var author = nodegit.Signature.now("Eunsub Kim", "eunsub@gmail.com");
-
-                    logger.info('3')
-                    return repo.createCommit(branch.name(), author, author, 
-                                             "updated "+(new Date()), 
-                                             oid, [commit])
-
-                  })
-                  .then(function(){
-                    logger.info('2', branch.name())
-                    return that._pushRepo(repo, branch)
-                      .then(function(){
-
-                        return that._createPullRequest(branch.name().split("/")[2], title, description);
-
-                      });
-
-                  });
-                });
+                return repo.createCommit(branch.name(), author, author, 
+                                         "updated "+(new Date()), 
+                                         oid, [commit])
 
               })
+              .then(function(){
+                return that._pushRepo(repo, branch)
+                  .then(function(){
 
+                    return that._createPullRequest(branch.name().split("/")[2], title, description);
 
+                  });
 
-
-
-
-
-
+              });
             });
-      })
+
+          })
+
+
+
+
+
+
+
+
+        });
 
 };
 
