@@ -3,11 +3,7 @@ var _ = require('lodash'),
   Promise = require('bluebird'),
   glob = Promise.promisify(require('glob')),
   fs = Promise.promisifyAll(require('fs')),
-  xml2js = Promise.promisifyAll(require('xml2js')),
-  libxml = require('libxmljs'),
-  vkbeautify = require('vkbeautify'),
   os = require('os'),
-  exec = Promise.promisify(require('child_process').exec),
   Path = require('path'),
   yaml = require('js-yaml'),
   nodegit = require('nodegit'),
@@ -41,10 +37,11 @@ var GithubStore = function(options){
 
 
 
-GithubStore.prototype._inRepo = function(){
+GithubStore.prototype.sync_repo = function(clean){
   var repo_root = this.options.repo_root;
   var that = this;
   var options = this.options
+
   console.log("tmp repo root", repo_root);
 
   var remoteCallbacks = this.remoteCallbacks;
@@ -72,29 +69,27 @@ GithubStore.prototype._inRepo = function(){
 
     })
     .then(function(repo){
-      var bra = options.working_branch;
-      return repo.fetchAll(that.remoteCallbacks)
-        .then(function(){
-          console.log('merge ', bra);
-          return repo.getBranchCommit('upstream/'+bra);
-        })
-        .then(function(commit){
-          console.log(commit.sha());
-          if(bra == "master"){
-            return repo.mergeBranches("master", "upstream/master");
-          }
-          return repo.createBranch(bra, commit, 1, repo.defaultSignature(), "new branch");
+      return that.pull(repo, 'upstream', options.working_branch).then(function(){
+        return repo;
+
+      });
+    });
 
 
+};
 
-          // return repo;
-        }).then(function(){
-          return repo;
-          
-        });
+GithubStore.prototype.pull = function(repo, remote, branch){
+  var that = this;
 
-
-
+  return repo.fetchAll(that.remoteCallbacks)
+    .then(function(){
+      return repo.getBranchCommit(remote + '/' + branch);
+    })
+    .then(function(commit){
+      if(branch == "master"){
+        return repo.mergeBranches("master", remote + "/master");
+      }
+      return repo.createBranch(branch, commit, 1, repo.defaultSignature(), "new branch");
     });
 
 
@@ -117,6 +112,25 @@ GithubStore.prototype.createPullRequest = function(branch_name, title, descripti
 
   });
 
+};
+
+GithubStore.prototype.push = function(repo, remote, ref){
+
+  var that = this;
+  return nodegit.Remote.lookup(repo, remote)
+    .then(function(remote){
+      remote.setCallbacks(that.remoteCallbacks);
+
+      return remote.push(
+        [ref+":"+ref],
+        null,
+        repo.defaultSignature(),
+        "Push");
+    })
+    .catch(function(e){
+      logger.error('failed to push', e);
+      
+    });
 };
 
 GithubStore.prototype.pushRepo = function(repo, ref){
