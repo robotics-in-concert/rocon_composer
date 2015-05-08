@@ -9,6 +9,7 @@ var _ = require('lodash')
   , URL = require('url')
   , JSONSelect = require('JSONSelect')
   , Settings = require('./model').Settings
+  , HicApp = require('./hic_app')
   , Rapp = require('./rapp')
   , ServiceStore = require('./service_store');
 
@@ -151,6 +152,13 @@ module.exports = function(app, db){
 
   });
 
+  app.post('/api/hic_app/save', function(req, res){
+    var app = new HicApp({});
+    app.save(req.body).then(function(){
+      res.send('ok');
+    });
+
+  });
   app.post('/api/rapp/save', function(req, res){
     var rapp = new Rapp({});
     rapp.save(req.body).then(function(){
