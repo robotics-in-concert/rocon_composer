@@ -366,15 +366,17 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
               }
             });
 
+
+            var data_s = JSON.stringify(data);
             _.each(service_meta.parameters, function(param){
               if(param.expose){
-                data.js = data.js.replace(
-                  new RegExp(_.escapeRegExp("{{parameter:" + param.key + "}}"), 'g'),
+                data_s = data_s.replace(
+                  new RegExp(_.escapeRegExp("\\\"({{parameter:" + param.key + "}})\\\"" ), 'g'),
                   _.template("$engine.getServiceParameter('<%= service_name %>', '<%= param %>')")({service_name: name_key, param: param.key})
                 );
               }else{
-                data.js = data.js.replace(
-                  new RegExp(_.escapeRegExp("{{parameter:" + param.key + "}}"), 'g'),
+                data_s = data_s.replace(
+                  new RegExp(_.escapeRegExp("({{parameter:" + param.key + "}})"), 'g'),
                   param.value);
               }
 
@@ -384,7 +386,7 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
 
 
             return thens.concat(fs.writeFileAsync(workflows_base + "/" + wf_title + ".wf", 
-                                     JSON.stringify(data)));
+                                     data_s));
           }, all_thens);
 
         }
