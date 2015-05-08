@@ -32,38 +32,31 @@
           Interfaces
         </h3>
 
-
-        <table class="table table-bordered" style="width: auto;">
-          <tr class="">
-            <th>Interface</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th></th>
-          </tr>
-          </tr>
-          <tr ng-repeat="if in current.interfaces">
-            <td>
-              <select ng-model="if.if" class="form-control">
-                <option>subscribers</option>
-                <option>publishers</option>
-                <option>services</option>
-                <option>action_clients</option>
-                <option>action_servers</option>
-              </select>
-            </td>
-            <td><input type="text" class="form-control" ng-model="if.name"></td>
-            <td><input type="text" class="form-control" ng-model="if.type"></td>
-            <td><button class="btn btn-default" ng-click="deleteItem(current.interfaces, if)">Delete</button></td>
-          </tr>
-        </table>
-        <button class="btn btn-default" ng-click="addItem(current.interfaces, {})">Add Interface</button>
-
-        <div class="toolbar">
-          <button type="submit" ng-click="save()" class="btn btn-primary">Save</button>
-          <button type="submit" ng-click="export()" class="btn btn-primary">Export</button>
+        <div ng-repeat="ifn in ['subscribers', 'publishers', 'services', 'action_clients', 'action_servers']">
+          <h4>[[ifn]]</h4> 
+          <table class="table table-bordered" style="width: auto;">
+            <tr class="">
+              <th>Name</th>
+              <th>Type</th>
+              <th></th>
+            </tr>
+            </tr>
+            <tr ng-repeat="if in current.interfaces[ifn]">
+              <td><input type="text" class="form-control" ng-model="if.name"></td>
+              <td><input type="text" class="form-control" ng-model="if.type"></td>
+              <td><button class="btn btn-default" ng-click="deleteItem(current.interfaces[ifn], if)">Delete</button></td>
+            </tr>
+          </table>
+          <button class="btn btn-default btn-sm" ng-click="addItem(current.interfaces[ifn], {})">Add Interface</button>
         </div>
 
+
+
     </form>
+    <div class="toolbar">
+      <button type="submit" ng-click="save()" class="btn btn-primary">Save</button>
+      <button type="submit" ng-click="export()" class="btn btn-primary">Export</button>
+    </div>
 
     <pre class="debug" style="position: fixed; top: 0; right: 0; width: 400px; height: 400px; overflow: auto; display: none;">[[current | json]]</pre>
 

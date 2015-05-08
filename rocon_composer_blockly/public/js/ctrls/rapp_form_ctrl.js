@@ -3,7 +3,14 @@ var $ = require('jquery'),
 
 module.exports = function($scope, blocksStore, $http, serviceAuthoring, $stateParams, $state) {
   console.log('x');
-  $scope.current = {interfaces: []};
+  $scope.current = {interfaces: {
+    'subscribers':[],
+    'publishers':[],
+    'services':[],
+    'action_clients':[],
+    'action_servers':[]
+  }
+  };
 
  $scope.addItem = function(lst, item){
    console.log(lst);
