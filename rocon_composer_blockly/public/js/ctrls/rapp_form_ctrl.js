@@ -9,7 +9,8 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
     'services':[],
     'action_clients':[],
     'action_servers':[]
-  }
+  },
+  parameters: []
   };
 
  $scope.addItem = function(lst, item){
