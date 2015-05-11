@@ -2415,7 +2415,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100,
@@ -2585,14 +2585,18 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../utils":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/utils.js"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/modal/package_select_ctrl.js":[function(require,module,exports){
+(function (global){
+var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 
 // @ngInject
-function PackageSelectCtrl($scope, $rootScope, $modalInstance, packages) {
+function PackageSelectCtrl($scope, $rootScope, $modalInstance, packages, defaults) {
 
   console.log("PACKAGES", packages);
+  console.log("DEF", defaults);
+
 
   var ctrl = this;
-  ctrl.current = {};
+  ctrl.current = _.defaults({}, defaults);
   ctrl.packages = packages;
   // ctrl.items = items;
   // ctrl.selected = null;
@@ -2606,6 +2610,7 @@ function PackageSelectCtrl($scope, $rootScope, $modalInstance, packages) {
 
 module.exports = PackageSelectCtrl;
 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/rapp_form_ctrl.js":[function(require,module,exports){
 (function (global){
 var $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
@@ -2640,7 +2645,11 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
      controller: PackageSelectCtrl,
      controllerAs: 'ctrl',
      resolve: {
-       packages: function(){ return serviceAuthoring.getPackages(); }
+       packages: function(){ return serviceAuthoring.getPackages(); },
+       defaults: function(){ return {
+         title: $scope.current.name,
+         description: $scope.current.description
+       }; }
      }
 
    });
@@ -3546,7 +3555,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {

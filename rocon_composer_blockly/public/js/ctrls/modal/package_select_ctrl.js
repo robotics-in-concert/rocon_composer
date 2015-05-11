@@ -1,11 +1,14 @@
+var _ = require('lodash');
 
 // @ngInject
-function PackageSelectCtrl($scope, $rootScope, $modalInstance, packages) {
+function PackageSelectCtrl($scope, $rootScope, $modalInstance, packages, defaults) {
 
   console.log("PACKAGES", packages);
+  console.log("DEF", defaults);
+
 
   var ctrl = this;
-  ctrl.current = {};
+  ctrl.current = _.defaults({}, defaults);
   ctrl.packages = packages;
   // ctrl.items = items;
   // ctrl.selected = null;

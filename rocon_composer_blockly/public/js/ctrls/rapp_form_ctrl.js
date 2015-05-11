@@ -30,7 +30,11 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
      controller: PackageSelectCtrl,
      controllerAs: 'ctrl',
      resolve: {
-       packages: function(){ return serviceAuthoring.getPackages(); }
+       packages: function(){ return serviceAuthoring.getPackages(); },
+       defaults: function(){ return {
+         title: $scope.current.name,
+         description: $scope.current.description
+       }; }
      }
 
    });
