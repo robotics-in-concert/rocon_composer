@@ -57,6 +57,37 @@ Rapp.prototype.packages = function(){
 
 };
 
+
+Rapp.prototype.generate_content = function(_data){
+  var data = _.clone(_data);
+  if(_.isEmpty(data.compatibility)){ delete data.compatibility; }
+  if(_.isEmpty(data.parent_name)){ delete data.parent_name; }
+
+  var results = {};
+
+  var rapp_meta = _.pick(data, 'display', 'description', 'compatibility', 'parent_name');
+  if(!_.isEmpty(data.parameters)){
+    rapp_meta.parameters = data.name + ".parameters";
+    var params = _(data.parameters).indexBy('key').mapValues('value').value();
+    results[data.name + '.parameters'] = yaml.dump(params);
+  }
+
+  if(!_.isEmpty(data.interfaces)){
+    results[data.name + ".interfaces"] = yaml.dump(data.interfaces);
+    rapp_meta.interfaces = data.name + ".interfaces";
+  }
+
+  if(!_.isEmpty(data.launcher_body)){
+    results[data.name + ".launch"] = yaml.dump(data.launcher_body);
+    rapp_meta.launch = data.name + ".launch";
+  }
+
+  results[data.name + ".rapp"] = yaml.dump(rapp_meta);
+
+  logger.debug(results);
+  return results;
+};
+
 Rapp.prototype.save = function(title, description, data, package_name){
   var that = this;
   return this.github.sync_repo().then(function(repo){
@@ -65,72 +96,19 @@ Rapp.prototype.save = function(title, description, data, package_name){
     return that.packages().then(function(packs){
 
 
-
-      if(_.isEmpty(data.compatibility)){ delete data.compatibility; }
-      if(_.isEmpty(data.parent_name)){ delete data.parent_name; }
-
-      all_thens = [];
-
-
-
-
       var pack = _.find(packs, {name: package_name});
-      console.log(pack);
-      console.log(data);
-
       var name_key = data.name.replace(/\s+/g, "_").toLowerCase();
-      console.log(name_key);
-
       var rapp_base = Path.join( Path.dirname(pack.path), "rapp", name_key);
-      console.log(rapp_base);
 
       mkdirp.sync(rapp_base);
 
 
-      var rapp_meta = _.pick(data, 'display', 'description', 'compatibility', 'parent_name');
-      if(!_.isEmpty(data.parameters)){
-      console.log('-=0==-=-=--------------');
-        rapp_meta.parameters = data.name + ".parameters";
-        var params = _(data.parameters).indexBy('key').mapValues('value').value();
-        all_thens.push(fs.writeFileAsync(rapp_base + "/" + data.name + ".parameters",
-                                         yaml.dump(params)));
-
-      }
-
-      console.log('--------------');
-
-      console.log(rapp_meta);
+      var files = that.generate_content(data);
+      var all_thens = _.map(files, function(body, fn){
+        return fs.writeFileAsync(rapp_base + "/" + fn, body);
+      });
 
 
-      if(!_.isEmpty(data.interfaces)){
-        all_thens.push(fs.writeFileAsync(rapp_base + "/" + data.name + ".interfaces",
-                                         yaml.dump(data.interfaces)));
-        rapp_meta.interfaces = data.name + ".interfaces";
-
-      }
-
-      if(!_.isEmpty(data.launcher_body)){
-        all_thens.push(fs.writeFileAsync(rapp_base + "/" + data.name + ".launch",
-                                         yaml.dump(data.launcher_body)));
-        rapp_meta.launch = data.name + ".launch";
-
-      }
-
-
-      console.log('HERE!!!!!!!');
-
-
-
-      all_thens.push(fs.writeFileAsync(rapp_base + "/" + data.name + ".rapp",
-                                       yaml.dump(rapp_meta)));
-
-
-      all_thens = all_thens.concat([
-        // fs.writeFileAsync(rapp_base + "/" + name_key + ".parameters", param_file_content),
-        // fs.writeFileAsync(rapp_base + "/" + name_key + ".launch", service_meta.launcher_body),
-        // fs.writeFileAsync(rapp_base + "/" + name_key + ".service", service_file_content),
-        // fs.writeFileAsync(rapp_base + "/" + name_key + ".interactions", yaml.dump(service_meta.interactions))
-      ]);
       return Promise.all(all_thens);
 
 
