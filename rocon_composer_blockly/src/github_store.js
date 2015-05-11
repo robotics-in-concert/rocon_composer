@@ -97,7 +97,7 @@ GithubStore.prototype.pull = function(repo, remote, branch){
 
 };
 
-GithubStore.prototype.createPullRequest = function(branch_name, title, description){
+GithubStore.prototype.create_pull_request = function(branch_name, title, description){
   var opt = this.options;
 
   return new Promise(function(resolve, reject){
@@ -116,26 +116,7 @@ GithubStore.prototype.createPullRequest = function(branch_name, title, descripti
 
 };
 
-GithubStore.prototype.push = function(repo, remote, ref){
-
-  var that = this;
-  return nodegit.Remote.lookup(repo, remote)
-    .then(function(remote){
-      remote.setCallbacks(that.remoteCallbacks);
-
-      return remote.push(
-        [ref+":"+ref],
-        null,
-        repo.defaultSignature(),
-        "Push");
-    })
-    .catch(function(e){
-      logger.error('failed to push', e);
-      
-    });
-};
-
-GithubStore.prototype.pushRepo = function(ref){
+GithubStore.prototype.push = function(ref){
   var repo = this.repo;
 
   var that = this;
@@ -168,20 +149,6 @@ GithubStore.prototype.create_branch = function(base, branch_name){
     })
 
 };
-
-GithubStore.prototype._createBranch = function(base, branch_name){
-  return repo.getBranchCommit(base)
-    .then(function(commit){
-      return repo.createBranch(branch_name, commit);
-    })
-
-};
-
-GithubStore.prototype.createBranch = function(repo){
-  var new_branch_name = 'new-branch-'+(new Date().getTime());
-  return this._createBranch(this.options.working_branch, new_branch_name);
-};
-
 
 GithubStore.prototype.add_all_to_index = function(){
 
@@ -224,56 +191,10 @@ GithubStore.prototype.addCommitPushPR = function(title, description){
 
               })
               .then(function(){
-                return that.pushRepo(branch)
+                return that.push(branch)
                   .then(function(){
 
-                    return that.createPullRequest(branch.name().split("/")[2], title, description);
-
-                  });
-
-              });
-            });
-
-          })
-
-
-
-
-
-
-
-
-        });
-
-};
-
-GithubStore.prototype.commitRepo = function(repo, title, description){
-  logger.info("commit", title, description)
-  var that = this;
-  var opts = this.options;
-  // var index = null;
-
-  that._createBranch(repo)
-    .then(function(branch){
-
-      repo.checkoutBranch(branch).then(function(){
-        that.add_all_to_index()
-          .then(function(oid){
-            return repo.getBranchCommit(config.service_repo_branch)
-              .then(function(commit){
-                logger.info(branch.toString());
-                var author = that.repo.defaultSignature()
-
-                return repo.createCommit(branch.name(), author, author, 
-                                         "updated "+(new Date()), 
-                                         oid, [commit])
-
-              })
-              .then(function(){
-                return that.pushRepo(branch)
-                  .then(function(){
-
-                    return that._createPullRequest(branch.name().split("/")[2], title, description);
+                    return that.create_pull_request(branch.name().split("/")[2], title, description);
 
                   });
 
