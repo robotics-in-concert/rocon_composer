@@ -1,7 +1,8 @@
 var $ = require('jquery'),
-  Utils = require('../utils')
+  Utils = require('../utils'),
+  PackageSelectCtrl = require('./modal/package_select_ctrl');
 
-module.exports = function($scope, blocksStore, $http, serviceAuthoring, $stateParams, $state) {
+module.exports = function($scope, blocksStore, $http, serviceAuthoring, $stateParams, $state, $modal) {
   console.log('x');
   $scope.current = {interfaces: {
     'subscribers':[],
@@ -22,5 +23,24 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 
    _.pull(lst, item);
  }
+
+ $scope.export = function(){
+   var mi = $modal.open({
+     templateUrl: '/js/tpl/modal/package_select.html',
+     controller: PackageSelectCtrl,
+     controllerAs: 'ctrl',
+     resolve: {
+       packages: function(){ return serviceAuthoring.getPackages(); }
+     }
+
+   });
+
+   mi.result.then(function(item){
+     console.log(item);
+
+
+   });
+
+ };
 
 };
