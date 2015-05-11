@@ -5,7 +5,7 @@ var _ = require('lodash'),message
   os = require('os'),
   mkdirp = require('mkdirp'),
   xml2js = Promise.promisifyAll(require('xml2js')),
-  GithubRepo = require('./github_store'),
+  GithubRepo = require('./github_repository'),
   Path = require('path'),
   yaml = require('js-yaml');
 

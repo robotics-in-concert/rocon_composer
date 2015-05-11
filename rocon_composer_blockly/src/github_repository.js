@@ -21,7 +21,7 @@ var _ = require('lodash'),
  * signature_name (optional)
  * signature_email (optional)
  */
-var GithubStore = function(options){
+var GithubRepository = function(options){
 
   this.options = options;
 
@@ -37,7 +37,7 @@ var GithubStore = function(options){
 
 
 
-GithubStore.prototype.sync_repo = function(clean){
+GithubRepository.prototype.sync_repo = function(clean){
   var repo_root = this.options.repo_root;
   var that = this;
   var options = this.options
@@ -80,7 +80,7 @@ GithubStore.prototype.sync_repo = function(clean){
 
 };
 
-GithubStore.prototype.pull = function(repo, remote, branch){
+GithubRepository.prototype.pull = function(repo, remote, branch){
   var that = this;
 
   return repo.fetchAll(that.remoteCallbacks)
@@ -97,7 +97,7 @@ GithubStore.prototype.pull = function(repo, remote, branch){
 
 };
 
-GithubStore.prototype.create_pull_request = function(branch_name, title, description){
+GithubRepository.prototype.create_pull_request = function(branch_name, title, description){
   var opt = this.options;
 
   return new Promise(function(resolve, reject){
@@ -116,7 +116,7 @@ GithubStore.prototype.create_pull_request = function(branch_name, title, descrip
 
 };
 
-GithubStore.prototype.push = function(ref){
+GithubRepository.prototype.push = function(ref){
   var repo = this.repo;
 
   var that = this;
@@ -141,7 +141,7 @@ GithubStore.prototype.push = function(ref){
 };
 
 
-GithubStore.prototype.create_branch = function(base, branch_name){
+GithubRepository.prototype.create_branch = function(base, branch_name){
   var that = this;
   return that.repo.getBranchCommit(base)
     .then(function(commit){
@@ -150,7 +150,7 @@ GithubStore.prototype.create_branch = function(base, branch_name){
 
 };
 
-GithubStore.prototype.add_all_to_index = function(){
+GithubRepository.prototype.add_all_to_index = function(){
 
   return this.repo.openIndex()
     .then(function(index){
@@ -167,7 +167,7 @@ GithubStore.prototype.add_all_to_index = function(){
 };
 
 
-GithubStore.prototype.addCommitPushPR = function(title, description){
+GithubRepository.prototype.addCommitPushPR = function(title, description){
   var that = this;
   var opts = this.options;
   var repo = that.repo;
@@ -214,4 +214,4 @@ GithubStore.prototype.addCommitPushPR = function(title, description){
 
 };
 
-module.exports = GithubStore;
+module.exports = GithubRepository;
