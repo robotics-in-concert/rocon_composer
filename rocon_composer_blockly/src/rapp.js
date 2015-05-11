@@ -134,6 +134,8 @@ Rapp.prototype.save = function(title, description, data, package_name){
       return Promise.all(all_thens);
 
 
+    }).then(function(){
+      return that.github.addCommitPushPR(title, description);
     });
 
 

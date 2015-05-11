@@ -59,6 +59,7 @@ GithubStore.prototype.sync_repo = function(clean){
 
         })
         .then(function(repo){
+          that.repo = repo;
            return nodegit.Remote.create(repo, "upstream",
                 "https://github.com/"+config.service_repo_base+".git")
                .then(function(){
@@ -70,6 +71,7 @@ GithubStore.prototype.sync_repo = function(clean){
     })
     .then(function(repo){
       return that.pull(repo, 'upstream', options.working_branch).then(function(){
+        that.repo = repo;
         return repo;
 
       });
@@ -133,11 +135,8 @@ GithubStore.prototype.push = function(repo, remote, ref){
     });
 };
 
-GithubStore.prototype.pushRepo = function(repo, ref){
-  console.log(ref);
-  console.log(ref+":"+ref);
-
-
+GithubStore.prototype.pushRepo = function(ref){
+  var repo = this.repo;
 
   var that = this;
   return nodegit.Remote.lookup(repo, 'origin')
@@ -160,6 +159,16 @@ GithubStore.prototype.pushRepo = function(repo, ref){
     });
 };
 
+
+GithubStore.prototype.create_branch = function(base, branch_name){
+  var that = this;
+  return that.repo.getBranchCommit(base)
+    .then(function(commit){
+      return that.repo.createBranch(branch_name, commit);
+    })
+
+};
+
 GithubStore.prototype._createBranch = function(base, branch_name){
   return repo.getBranchCommit(base)
     .then(function(commit){
@@ -174,8 +183,9 @@ GithubStore.prototype.createBranch = function(repo){
 };
 
 
-GithubStore.prototype.addAllToIndex = function(repo){
-  return repo.openIndex()
+GithubStore.prototype.add_all_to_index = function(){
+
+  return this.repo.openIndex()
     .then(function(index){
       index.read(1)
       return index.addAll()
@@ -190,6 +200,53 @@ GithubStore.prototype.addAllToIndex = function(repo){
 };
 
 
+GithubStore.prototype.addCommitPushPR = function(title, description){
+  var that = this;
+  var opts = this.options;
+  var repo = that.repo;
+  // var index = null;
+
+  var new_branch_name = 'new-branch-'+(new Date().getTime());
+  return that.create_branch(config.rapp_repo_branch, new_branch_name)
+    .then(function(branch){
+
+      return repo.checkoutBranch(new_branch_name).then(function(){
+        that.add_all_to_index()
+          .then(function(oid){
+            return repo.getBranchCommit(config.rapp_repo_branch)
+              .then(function(commit){
+                logger.info(branch.toString());
+                var author = that.repo.defaultSignature()
+
+                return repo.createCommit(branch.name(), author, author, 
+                                         "updated "+(new Date()), 
+                                         oid, [commit])
+
+              })
+              .then(function(){
+                return that.pushRepo(branch)
+                  .then(function(){
+
+                    return that.createPullRequest(branch.name().split("/")[2], title, description);
+
+                  });
+
+              });
+            });
+
+          })
+
+
+
+
+
+
+
+
+        });
+
+};
+
 GithubStore.prototype.commitRepo = function(repo, title, description){
   logger.info("commit", title, description)
   var that = this;
@@ -200,12 +257,12 @@ GithubStore.prototype.commitRepo = function(repo, title, description){
     .then(function(branch){
 
       repo.checkoutBranch(branch).then(function(){
-        that._addAllToIndex(repo)
+        that.add_all_to_index()
           .then(function(oid){
             return repo.getBranchCommit(config.service_repo_branch)
               .then(function(commit){
                 logger.info(branch.toString());
-                var author = nodegit.Signature.now(opts.signature_name, opts.signature_email);
+                var author = that.repo.defaultSignature()
 
                 return repo.createCommit(branch.name(), author, author, 
                                          "updated "+(new Date()), 
@@ -213,7 +270,7 @@ GithubStore.prototype.commitRepo = function(repo, title, description){
 
               })
               .then(function(){
-                return that._pushRepo(repo, branch)
+                return that.pushRepo(branch)
                   .then(function(){
 
                     return that._createPullRequest(branch.name().split("/")[2], title, description);
