@@ -159,10 +159,21 @@ module.exports = function(app, db){
     });
 
   });
+  app.get('/api/rapp/packages', function(req, res){
+    var rapp = new Rapp();
+    rapp.packages().then(function(rows){
+      res.send(rows);
+    });
+
+  });
   app.post('/api/rapp/save', function(req, res){
     var rapp = new Rapp({});
-    rapp.save(req.body).then(function(){
+    rapp.save(req.body.title, req.body.description, req.body.rapp, req.body.package).then(function(){
       res.send('ok');
+    }).catch(function(e){
+      console.log(e, e.stack);
+
+      
     });
 
   });

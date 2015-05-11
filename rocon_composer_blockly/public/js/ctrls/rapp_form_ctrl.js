@@ -39,9 +39,17 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 
    });
 
-   mi.result.then(function(item){
-     console.log(item);
+   mi.result.then(function(selected){
+     var pack = selected.package;
+     var v = _.clone($scope.current);
+     selected.rapp = v;
 
+
+
+     $http.post('/api/rapp/save', selected).then(function(res){
+       console.log('rapp saved');
+
+     });
 
    });
 

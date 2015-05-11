@@ -6,6 +6,9 @@
   "service_repo_base": "robotics-in-concert/service_repository",
   "service_repo_branch": "master",
   "service_repo": "eskim/service_repository",
+  "rapp_repo_base": "eskim/test_ros_packages",
+  "rapp_repo_branch": "branch0001",
+  "rapp_repo": "waypoint/test_ros_packages",
   "github_token": "<github token>"
 }
 

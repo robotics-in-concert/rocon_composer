@@ -236,3 +236,4 @@ GithubStore.prototype.commitRepo = function(repo, title, description){
 
 };
 
+module.exports = GithubStore;
