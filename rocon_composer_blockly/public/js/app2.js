@@ -9,6 +9,8 @@ require('./blocks/index');
 
 ITEMS_PARAM_KEY = 'cento_authoring_items';
 SERVICES_PARAM_KEY = 'cento_authoring_services';
+RAPPS_PARAM_KEY = 'rocon_composer_rapps';
+HIC_APPS_PARAM_KEY = 'rocon_composer_hic_apps';
 
 JSONEditor.defaults.options.theme = 'bootstrap3';
 
@@ -174,6 +176,11 @@ app.config(function(uiSelectConfig, $stateProvider, $interpolateProvider) {
     })
     .state('rapps_form', {
       url: '/rapps_form',
+      controller: require('./ctrls/rapp_form_ctrl'),
+      templateUrl: '/js/tpl/rapp_form.html'
+    })
+    .state('rapps_edit', {
+      url: '/rapps_form/:rapp_id',
       controller: require('./ctrls/rapp_form_ctrl'),
       templateUrl: '/js/tpl/rapp_form.html'
     })

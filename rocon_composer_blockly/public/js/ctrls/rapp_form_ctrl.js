@@ -4,15 +4,63 @@ var $ = require('jquery'),
 
 module.exports = function($scope, blocksStore, $http, serviceAuthoring, $stateParams, $state, $modal) {
   console.log('x');
-  $scope.current = {interfaces: {
-    'subscribers':[],
-    'publishers':[],
-    'services':[],
-    'action_clients':[],
-    'action_servers':[]
-  },
-  parameters: []
+  $scope.current = {
+    interfaces: {
+      'subscribers':[],
+      'publishers':[],
+      'services':[],
+      'action_clients':[],
+      'action_servers':[]
+    },
+    parameters: []
   };
+
+
+
+  if($stateParams.rapp_id){
+    blocksStore.getParam(RAPPS_PARAM_KEY).then(function(rows){
+      $scope.current = _.find(rows, {id: $stateParams.rapp_id});
+    });
+
+
+
+  }
+
+  $scope.save = function(){
+    blocksStore.getParam(RAPPS_PARAM_KEY).then(function(rows){
+      if(_.isEmpty(rows)){
+        rows = []
+      }
+
+      var v = $scope.current;
+
+      if(v.id){
+        var s = _.find(rows, {id: v.id});
+        _.assign(s, v);
+
+      }else{
+        v.id = Utils.uuid();
+        v.created_at = new Date().getTime();
+        rows.push(v);
+
+
+      }
+      console.log(v.id);
+
+
+
+      blocksStore.setParam(RAPPS_PARAM_KEY, rows).then(function(res){
+        alert('saved');
+        $state.go('rapps_edit', {rapp_id: v.id});
+
+      });
+
+    });
+
+
+
+  };
+
 
  $scope.addItem = function(lst, item){
    console.log(lst);

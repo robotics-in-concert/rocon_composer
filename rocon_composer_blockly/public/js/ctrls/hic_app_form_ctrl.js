@@ -31,4 +31,5 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 
  };
 
+
 };
