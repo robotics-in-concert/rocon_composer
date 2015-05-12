@@ -21,5 +21,14 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 
    _.pull(lst, item);
  }
+ $scope.export = function(){
+   var cur = $scope.current;
+   $http.post('/api/hic_app/save', {data: cur, title: cur.defaults.display, description: cur.defaults.description})
+    .then(function(){
+      alert('exported');
+
+    });
+
+ };
 
 };

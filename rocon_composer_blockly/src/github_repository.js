@@ -124,7 +124,7 @@ GithubRepository.prototype.push = function(ref){
     .then(function(origin){
       origin.setCallbacks(that.remoteCallbacks);
 
-      logger.info("origin", origin);
+      logger.info("origin", origin, ref + ":" + ref);
       return origin.push(
         [ref+":"+ref],
         null,
@@ -135,7 +135,7 @@ GithubRepository.prototype.push = function(ref){
 
     })
     .catch(function(e){
-      logger.error('failed to push', e);
+      logger.error('failed to push'+ e);
       
     });
 };
