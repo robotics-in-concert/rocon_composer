@@ -191,6 +191,11 @@ app.config(function(uiSelectConfig, $stateProvider, $interpolateProvider) {
       controller: require('./ctrls/hic_app_form_ctrl'),
       templateUrl: '/js/tpl/hic_app_form.html'
     })
+    .state('hic_apps_edit', {
+      url: '/hic_apps_form/:hic_app_id',
+      controller: require('./ctrls/hic_app_form_ctrl'),
+      templateUrl: '/js/tpl/hic_app_form.html'
+    })
     .state('services_edit', {
       url: '/services/:service_id',
       controller: require('./ctrls/services_form_ctrl'),
@@ -2422,7 +2427,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100,
@@ -2577,6 +2582,52 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
     'action_servers':[]
   }
   };
+
+
+  if($stateParams.hic_app_id){
+    blocksStore.getParam(HIC_APPS_PARAM_KEY).then(function(rows){
+      $scope.current = _.find(rows, {id: $stateParams.hic_app_id});
+    });
+
+
+
+  }
+
+
+$scope.save = function(){
+  blocksStore.getParam(HIC_APPS_PARAM_KEY).then(function(rows){
+    if(_.isEmpty(rows)){
+      rows = []
+    }
+
+    var v = $scope.current;
+
+    if(v.id){
+      var s = _.find(rows, {id: v.id});
+      _.assign(s, v);
+
+    }else{
+      v.id = Utils.uuid();
+      v.created_at = new Date().getTime();
+      rows.push(v);
+
+
+    }
+    console.log(v.id);
+
+
+
+    blocksStore.setParam(HIC_APPS_PARAM_KEY, rows).then(function(res){
+      alert('saved');
+      $state.go('hic_apps_edit', {hic_app_id: v.id});
+
+    });
+
+  });
+
+
+
+};
 
  $scope.addItem = function(lst, item){
    console.log(lst);
@@ -3628,7 +3679,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {
