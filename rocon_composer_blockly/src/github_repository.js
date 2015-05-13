@@ -173,19 +173,18 @@ GithubRepository.prototype.add_all_to_index = function(){
 };
 
 
+
+
 GithubRepository.prototype.addCommitPushPR = function(title, description){
   var that = this;
   var opts = this.options;
   var repo = that.repo;
-  // var index = null;
-
-
 
   repo.getCurrentBranch().then(function(branch_ref){
     var branch_name = branch_ref.name();
     logger.info("current branch", branch_ref.name());
 
-    that.add_all_to_index()
+    return that.add_all_to_index()
       .then(function(oid){
         return repo.getBranchCommit(config.rapp_repo_branch)
           .then(function(commit){
@@ -197,12 +196,9 @@ GithubRepository.prototype.addCommitPushPR = function(title, description){
           })
           .then(function(){
             return that.push(branch_name)
-              .then(function(){
-
-                return that.create_pull_request(branch_name.split("/")[2], title, description);
-
-              });
-
+          })
+          .then(function(){
+            return that.create_pull_request(branch_name.split("/")[2], title, description);
           });
         });
 
