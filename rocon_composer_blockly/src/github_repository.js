@@ -80,6 +80,12 @@ GithubRepository.prototype.sync_repo = function(clean){
 
 };
 
+GithubRepository.prototype.checkout = function(branch){
+  return this.repo.checkoutBranch(branch,{
+    checkoutStrategy: nodegit.Checkout.STRATEGY.FORCE
+  });
+};
+
 GithubRepository.prototype.pull = function(repo, remote, branch){
   var that = this;
 
@@ -173,44 +179,35 @@ GithubRepository.prototype.addCommitPushPR = function(title, description){
   var repo = that.repo;
   // var index = null;
 
-  var new_branch_name = 'new-branch-'+(new Date().getTime());
-  return that.create_branch(config.rapp_repo_branch, new_branch_name)
-    .then(function(branch){
 
-      return repo.checkoutBranch(new_branch_name).then(function(){
-        that.add_all_to_index()
-          .then(function(oid){
-            return repo.getBranchCommit(config.rapp_repo_branch)
-              .then(function(commit){
-                logger.info(branch.toString());
-                var author = that.repo.defaultSignature()
 
-                return repo.createCommit(branch.name(), author, author, 
-                                         "updated "+(new Date()), 
-                                         oid, [commit])
+  repo.getCurrentBranch().then(function(branch_ref){
+    var branch_name = branch_ref.name();
+    logger.info("current branch", branch_ref.name());
 
-              })
-              .then(function(){
-                return that.push(branch)
-                  .then(function(){
-
-                    return that.create_pull_request(branch.name().split("/")[2], title, description);
-
-                  });
-
-              });
-            });
+    that.add_all_to_index()
+      .then(function(oid){
+        return repo.getBranchCommit(config.rapp_repo_branch)
+          .then(function(commit){
+            var author = that.repo.defaultSignature()
+            return repo.createCommit(branch_name, author, author, 
+                                     "updated "+(new Date()), 
+                                     oid, [commit])
 
           })
+          .then(function(){
+            return that.push(branch_name)
+              .then(function(){
 
+                return that.create_pull_request(branch_name.split("/")[2], title, description);
 
+              });
 
-
-
-
-
-
+          });
         });
+
+  });
+
 
 };
 
