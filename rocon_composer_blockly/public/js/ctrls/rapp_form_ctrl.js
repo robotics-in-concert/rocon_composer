@@ -78,7 +78,11 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
      controller: PackageSelectCtrl,
      controllerAs: 'ctrl',
      resolve: {
-       packages: function(){ return serviceAuthoring.getPackages(); },
+       packages: function(){ 
+         return $http.get('/api/rapp/packages').then(function(res){
+           return res.data;
+         });
+       },
        defaults: function(){ return {
          title: $scope.current.name,
          description: $scope.current.description

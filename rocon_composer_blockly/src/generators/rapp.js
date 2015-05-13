@@ -5,8 +5,9 @@ var _ = require('lodash'),message
   os = require('os'),
   mkdirp = require('mkdirp'),
   xml2js = Promise.promisifyAll(require('xml2js')),
-  GithubRepo = require('./github_repository'),
+  GithubRepo = require('../github_repository'),
   Path = require('path'),
+  GeneratorMixin = require('./mixin'),
   yaml = require('js-yaml');
 
 
@@ -15,9 +16,9 @@ var _ = require('lodash'),message
  */
 
 var Rapp = function(options){
-  this.repo_base = Path.join(os.tmpdir(), "rapp_repository");
+  this.repo_root = Path.join(os.tmpdir(), "rapp_repository");
   this.github = new GithubRepo({
-    repo_root: this.repo_base,
+    repo_root: this.repo_root,
     working_repo: config.rapp_repo,
     base_repo: config.rapp_repo_base,
     working_branch: config.rapp_repo_branch,
@@ -27,35 +28,7 @@ var Rapp = function(options){
 };
 
 
-Rapp.prototype.packages = function(){
-  return this.github.sync_repo()
-    .then(function(repo){
-      var workdir = repo.workdir();
-      console.log(repo.workdir());
-      return glob(workdir + "/**/*.xml")
-    })
-    .then(function(packs){
-      return Promise.resolve(packs)
-        .map(function(xmlpath){
-          return fs.readFileAsync(xmlpath).then(function(xml){
-            return xml2js.parseStringAsync(xml, {explicitArray: false});
-          })
-          .then(function(item){
-            item = item.package;
-            item.path = xmlpath;
-            return item;
-
-          });
-
-        })
-
-    })
-    .catch(function(e){
-      logger.error("failed to get packages :", e, e.stack);
-
-    });
-
-};
+_.extend(Rapp.prototype, GeneratorMixin);
 
 
 Rapp.prototype.generate_content = function(_data){

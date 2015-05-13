@@ -10,7 +10,7 @@ var _ = require('lodash')
   , JSONSelect = require('JSONSelect')
   , Settings = require('./model').Settings
   , HicApp = require('./hic_app')
-  , Rapp = require('./rapp')
+  , Rapp = require('./generators/rapp')
   , ServiceStore = require('./service_store');
 
 var _getMessageDetails = function(type, cb){
