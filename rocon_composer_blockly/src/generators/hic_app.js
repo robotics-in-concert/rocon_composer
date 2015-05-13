@@ -1,7 +1,8 @@
 var _ = require('lodash'),
   Path = require('path'),
   yaml = require('js-yaml'),
-  GithubRepo = require('./github_repository');
+  GeneratorMixin = require('./mixin'),
+  GithubRepo = require('../github_repository');
 
 
 /*
@@ -9,9 +10,9 @@ var _ = require('lodash'),
  */
 
 var HicApp = function(options){
-  this.repo_base = Path.join(os.tmpdir(), "hic_apps_repository");
+  this.repo_root = Path.join(os.tmpdir(), "hic_apps_repository");
   this.github = new GithubRepo({
-    repo_root: this.repo_base,
+    repo_root: this.repo_root,
     working_repo: config.hic_app_repo,
     base_repo: config.hic_app_repo_base,
     working_branch: config.hic_app_repo_branch,
@@ -20,6 +21,8 @@ var HicApp = function(options){
 
 
 };
+
+_.extend(HicApp.prototype, GeneratorMixin);
 
 HicApp.prototype.save = function(params){
   var that = this;
@@ -41,13 +44,5 @@ HicApp.prototype.save = function(params){
   });;
 
 };
-
-HicApp.prototype.keyed_interfaces = function(data){
-  return _(data).groupBy('if')
-    .omit('if')
-    .value();
-
-};
-
 
 module.exports = HicApp;

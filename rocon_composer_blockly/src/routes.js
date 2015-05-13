@@ -9,9 +9,9 @@ var _ = require('lodash')
   , URL = require('url')
   , JSONSelect = require('JSONSelect')
   , Settings = require('./model').Settings
-  , HicApp = require('./hic_app')
+  , HicApp = require('./generators/hic_app')
   , Rapp = require('./generators/rapp')
-  , ServiceStore = require('./service_store');
+  , ServiceStore = require('./generators/service');
 
 var _getMessageDetails = function(type, cb){
   var url = URL.resolve(config.rocon_protocols_webserver_address, "/api/message_details");

@@ -11,7 +11,8 @@ var _ = require('lodash'),
   yaml = require('js-yaml'),
   nodegit = require('nodegit'),
   request = require('superagent'),
-  Settings = require('./model').Settings,
+  Settings = require('../model').Settings,
+  GeneratorMixin = require('./mixin'),
   mkdirp = require('mkdirp');
   // ServiceStore = require('./service_store');
   
@@ -33,29 +34,8 @@ var ServiceStore = function(options){
 };
 
 
-ServiceStore.prototype.ensureRepoCloned = function(){
-  var that = this;
-  return new Promise(function(resolve, reject){
-    fs.exists(that.repo_root, function(exists){
-      console.log('here', exists);
+_.extend(ServiceStore.prototype, GeneratorMixin);
 
-      if(exists){
-        resolve(exists);
-      }else{
-        that.github.sync_repo().then(function(repo){
-          resolve();
-          // return that.github.checkout(config.service_repo_branch);
-        })
-        // .then(function(){
-          // resolve();
-        // });
-      }
-
-    });
-
-  });
-
-};
 
 ServiceStore.prototype.createPackage = function(package_meta){
   return this._withRepo()
@@ -84,36 +64,7 @@ ServiceStore.prototype.createPackage = function(package_meta){
 
 
 ServiceStore.prototype.allPackageInfos = function(){
-  var that = this;
-  return this.ensureRepoCloned().then(function(){
-
-    var workdir = that.repo_root;
-
-    return glob(workdir + "/**/*.xml")
-    .then(function(packs){
-      return Promise.resolve(packs)
-        .map(function(xmlpath){
-          return fs.readFileAsync(xmlpath).then(function(xml){
-            return xml2js.parseStringAsync(xml, {explicitArray: false});
-          })
-          .then(function(item){
-            item = item.package;
-            item.path = xmlpath;
-            return item;
-
-          });
-
-        })
-
-    })
-    .catch(function(e){
-      logger.error("failed to get packages :", e, e.stack);
-
-    });
-
-  });
-  
-
+  return this.packages();
 };
 
 
