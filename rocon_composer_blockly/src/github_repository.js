@@ -61,7 +61,7 @@ GithubRepository.prototype.sync_repo = function(clean){
         .then(function(repo){
           that.repo = repo;
            return nodegit.Remote.create(repo, "upstream",
-                "https://github.com/"+config.service_repo_base+".git")
+                "https://github.com/"+options.base_repo+".git")
                .then(function(){
                  return repo;
                });
