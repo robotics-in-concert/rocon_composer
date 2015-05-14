@@ -179,6 +179,11 @@ app.config(function(uiSelectConfig, $stateProvider, $interpolateProvider) {
       controller: require('./ctrls/rapp_form_ctrl'),
       templateUrl: '/js/tpl/rapp_form.html'
     })
+    .state('apps', {
+      url: '/apps',
+      controller: require('./ctrls/apps_ctrl'),
+      templateUrl: '/js/tpl/apps.html'
+    })
     .state('rapps_edit', {
       url: '/rapps_form/:rapp_id',
       controller: require('./ctrls/rapp_form_ctrl'),

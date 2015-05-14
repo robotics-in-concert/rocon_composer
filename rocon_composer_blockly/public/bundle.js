@@ -181,6 +181,11 @@ app.config(function(uiSelectConfig, $stateProvider, $interpolateProvider) {
       controller: require('./ctrls/rapp_form_ctrl'),
       templateUrl: '/js/tpl/rapp_form.html'
     })
+    .state('apps', {
+      url: '/apps',
+      controller: require('./ctrls/apps_ctrl'),
+      templateUrl: '/js/tpl/apps.html'
+    })
     .state('rapps_edit', {
       url: '/rapps_form/:rapp_id',
       controller: require('./ctrls/rapp_form_ctrl'),
@@ -242,7 +247,7 @@ app.directive("roconSelect2", ["$interval", function($interval) {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./blocks/index":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/index.js","./ctrls/hic_app_form_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/hic_app_form_ctrl.js","./ctrls/rapp_form_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/rapp_form_ctrl.js","./ctrls/root_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/root_ctrl.js","./ctrls/services_form_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/services_form_ctrl.js","./ctrls/services_index_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/services_index_ctrl.js","./ctrls/workflow_blockly_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/workflow_blockly_ctrl.js","./ctrls/workflow_index_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/workflow_index_ctrl.js","./directives/json-editor":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/directives/json-editor.js","./services/blocks":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/services/blocks.js","./services/services":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/services/services.js","./utils":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/utils.js"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/block_gen.js":[function(require,module,exports){
+},{"./blocks/index":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/blocks/index.js","./ctrls/apps_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/apps_ctrl.js","./ctrls/hic_app_form_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/hic_app_form_ctrl.js","./ctrls/rapp_form_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/rapp_form_ctrl.js","./ctrls/root_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/root_ctrl.js","./ctrls/services_form_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/services_form_ctrl.js","./ctrls/services_index_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/services_index_ctrl.js","./ctrls/workflow_blockly_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/workflow_blockly_ctrl.js","./ctrls/workflow_index_ctrl":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/workflow_index_ctrl.js","./directives/json-editor":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/directives/json-editor.js","./services/blocks":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/services/blocks.js","./services/services":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/services/services.js","./utils":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/utils.js"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/block_gen.js":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
   $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
@@ -2427,7 +2432,7 @@ Blockly.JavaScript['defer'] = function(block) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json"}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/config.json":[function(require,module,exports){
-module.exports={
+module.exports=module.exports=module.exports=module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
   "undo_max_size": 100,
@@ -2440,6 +2445,20 @@ module.exports={
     "ros_svc": 240
   }
 }
+
+},{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/apps_ctrl.js":[function(require,module,exports){
+
+
+module.exports = function($scope, blocksStore, $http, serviceAuthoring, $stateParams, $state, $modal) {
+
+  blocksStore.getParam(RAPPS_PARAM_KEY).then(function(rows){
+    $scope.rapps = rows;
+  });
+  blocksStore.getParam(HIC_APPS_PARAM_KEY).then(function(rows){
+    $scope.hic_apps = rows;
+  });
+
+};
 
 },{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/ctrls/config_ctrl.js":[function(require,module,exports){
 
@@ -3683,7 +3702,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/Users/eskim/current/rocon_composer/rocon_composer_blockly/public/js/schema/service_form.json":[function(require,module,exports){
-module.exports={
+module.exports=module.exports=module.exports=module.exports={
   "title": "Create Service",
   "type": "object",
   "properties": {
