@@ -9,6 +9,8 @@ require('./blocks/index');
 
 ITEMS_PARAM_KEY = 'cento_authoring_items';
 SERVICES_PARAM_KEY = 'cento_authoring_services';
+RAPPS_PARAM_KEY = 'rocon_composer_rapps';
+HIC_APPS_PARAM_KEY = 'rocon_composer_hic_apps';
 
 JSONEditor.defaults.options.theme = 'bootstrap3';
 
@@ -171,6 +173,31 @@ app.config(function(uiSelectConfig, $stateProvider, $interpolateProvider) {
       url: '/services?new_name',
       controller: require('./ctrls/services_form_ctrl'),
       templateUrl: '/js/tpl/services.html'
+    })
+    .state('rapps_form', {
+      url: '/rapps_form',
+      controller: require('./ctrls/rapp_form_ctrl'),
+      templateUrl: '/js/tpl/rapp_form.html'
+    })
+    .state('apps', {
+      url: '/apps',
+      controller: require('./ctrls/apps_ctrl'),
+      templateUrl: '/js/tpl/apps.html'
+    })
+    .state('rapps_edit', {
+      url: '/rapps_form/:rapp_id',
+      controller: require('./ctrls/rapp_form_ctrl'),
+      templateUrl: '/js/tpl/rapp_form.html'
+    })
+    .state('hic_apps_form', {
+      url: '/hic_apps_form',
+      controller: require('./ctrls/hic_app_form_ctrl'),
+      templateUrl: '/js/tpl/hic_app_form.html'
+    })
+    .state('hic_apps_edit', {
+      url: '/hic_apps_form/:hic_app_id',
+      controller: require('./ctrls/hic_app_form_ctrl'),
+      templateUrl: '/js/tpl/hic_app_form.html'
     })
     .state('services_edit', {
       url: '/services/:service_id',

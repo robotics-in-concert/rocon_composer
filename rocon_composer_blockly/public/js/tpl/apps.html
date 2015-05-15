@@ -1,0 +1,19 @@
+<h2>Rapps</h2>
+
+<ul>
+  <li ng-repeat="rapp in rapps">
+    <a ui-sref="rapps_edit({rapp_id: rapp.id})">[[rapp.name]]</a>
+  </li>
+</ul>
+
+
+<a class="btn btn-default" ui-sref="rapps_form">New Rapp</a>
+
+<h2>HIC apps</h2>
+<ul>
+  <li ng-repeat="app in hic_apps">
+    <a ui-sref="hic_apps_edit({hic_app_id: app.id})">[[app.name]]</a>
+  </li>
+</ul>
+
+<a class="btn btn-default" ui-sref="hic_apps_form">New Hic app</a>

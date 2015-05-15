@@ -9,7 +9,9 @@ var _ = require('lodash')
   , URL = require('url')
   , JSONSelect = require('JSONSelect')
   , Settings = require('./model').Settings
-  , ServiceStore = require('./service_store');
+  , HicApp = require('./generators/hic_app')
+  , Rapp = require('./generators/rapp')
+  , ServiceStore = require('./generators/service');
 
 var _getMessageDetails = function(type, cb){
   var url = URL.resolve(config.rocon_protocols_webserver_address, "/api/message_details");
@@ -147,6 +149,32 @@ module.exports = function(app, db){
     });
 
 
+
+  });
+
+  app.post('/api/hic_app/save', function(req, res){
+    var app = new HicApp({});
+    app.save(req.body).then(function(){
+      res.send('ok');
+    });
+
+  });
+  app.get('/api/rapp/packages', function(req, res){
+    var rapp = new Rapp();
+    rapp.packages().then(function(rows){
+      res.send(rows);
+    });
+
+  });
+  app.post('/api/rapp/save', function(req, res){
+    var rapp = new Rapp({});
+    rapp.save(req.body.title, req.body.description, req.body.rapp, req.body.package).then(function(){
+      res.send('ok');
+    }).catch(function(e){
+      console.log(e, e.stack);
+
+      
+    });
 
   });
 
