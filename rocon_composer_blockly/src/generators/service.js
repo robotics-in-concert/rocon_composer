@@ -223,7 +223,7 @@ ServiceStore.prototype.exportToROS = function(title, description, service_meta, 
 
   return that.github.sync_repo().then(function(){
     var new_branch_name = 'new-branch-'+(new Date().getTime());
-    return that.github.create_branch(config.rapp_repo_branch, new_branch_name).then(function(branch){
+    return that.github.create_branch(config.service_repo_branch, new_branch_name).then(function(branch){
 
       return that.github.checkout(new_branch_name).then(function(){
 
