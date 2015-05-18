@@ -53,10 +53,10 @@ GithubRepository.prototype.sync_repo = function(clean){
       return nodegit.Clone(
         repo_url,
         repo_root,
-        {remoteCallbacks: remoteCallbacks}).catch(function(e){
+        {remoteCallbacks: remoteCallbacks,
+         checkoutBranch: options.working_branch
+        }).catch(function(e){
           logger.error('clone failed', e);
-
-
         })
         .then(function(repo){
           that.repo = repo;
@@ -99,8 +99,6 @@ GithubRepository.prototype.pull = function(repo, remote, branch){
       }
       return repo.createBranch(branch, commit, 1, repo.defaultSignature(), "new branch");
     });
-
-
 };
 
 GithubRepository.prototype.create_pull_request = function(branch_name, title, description){
