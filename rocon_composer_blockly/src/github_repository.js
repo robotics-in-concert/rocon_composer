@@ -41,7 +41,6 @@ GithubRepository.prototype.sync_repo = function(clean){
   var repo_root = this.options.repo_root;
   var that = this;
   var options = this.options
-
   console.log("tmp repo root", repo_root);
 
   var remoteCallbacks = this.remoteCallbacks;
@@ -60,6 +59,7 @@ GithubRepository.prototype.sync_repo = function(clean){
         })
         .then(function(repo){
           that.repo = repo;
+          console.log("clone: ", that.repo)
            return nodegit.Remote.create(repo, "upstream",
                 "https://github.com/"+options.base_repo+".git")
                .then(function(){
@@ -67,14 +67,14 @@ GithubRepository.prototype.sync_repo = function(clean){
                });
               
             })
-
     })
     .then(function(repo){
       return that.pull(repo, 'upstream', options.working_branch).then(function(){
         that.repo = repo;
+        console.log("pull: ", that.repo)
         return repo;
 
-      });
+      }).catch(function(e){logger.error('[err] git pull: ', e);});
     });
 
 
@@ -92,13 +92,18 @@ GithubRepository.prototype.pull = function(repo, remote, branch){
   return repo.fetchAll(that.remoteCallbacks)
     .then(function(){
       return repo.getBranchCommit(remote + '/' + branch);
-    })
+    }).catch(function(e){logger.error('[err] fetchAll: ', e);})
     .then(function(commit){
-      if(branch == "master"){
-        return repo.mergeBranches("master", remote + "/master");
-      }
-      return repo.createBranch(branch, commit, 1, repo.defaultSignature(), "new branch");
-    });
+      //if(branch == "master"){
+      //  return repo.mergeBranches("master", remote + "/master");
+      //}  
+      //return repo.createBranch(branch, commit, 1, repo.defaultSignature(), "new branch");
+
+      // get branch list
+      // compare with working branch and list of branch
+      // merge or create new branch
+      return repo.mergeBranches(branch, remote + "/" + branch);
+    }).catch(function(e){logger.error('[err] getBranchCommit: ', e);});
 };
 
 GithubRepository.prototype.create_pull_request = function(branch_name, title, description){
@@ -135,8 +140,6 @@ GithubRepository.prototype.push = function(ref){
         repo.defaultSignature(),
         "Push");
 
-
-
     })
     .catch(function(e){
       logger.error('failed to push'+ e);
@@ -150,7 +153,7 @@ GithubRepository.prototype.create_branch = function(base, branch_name){
   return that.repo.getBranchCommit(base)
     .then(function(commit){
       return that.repo.createBranch(branch_name, commit);
-    })
+    });
 
 };
 
@@ -180,29 +183,24 @@ GithubRepository.prototype.addCommitPushPR = function(title, description){
 
   repo.getCurrentBranch().then(function(branch_ref){
     var branch_name = branch_ref.name();
-    logger.info("current branch", branch_ref.name());
-
     return that.add_all_to_index()
       .then(function(oid){
-        return repo.getBranchCommit(config.rapp_repo_branch)
+        return repo.getBranchCommit(opts.working_branch)
           .then(function(commit){
             var author = that.repo.defaultSignature()
             return repo.createCommit(branch_name, author, author, 
                                      "updated "+(new Date()), 
                                      oid, [commit])
 
-          })
+          }).catch(function(e){logger.error('[err] getBranchCommit: ', e)})
           .then(function(){
             return that.push(branch_name)
-          })
+          }).catch(function(e){logger.error('[err] push: ', e)})
           .then(function(){
             return that.create_pull_request(branch_name.split("/")[2], title, description);
-          });
+          }).catch(function(e){logger.error('[err] create_pull_request: ', e)});
         });
-
   });
-
-
 };
 
 module.exports = GithubRepository;
