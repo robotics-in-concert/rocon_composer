@@ -26,7 +26,7 @@ var GithubRepository = function(options){
   this.remoteCallbacks = {
     certificateCheck: function() { return 1; },
     credentials: function() {
-      return nodegit.Cred.userpassPlaintextNew(config.github_token, "x-oauth-basic");
+      return nodegit.Cred.userpassPlaintextNew(config.github_token, 'x-oauth-basic');
     }
   };
 };
@@ -37,13 +37,13 @@ GithubRepository.prototype.sync_repo = function(clean){
   var repo_root = this.options.repo_root;
   var that = this;
   var options = this.options
-  logger.info("tmp repo root"+ repo_root);
+  logger.info('tmp repo root'+ repo_root);
 
   var remoteCallbacks = this.remoteCallbacks;
 
   return nodegit.Repository.open(repo_root)
     .catch(function(e){
-      var repo_url = "https://github.com/"+options.working_repo+".git";
+      var repo_url = 'https://github.com/'+options.working_repo+'.git';
       logger.info('clone repo_url: '+ repo_url);
       return nodegit.Clone(
         repo_url,
@@ -53,8 +53,8 @@ GithubRepository.prototype.sync_repo = function(clean){
         }).catch(function(e){logger.error('Clone failed: '+ e);})
         .then(function(repo){
           that.repo = repo;
-           return nodegit.Remote.create(repo, "upstream",
-                "https://github.com/"+options.base_repo+".git")
+           return nodegit.Remote.create(repo, 'upstream',
+                'https://github.com/'+options.base_repo+'.git')
                .then(function(){
                  return repo;
                });
@@ -70,6 +70,7 @@ GithubRepository.prototype.sync_repo = function(clean){
 };
 
 GithubRepository.prototype.checkout = function(branch){
+  logger.info('change working branch into ', branch);
   return this.repo.checkoutBranch(branch,{
     checkoutStrategy: nodegit.Checkout.STRATEGY.FORCE
   });
@@ -82,7 +83,7 @@ GithubRepository.prototype.pull = function(repo, remote, branch){
       return repo.getBranchCommit(remote + '/' + branch);
     }).catch(function(e){logger.error('[err] fetchAll: ' + e);})
     .then(function(commit){
-      return repo.createBranch(branch, commit, 1, repo.defaultSignature(), "new branch");
+      return repo.createBranch(branch, commit, 1, repo.defaultSignature(), 'new branch');
     }).catch(function(e){
       logger.error('[err] getBranchCommit: ' + e);
     })
@@ -100,11 +101,11 @@ GithubRepository.prototype.create_pull_request = function(branch_name, title, de
   var opt = this.options;
 
   return new Promise(function(resolve, reject){
-    var head = opt.working_repo.split("/")[0] + ":" + branch_name;
+    var head = opt.working_repo.split('/')[0] + ':' + branch_name;
     var data = {title: title, head: head, base: opt.working_branch, body: description}
     logger.info('PR : ', data);
-    request.post('https://api.github.com/repos/' + opt.base_repo + "/pulls")
-      .set('Authorization', "token "+opt.github_token) 
+    request.post('https://api.github.com/repos/' + opt.base_repo + '/pulls')
+      .set('Authorization', 'token '+opt.github_token) 
       .type('json')
       .send(data)
       .end(function(e, res){
@@ -123,12 +124,12 @@ GithubRepository.prototype.push = function(ref){
     .then(function(origin){
       origin.setCallbacks(that.remoteCallbacks);
 
-      logger.info("origin", origin, ref + ":" + ref);
+      logger.info('origin', origin, ref + ':' + ref);
       return origin.push(
-        [ref+":"+ref],
+        [ref+':'+ref],
         null,
         repo.defaultSignature(),
-        "Push");
+        'Push');
 
     })
     .catch(function(e){
@@ -179,7 +180,7 @@ GithubRepository.prototype.addCommitPushPR = function(title, description){
           .then(function(commit){
             var author = that.repo.defaultSignature()
             return repo.createCommit(branch_name, author, author, 
-                                     "updated "+(new Date()), 
+                                     'updated '+(new Date()), 
                                      oid, [commit])
 
           }).catch(function(e){logger.error('[err] getBranchCommit: ' + e)})
@@ -187,7 +188,7 @@ GithubRepository.prototype.addCommitPushPR = function(title, description){
             return that.push(branch_name)
           }).catch(function(e){logger.error('[err] push: ' + e)})
           .then(function(){
-            return that.create_pull_request(branch_name.split("/")[2], title, description);
+            return that.create_pull_request(branch_name.split('/')[2], title, description);
           }).catch(function(e){logger.error('[err] create_pull_request: ' + e)});
         });
   });
