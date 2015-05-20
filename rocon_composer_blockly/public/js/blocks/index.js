@@ -310,7 +310,7 @@ Blockly.Blocks['action_sleep'] = {
 
 Blockly.JavaScript['action_sleep'] = function(block) {
   var arg0 = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_NONE) || "''";
-  return _.template('$engine.sleep(<%= ms %>);')({ms: arg0});
+  return _.template('Fiber(function(){ $engine.sleep(<%= ms %>); }).run();')({ms: arg0});
 };
 
 require('./lodash');
