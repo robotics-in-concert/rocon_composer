@@ -22,17 +22,13 @@ var _ = require('lodash'),
  * signature_email (optional)
  */
 var GithubRepository = function(options){
-
   this.options = options;
-
-
   this.remoteCallbacks = {
     certificateCheck: function() { return 1; },
     credentials: function() {
       return nodegit.Cred.userpassPlaintextNew(config.github_token, "x-oauth-basic");
     }
   };
-
 };
 
 
@@ -41,43 +37,36 @@ GithubRepository.prototype.sync_repo = function(clean){
   var repo_root = this.options.repo_root;
   var that = this;
   var options = this.options
-  console.log("tmp repo root", repo_root);
+  logger.info("tmp repo root"+ repo_root);
 
   var remoteCallbacks = this.remoteCallbacks;
 
   return nodegit.Repository.open(repo_root)
     .catch(function(e){
       var repo_url = "https://github.com/"+options.working_repo+".git";
-
+      logger.info('clone repo_url: '+ repo_url);
       return nodegit.Clone(
         repo_url,
         repo_root,
         {remoteCallbacks: remoteCallbacks,
-         checkoutBranch: options.working_branch
-        }).catch(function(e){
-          logger.error('clone failed', e);
-        })
+         //checkoutBranch: options.working_branch
+        }).catch(function(e){logger.error('Clone failed: '+ e);})
         .then(function(repo){
           that.repo = repo;
-          console.log("clone: ", that.repo)
            return nodegit.Remote.create(repo, "upstream",
                 "https://github.com/"+options.base_repo+".git")
                .then(function(){
                  return repo;
                });
-              
-            })
+        })
     })
     .then(function(repo){
-      return that.pull(repo, 'upstream', options.working_branch).then(function(){
+      return that.pull(repo, 'upstream', options.working_branch)
+      .then(function(){
         that.repo = repo;
-        console.log("pull: ", that.repo)
         return repo;
-
-      }).catch(function(e){logger.error('[err] git pull: ', e);});
+      }).catch(function(e){logger.error('[err] git pull: ' + e);});
     });
-
-
 };
 
 GithubRepository.prototype.checkout = function(branch){
@@ -87,23 +76,24 @@ GithubRepository.prototype.checkout = function(branch){
 };
 
 GithubRepository.prototype.pull = function(repo, remote, branch){
-  var that = this;
-
-  return repo.fetchAll(that.remoteCallbacks)
+   var that = this;
+   return repo.fetchAll(that.remoteCallbacks)
     .then(function(){
       return repo.getBranchCommit(remote + '/' + branch);
-    }).catch(function(e){logger.error('[err] fetchAll: ', e);})
+    }).catch(function(e){logger.error('[err] fetchAll: ' + e);})
     .then(function(commit){
-      //if(branch == "master"){
-      //  return repo.mergeBranches("master", remote + "/master");
-      //}  
-      //return repo.createBranch(branch, commit, 1, repo.defaultSignature(), "new branch");
-
-      // get branch list
-      // compare with working branch and list of branch
-      // merge or create new branch
-      return repo.mergeBranches(branch, remote + "/" + branch);
-    }).catch(function(e){logger.error('[err] getBranchCommit: ', e);});
+      return repo.createBranch(branch, commit, 1, repo.defaultSignature(), "new branch");
+    }).catch(function(e){
+      logger.error('[err] getBranchCommit: ' + e);
+    })
+    .then(function(){
+      return that.checkout(branch);
+    }).catch(function(e){
+      logger.error('[err] createBranch: ' + e);
+      return that.checkout(branch);
+    })
+    .then(function(){
+    }).catch(function(e){logger.error('[err] checkoutBranch: ' + e);})
 };
 
 GithubRepository.prototype.create_pull_request = function(branch_name, title, description){
@@ -192,13 +182,13 @@ GithubRepository.prototype.addCommitPushPR = function(title, description){
                                      "updated "+(new Date()), 
                                      oid, [commit])
 
-          }).catch(function(e){logger.error('[err] getBranchCommit: ', e)})
+          }).catch(function(e){logger.error('[err] getBranchCommit: ' + e)})
           .then(function(){
             return that.push(branch_name)
-          }).catch(function(e){logger.error('[err] push: ', e)})
+          }).catch(function(e){logger.error('[err] push: ' + e)})
           .then(function(){
             return that.create_pull_request(branch_name.split("/")[2], title, description);
-          }).catch(function(e){logger.error('[err] create_pull_request: ', e)});
+          }).catch(function(e){logger.error('[err] create_pull_request: ' + e)});
         });
   });
 };
