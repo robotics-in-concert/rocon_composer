@@ -376,3 +376,31 @@ button {
 .modal-backdrop {
   bottom: 0;
 }
+ul.apps {
+  display: flex;
+  flex-wrap: wrap;
+}
+ul.apps li {
+  padding: 5px;
+  border: solid 2px #1B75BB;
+  width: 300px;
+  margin: 20px 10px;
+  min-height: 150px;
+}
+ul.apps li h4 {
+  color: #1B75BB;
+  font-size: 24px;
+  margin: 0;
+  padding: 0 0 5px 0;
+  line-height: 1;
+  border-bottom: solid 1px #1B75BB;
+}
+ul.apps li .description {
+  padding: 5px;
+}
+h2.blue {
+  color: #1B75BB;
+}
+h2.blue.no-top-mg {
+  margin-top: 0;
+}

@@ -1,18 +1,20 @@
-<h2>Rapps</h2>
+<h2 class="blue no-top-mg">Rapps</h2>
 
-<ul>
-  <li ng-repeat="rapp in rapps">
-    <a ui-sref="rapps_edit({rapp_id: rapp.id})">[[rapp.name]]</a>
+<ul class="list-unstyled apps">
+  <li ui-sref="rapps_edit({rapp_id: rapp.id})" ng-repeat="rapp in rapps">
+    <h4>[[rapp.name]]</h4>
+    <div class="description">[[rapp.description]]</div>
   </li>
 </ul>
 
 
 <a class="btn btn-default" ui-sref="rapps_form">New Rapp</a>
 
-<h2>HIC apps</h2>
-<ul>
-  <li ng-repeat="app in hic_apps">
-    <a ui-sref="hic_apps_edit({hic_app_id: app.id})">[[app.name]]</a>
+<h2 class="blue">HIC apps</h2>
+<ul class="list-unstyled apps">
+  <li ng-repeat="app in hic_apps" ui-sref="hic_apps_edit({hic_app_id: app.id})">
+    <h4>[[app.name]]</h4>
+    <div class="description">[[app.defaults.description]]</div>
   </li>
 </ul>
 
