@@ -86,6 +86,7 @@ GithubRepository.prototype.pull = function(repo, remote, branch){
       return repo.createBranch(branch, commit, 1, repo.defaultSignature(), 'new branch');
     }).catch(function(e){
       logger.error('[err] getBranchCommit: ' + e);
+      return repo;
     })
     .then(function(){
       return that.checkout(branch);
@@ -94,7 +95,11 @@ GithubRepository.prototype.pull = function(repo, remote, branch){
       return that.checkout(branch);
     })
     .then(function(){
-    }).catch(function(e){logger.error('[err] checkoutBranch: ' + e);})
+      return repo;
+    }).catch(function(e){
+      logger.error('[err] checkoutBranch: ' + e);
+      return repo;
+    })
 };
 
 GithubRepository.prototype.create_pull_request = function(branch_name, title, description){
@@ -103,7 +108,8 @@ GithubRepository.prototype.create_pull_request = function(branch_name, title, de
   return new Promise(function(resolve, reject){
     var head = opt.working_repo.split('/')[0] + ':' + branch_name;
     var data = {title: title, head: head, base: opt.working_branch, body: description}
-    logger.info('PR : ', data);
+    logger.info('PR URL: '+ 'https://api.github.com/repos/' + opt.base_repo + '/pulls');
+    logger.info('PR DATA: ', data);
     request.post('https://api.github.com/repos/' + opt.base_repo + '/pulls')
       .set('Authorization', 'token '+opt.github_token) 
       .type('json')
