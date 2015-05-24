@@ -8,7 +8,6 @@ GeneratorMixin = {
     return new Promise(function(resolve, reject){
       fs.exists(that.repo_root, function(exists){
         console.log('here', exists);
-
         if(exists){
           resolve(exists);
         }else{
