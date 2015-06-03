@@ -1,254 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (global){
-var angular = (typeof window !== "undefined" ? window.angular : typeof global !== "undefined" ? global.angular : null),
-  Mousetrap = (typeof window !== "undefined" ? window.Mousetrap : typeof global !== "undefined" ? global.Mousetrap : null),
-  Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null),
-  JSONEditor = (typeof window !== "undefined" ? window.JSONEditor : typeof global !== "undefined" ? global.JSONEditor : null),
-  Utils = require('./utils'),
-  $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null);
-
-require('./blocks/index');
-
-ITEMS_PARAM_KEY = 'cento_authoring_items';
-SERVICES_PARAM_KEY = 'cento_authoring_services';
-RAPPS_PARAM_KEY = 'rocon_composer_rapps';
-HIC_APPS_PARAM_KEY = 'rocon_composer_hic_apps';
-
-JSONEditor.defaults.options.theme = 'bootstrap3';
-
-
-$.fn.editable.defaults.mode = 'inline';
-$.fn.editableform.buttons = '<button type="submit" class="btn btn-primary btn-sm editable-submit"><i class="fa fa-check"></i></button><button type="button" class="btn btn-default btn-sm editable-cancel"><i class="fa fa-remove"></i></button>'
-
-
-var toggle_header_menu = function(){
-  $('#header').toggle();
-  if($('#header').is(':visible')){
-    $('#header_toggler').hide();
-    $('.container0').addClass('down');
-  }else{
-    $('#header_toggler').show();
-    $('.container0').removeClass('down');
-  }
-  Blockly.fireUiEvent(window, 'resize');
-  return false;
-
-};
-$(function(){
-  $(document.body).on('click', '.toggle_header', toggle_header_menu);
-  $(document.body).on('click', '.toggle_right', function(){ $('.container0 .right').toggle(); });
-  $(document.body).on('click', '.undo', function(){ window.undo_manager.undo(); });
-});
-Mousetrap.bind('ctrl+alt+t', function(){
-  toggle_header_menu();
-  return false;
-
-});
-Mousetrap.bind('ctrl+alt+y', function(){
-  $('.container0 .right').toggle();
-  return false;
-
-});
-
-Mousetrap.bind('ctrl+alt+0', function() { 
-  $('.debug').toggle();
-});
-
-Mousetrap.bind('ctrl+alt+d', function() { 
-  var sel = Blockly.selected;
-  Blockly.copy_(sel);
-  if (Blockly.clipboard_) {
-    Blockly.mainWorkspace.paste(Blockly.clipboard_);
-  }
-});
-Mousetrap.bind('ctrl+alt+c', function() { 
-  var sel = Blockly.selected;
-  if(sel){
-    sel.setCollapsed(!sel.collapsed_);
-
-  }
-});
-
-window.searching_keyword = null;
-
-
-findNext = function(keyword){
-  var blks = $(_xml()).find('block[type=text]');
-  blks.each(function(){
-    var txt = $(this).text().trim().toLowerCase();
-    var id = $(this).attr('id');
-    var b = Blockly.mainWorkspace.getBlockById(id);
-
-    if( $(this).text().indexOf(keyword) >= 0 && b != Blockly.selected ){
-      console.log(id);
-
-      b.select();
-      return false;
-    }
-
-  });
-
-};
-
-Mousetrap.bind('esc', function() { 
-  if(Blockly.selected){
-    Blockly.selected.unselect();
-    window.searching_keyword = null;
-  }
-
-});
-Mousetrap.bind('ctrl+alt+r', function() { 
-  if(window.searching_keyword){
-    findNext(window.searching_keyword);
-  };
-
-});
-
-Mousetrap.bind('ctrl+alt+f', function() { 
-  var keyword = prompt("search block").toLowerCase();
-  window.searching_keyword = keyword;
-  findNext(keyword);
-
-  
-});
-
-
-Mousetrap.bind('?', function(){
-  $('.shortcut-modal').modal();
-
-});
-
-Mousetrap.bind('ctrl+alt+z', function() { 
-  window.undo_manager.undo();
-});
-Mousetrap.bind('ctrl+alt+j', function() { 
-  $('.code-modal .modal-title').text('Javascript');
-  var $code = $('.code-modal code');
-  $code.text(Utils.js(true));
-  $code.attr('class', 'javascript');
-  hljs.highlightBlock($('.code-modal code').get(0));
-  jQuery('.code-modal').modal({});
-
-});
-Mousetrap.bind('ctrl+alt+l', function() { 
-  $('.code-modal .modal-title').text('XML');
-
-  var $code = $('.code-modal code');
-  $code.text(Utils.xml(true));
-  $code.attr('class', 'xml');
-  hljs.highlightBlock($('.code-modal code').get(0));
-  jQuery('.code-modal').modal({});
-
-});
-
-
-
-var app = angular.module('centoAuthoring', [
-  'ngSanitize',
-  'ui.router',
-  'ui.bootstrap',
-  'ui.select'
-]);
-
-
-app.service('blocksStore', require('./services/blocks'));
-app.service('serviceAuthoring', require('./services/services'));
-app.controller('RootCtrl', require('./ctrls/root_ctrl'));
-
-app.provider('caJsonEditor', require('./directives/json-editor').provider)
-app.directive('caJsonEditor', require('./directives/json-editor').directive)
-
-app.config(function(uiSelectConfig, $stateProvider, $interpolateProvider) {
-  uiSelectConfig.theme = 'select2';
-
-  $interpolateProvider.startSymbol('[[');
-  $interpolateProvider.endSymbol(']]');
-
-
-  $stateProvider
-    .state('services_index', {
-      url: '/services_index',
-      controller: require('./ctrls/services_index_ctrl'),
-      templateUrl: '/js/tpl/services_index.html'
-    })
-    .state('services', {
-      url: '/services?new_name',
-      controller: require('./ctrls/services_form_ctrl'),
-      templateUrl: '/js/tpl/services.html'
-    })
-    .state('rapps_form', {
-      url: '/rapps_form',
-      controller: require('./ctrls/rapp_form_ctrl'),
-      templateUrl: '/js/tpl/rapp_form.html'
-    })
-    .state('apps', {
-      url: '/apps',
-      controller: require('./ctrls/apps_ctrl'),
-      templateUrl: '/js/tpl/apps.html'
-    })
-    .state('rapps_edit', {
-      url: '/rapps_form/:rapp_id',
-      controller: require('./ctrls/rapp_form_ctrl'),
-      templateUrl: '/js/tpl/rapp_form.html'
-    })
-    .state('hic_apps_form', {
-      url: '/hic_apps_form',
-      controller: require('./ctrls/hic_app_form_ctrl'),
-      templateUrl: '/js/tpl/hic_app_form.html'
-    })
-    .state('hic_apps_edit', {
-      url: '/hic_apps_form/:hic_app_id',
-      controller: require('./ctrls/hic_app_form_ctrl'),
-      templateUrl: '/js/tpl/hic_app_form.html'
-    })
-    .state('services_edit', {
-      url: '/services/:service_id',
-      controller: require('./ctrls/services_form_ctrl'),
-      templateUrl: '/js/tpl/services.html'
-    })
-    .state('workflow_index', {
-      url: '',
-      controller: require('./ctrls/workflow_index_ctrl'),
-      templateUrl: '/js/tpl/workflow_index.html'
-
-    })
-    .state('workflow_edit', {
-      url: '/blockly/:id',
-      controller: require('./ctrls/workflow_blockly_ctrl'),
-      templateUrl: '/js/tpl/blockly.html'
-
-    })
-    .state('workflow_blockly', {
-      url: '/blockly?new_name',
-      controller: require('./ctrls/workflow_blockly_ctrl'),
-      templateUrl: '/js/tpl/blockly.html'
-
-    });
-});
-app.directive("roconSelect2", ["$interval", function($interval) {
-    return {
-        restrict: "A",
-        link: function(scope, elem, attrs) {
-            //On click
-            $(elem).select2()
-            $(elem).on('change', function(){
-              console.log('hh');
-              var v = $(elem).select2('val');
-              console.log("v", v);
-
-
-              scope.destPackage = $(elem).select2('val');
-
-            });
-
-        }
-    }
-}]);
-
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./blocks/index":4,"./ctrls/apps_ctrl":16,"./ctrls/hic_app_form_ctrl":18,"./ctrls/rapp_form_ctrl":20,"./ctrls/root_ctrl":21,"./ctrls/services_form_ctrl":22,"./ctrls/services_index_ctrl":23,"./ctrls/workflow_blockly_ctrl":24,"./ctrls/workflow_index_ctrl":25,"./directives/json-editor":26,"./services/blocks":28,"./services/services":29,"./utils":32}],2:[function(require,module,exports){
-(function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
   $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
   R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null);
@@ -520,7 +271,7 @@ BlockGenerator.prototype.subscribe_block_dom = function(opts){
 module.exports = BlockGenerator;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],3:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 (function (global){
 var R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null),
   angular = (typeof window !== "undefined" ? window.angular : typeof global !== "undefined" ? global.angular : null);
@@ -591,7 +342,7 @@ var ros_block_override = function(){
 module.exports = ros_block_override;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 var DESTINATION_COLOR, declare_event;
@@ -905,7 +656,7 @@ Blockly.Blocks['action_sleep'] = {
 
 Blockly.JavaScript['action_sleep'] = function(block) {
   var arg0 = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_NONE) || "''";
-  return _.template('Fiber(function(){ $engine.sleep(<%= ms %>); }).run();')({ms: arg0});
+  return _.template('$engine.sleep(<%= ms %>);')({ms: arg0});
 };
 
 require('./lodash');
@@ -920,7 +671,7 @@ require('./utils.js');
 require('./prezi.js');
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../config":15,"./lodash":5,"./object":6,"./prezi.js":7,"./ros_action":8,"./ros_misc":9,"./ros_msg":10,"./ros_pubsub":11,"./ros_requester":12,"./ros_service":13,"./utils.js":14}],5:[function(require,module,exports){
+},{"../config":14,"./lodash":4,"./object":5,"./prezi.js":6,"./ros_action":7,"./ros_misc":8,"./ros_msg":9,"./ros_pubsub":10,"./ros_requester":11,"./ros_service":12,"./utils.js":13}],4:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
@@ -973,7 +724,7 @@ Blockly.JavaScript['lodash_find'] = function(block){
 // }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
@@ -1258,7 +1009,7 @@ Blockly.Blocks['object_create_with_container'] = {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 (function (global){
 
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
@@ -1391,7 +1142,7 @@ Blockly.JavaScript['prezi_move_with_channel'] = function(block){
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
@@ -1768,7 +1519,7 @@ Blockly.Blocks['ros_action'] = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 (function (global){
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
@@ -1794,7 +1545,7 @@ Blockly.JavaScript['ros_parameter'] = function(block) {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../config":15}],10:[function(require,module,exports){
+},{"../config":14}],9:[function(require,module,exports){
 (function (global){
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
@@ -1866,7 +1617,7 @@ Blockly.register_message_block = function(type, meta, tooltip){
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
@@ -2064,7 +1815,7 @@ Blockly.Blocks['ros_publish2'] = {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../config":15}],12:[function(require,module,exports){
+},{"../config":14}],11:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
@@ -2280,7 +2031,7 @@ Blockly.JavaScript['ros_requester_release'] = function(block){
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 (function (global){
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null);
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
@@ -2312,7 +2063,7 @@ Blockly.JavaScript['ros_service'] = function(block) {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../config":15}],14:[function(require,module,exports){
+},{"../config":14}],13:[function(require,module,exports){
 (function (global){
 var Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null),
   _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
@@ -2427,11 +2178,11 @@ Blockly.Blocks['defer'] = {
 
 Blockly.JavaScript['defer'] = function(block) {
   var code = Blockly.JavaScript.statementToCode(block, 'DO');
-  return _.template("setTimeout(function(){ <%= code %> }, 0);")({code: code});
+  return _.template("setTimeout(function(){ Fiber(function(){<%= code %>}).run(); }, 0);")({code: code});
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../config":15}],15:[function(require,module,exports){
+},{"../config":14}],14:[function(require,module,exports){
 module.exports={
   "action_color": 100,
   "undo_check_interval": 1000,
@@ -2446,7 +2197,7 @@ module.exports={
   }
 }
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 
 
 module.exports = function($scope, blocksStore, $http, serviceAuthoring, $stateParams, $state, $modal) {
@@ -2460,7 +2211,7 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 
 };
 
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 
                                             
                                             
@@ -2586,7 +2337,7 @@ function ConfigCtrl($scope, $rootScope, blocksStore, $http, $modalInstance, rapp
 
 module.exports = ConfigCtrl;
 
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 (function (global){
 
 var $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
@@ -2671,7 +2422,7 @@ $scope.save = function(){
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../utils":32}],19:[function(require,module,exports){
+},{"../utils":31}],18:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 
@@ -2698,7 +2449,7 @@ function PackageSelectCtrl($scope, $rootScope, $modalInstance, packages, default
 module.exports = PackageSelectCtrl;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 (function (global){
 var $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
   Utils = require('../utils'),
@@ -2812,7 +2563,7 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../utils":32,"./modal/package_select_ctrl":19}],21:[function(require,module,exports){
+},{"../utils":31,"./modal/package_select_ctrl":18}],20:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 
@@ -2896,7 +2647,7 @@ module.exports = function($scope, blocksStore, $http, $state, $rootScope) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 (function (global){
 var R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null)
   $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
@@ -3141,13 +2892,13 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../schema/service_form":27,"../utils":32}],23:[function(require,module,exports){
+},{"../schema/service_form":26,"../utils":31}],22:[function(require,module,exports){
 
 module.exports = function ServicesIndex($scope, blocksStore){
 
 };
 
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
   $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null),
@@ -3586,7 +3337,7 @@ module.exports = WorkflowBlocklyCtrl;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../block_gen":2,"../blocks/blocks_defaults":3,"../undo_manager":31,"../utils":32,"./config_ctrl":17}],25:[function(require,module,exports){
+},{"../block_gen":1,"../blocks/blocks_defaults":2,"../undo_manager":30,"../utils":31,"./config_ctrl":16}],24:[function(require,module,exports){
 (function (global){
 var R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null);
 
@@ -3605,7 +3356,7 @@ module.exports = function($scope, blocksStore) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 (function (global){
 var R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null);
 
@@ -3701,7 +3452,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 module.exports={
   "title": "Create Service",
   "type": "object",
@@ -3881,7 +3632,7 @@ module.exports={
   }
 }
 
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 
 module.exports = function($http, $q){
 
@@ -3940,7 +3691,7 @@ module.exports = function($http, $q){
 
 };
 
-},{}],29:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 
 module.exports = function($http, $q){
 
@@ -3964,7 +3715,7 @@ module.exports = function($http, $q){
 
 
 
-},{}],30:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /*jslint onevar: false, plusplus: false */
 /*
 
@@ -5108,7 +4859,7 @@ if (typeof exports !== "undefined")
 
 module.exports = js_beautify;
 
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var Utils = require('./utils'),
   config = require('./config');
   
@@ -5167,7 +4918,7 @@ UndoManager.prototype.undo = function(){
 
 module.exports = UndoManager;
 
-},{"./config":15,"./utils":32}],32:[function(require,module,exports){
+},{"./config":14,"./utils":31}],31:[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
   R = (typeof window !== "undefined" ? window.R : typeof global !== "undefined" ? global.R : null),
@@ -5246,4 +4997,253 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./tools/beautify":30}]},{},[1]);
+},{"./tools/beautify":29}],32:[function(require,module,exports){
+(function (global){
+var angular = (typeof window !== "undefined" ? window.angular : typeof global !== "undefined" ? global.angular : null),
+  Mousetrap = (typeof window !== "undefined" ? window.Mousetrap : typeof global !== "undefined" ? global.Mousetrap : null),
+  Blockly = (typeof window !== "undefined" ? window.Blockly : typeof global !== "undefined" ? global.Blockly : null),
+  JSONEditor = (typeof window !== "undefined" ? window.JSONEditor : typeof global !== "undefined" ? global.JSONEditor : null),
+  Utils = require('./utils'),
+  $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null);
+
+require('./blocks/index');
+
+ITEMS_PARAM_KEY = 'cento_authoring_items';
+SERVICES_PARAM_KEY = 'cento_authoring_services';
+RAPPS_PARAM_KEY = 'rocon_composer_rapps';
+HIC_APPS_PARAM_KEY = 'rocon_composer_hic_apps';
+
+JSONEditor.defaults.options.theme = 'bootstrap3';
+
+
+$.fn.editable.defaults.mode = 'inline';
+$.fn.editableform.buttons = '<button type="submit" class="btn btn-primary btn-sm editable-submit"><i class="fa fa-check"></i></button><button type="button" class="btn btn-default btn-sm editable-cancel"><i class="fa fa-remove"></i></button>'
+
+
+var toggle_header_menu = function(){
+  $('#header').toggle();
+  if($('#header').is(':visible')){
+    $('#header_toggler').hide();
+    $('.container0').addClass('down');
+  }else{
+    $('#header_toggler').show();
+    $('.container0').removeClass('down');
+  }
+  Blockly.fireUiEvent(window, 'resize');
+  return false;
+
+};
+$(function(){
+  $(document.body).on('click', '.toggle_header', toggle_header_menu);
+  $(document.body).on('click', '.toggle_right', function(){ $('.container0 .right').toggle(); });
+  $(document.body).on('click', '.undo', function(){ window.undo_manager.undo(); });
+});
+Mousetrap.bind('ctrl+alt+t', function(){
+  toggle_header_menu();
+  return false;
+
+});
+Mousetrap.bind('ctrl+alt+y', function(){
+  $('.container0 .right').toggle();
+  return false;
+
+});
+
+Mousetrap.bind('ctrl+alt+0', function() { 
+  $('.debug').toggle();
+});
+
+Mousetrap.bind('ctrl+alt+d', function() { 
+  var sel = Blockly.selected;
+  Blockly.copy_(sel);
+  if (Blockly.clipboard_) {
+    Blockly.mainWorkspace.paste(Blockly.clipboard_);
+  }
+});
+Mousetrap.bind('ctrl+alt+c', function() { 
+  var sel = Blockly.selected;
+  if(sel){
+    sel.setCollapsed(!sel.collapsed_);
+
+  }
+});
+
+window.searching_keyword = null;
+
+
+findNext = function(keyword){
+  var blks = $(_xml()).find('block[type=text]');
+  blks.each(function(){
+    var txt = $(this).text().trim().toLowerCase();
+    var id = $(this).attr('id');
+    var b = Blockly.mainWorkspace.getBlockById(id);
+
+    if( $(this).text().indexOf(keyword) >= 0 && b != Blockly.selected ){
+      console.log(id);
+
+      b.select();
+      return false;
+    }
+
+  });
+
+};
+
+Mousetrap.bind('esc', function() { 
+  if(Blockly.selected){
+    Blockly.selected.unselect();
+    window.searching_keyword = null;
+  }
+
+});
+Mousetrap.bind('ctrl+alt+r', function() { 
+  if(window.searching_keyword){
+    findNext(window.searching_keyword);
+  };
+
+});
+
+Mousetrap.bind('ctrl+alt+f', function() { 
+  var keyword = prompt("search block").toLowerCase();
+  window.searching_keyword = keyword;
+  findNext(keyword);
+
+  
+});
+
+
+Mousetrap.bind('?', function(){
+  $('.shortcut-modal').modal();
+
+});
+
+Mousetrap.bind('ctrl+alt+z', function() { 
+  window.undo_manager.undo();
+});
+Mousetrap.bind('ctrl+alt+j', function() { 
+  $('.code-modal .modal-title').text('Javascript');
+  var $code = $('.code-modal code');
+  $code.text(Utils.js(true));
+  $code.attr('class', 'javascript');
+  hljs.highlightBlock($('.code-modal code').get(0));
+  jQuery('.code-modal').modal({});
+
+});
+Mousetrap.bind('ctrl+alt+l', function() { 
+  $('.code-modal .modal-title').text('XML');
+
+  var $code = $('.code-modal code');
+  $code.text(Utils.xml(true));
+  $code.attr('class', 'xml');
+  hljs.highlightBlock($('.code-modal code').get(0));
+  jQuery('.code-modal').modal({});
+
+});
+
+
+
+var app = angular.module('centoAuthoring', [
+  'ngSanitize',
+  'ui.router',
+  'ui.bootstrap',
+  'ui.select'
+]);
+
+
+app.service('blocksStore', require('./services/blocks'));
+app.service('serviceAuthoring', require('./services/services'));
+app.controller('RootCtrl', require('./ctrls/root_ctrl'));
+
+app.provider('caJsonEditor', require('./directives/json-editor').provider)
+app.directive('caJsonEditor', require('./directives/json-editor').directive)
+
+app.config(function(uiSelectConfig, $stateProvider, $interpolateProvider) {
+  uiSelectConfig.theme = 'select2';
+
+  $interpolateProvider.startSymbol('[[');
+  $interpolateProvider.endSymbol(']]');
+
+
+  $stateProvider
+    .state('services_index', {
+      url: '/services_index',
+      controller: require('./ctrls/services_index_ctrl'),
+      templateUrl: '/js/tpl/services_index.html'
+    })
+    .state('services', {
+      url: '/services?new_name',
+      controller: require('./ctrls/services_form_ctrl'),
+      templateUrl: '/js/tpl/services.html'
+    })
+    .state('rapps_form', {
+      url: '/rapps_form',
+      controller: require('./ctrls/rapp_form_ctrl'),
+      templateUrl: '/js/tpl/rapp_form.html'
+    })
+    .state('apps', {
+      url: '/apps',
+      controller: require('./ctrls/apps_ctrl'),
+      templateUrl: '/js/tpl/apps.html'
+    })
+    .state('rapps_edit', {
+      url: '/rapps_form/:rapp_id',
+      controller: require('./ctrls/rapp_form_ctrl'),
+      templateUrl: '/js/tpl/rapp_form.html'
+    })
+    .state('hic_apps_form', {
+      url: '/hic_apps_form',
+      controller: require('./ctrls/hic_app_form_ctrl'),
+      templateUrl: '/js/tpl/hic_app_form.html'
+    })
+    .state('hic_apps_edit', {
+      url: '/hic_apps_form/:hic_app_id',
+      controller: require('./ctrls/hic_app_form_ctrl'),
+      templateUrl: '/js/tpl/hic_app_form.html'
+    })
+    .state('services_edit', {
+      url: '/services/:service_id',
+      controller: require('./ctrls/services_form_ctrl'),
+      templateUrl: '/js/tpl/services.html'
+    })
+    .state('workflow_index', {
+      url: '',
+      controller: require('./ctrls/workflow_index_ctrl'),
+      templateUrl: '/js/tpl/workflow_index.html'
+
+    })
+    .state('workflow_edit', {
+      url: '/blockly/:id',
+      controller: require('./ctrls/workflow_blockly_ctrl'),
+      templateUrl: '/js/tpl/blockly.html'
+
+    })
+    .state('workflow_blockly', {
+      url: '/blockly?new_name',
+      controller: require('./ctrls/workflow_blockly_ctrl'),
+      templateUrl: '/js/tpl/blockly.html'
+
+    });
+});
+app.directive("roconSelect2", ["$interval", function($interval) {
+    return {
+        restrict: "A",
+        link: function(scope, elem, attrs) {
+            //On click
+            $(elem).select2()
+            $(elem).on('change', function(){
+              console.log('hh');
+              var v = $(elem).select2('val');
+              console.log("v", v);
+
+
+              scope.destPackage = $(elem).select2('val');
+
+            });
+
+        }
+    }
+}]);
+
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./blocks/index":3,"./ctrls/apps_ctrl":15,"./ctrls/hic_app_form_ctrl":17,"./ctrls/rapp_form_ctrl":19,"./ctrls/root_ctrl":20,"./ctrls/services_form_ctrl":21,"./ctrls/services_index_ctrl":22,"./ctrls/workflow_blockly_ctrl":23,"./ctrls/workflow_index_ctrl":24,"./directives/json-editor":25,"./services/blocks":27,"./services/services":28,"./utils":31}]},{},[32]);
