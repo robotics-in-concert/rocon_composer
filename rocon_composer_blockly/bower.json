@@ -15,7 +15,7 @@
     "tests"
   ],
   "dependencies": {
-    "blockly": "git@github.com:google/blockly.git",
+    "blockly": "https://github.com/google/blockly.git",
     "bootstrap": "~3.3.2",
     "json-editor": "~0.7.13",
     "angular-ui-select": "~0.9.6",

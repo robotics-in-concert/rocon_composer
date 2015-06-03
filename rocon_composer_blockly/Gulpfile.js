@@ -47,7 +47,12 @@ gulp.task('css-vendor', function(){
 
 gulp.task('js-vendor', function(){
   var bower_files = mainBowerFiles({
-    filter: /.+\.js$/
+    filter: /.+\.js$/,
+    paths:{
+      bowerDirectory: 'public/components',
+      bowerrc: '../.bowerrc',
+      bowerJson: 'bower.json'
+    }
   });
   console.log(bower_files);
 
