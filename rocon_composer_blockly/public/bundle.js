@@ -2181,6 +2181,40 @@ Blockly.JavaScript['defer'] = function(block) {
   return _.template("setTimeout(function(){ Fiber(function(){<%= code %>}).run(); }, 0);")({code: code});
 };
 
+
+/*
+ * now_date_get
+ */
+Blockly.Blocks['now_date_get'] = {
+  init: function() {
+    this.setColour(0);
+    this.appendDummyInput()
+         .appendField('now date');
+    this.setOutput(true, 'Value');
+  }
+};
+
+Blockly.JavaScript['now_date_get'] = function(block) {
+  var code = _.template("Date()")({});
+  return [code, Blockly.JavaScript.ORDER_ATOMIC]
+};
+
+/*
+ * tick_count_get
+ */
+Blockly.Blocks['tick_count_get'] = {
+  init: function() {
+    this.setColour(0);
+    this.appendDummyInput()
+         .appendField('tick count');
+    this.setOutput(true, 'Value');
+  }
+};
+
+Blockly.JavaScript['tick_count_get'] = function(block) {
+  var code = _.template("_.now()")({});
+  return [code, Blockly.JavaScript.ORDER_ATOMIC]
+};
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../config":14}],14:[function(require,module,exports){
 module.exports={
