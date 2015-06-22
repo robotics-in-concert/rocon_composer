@@ -44,13 +44,13 @@
               <th></th>
             </tr>
             </tr>
-            <tr ng-repeat="if in current.interfaces[ifn]">
+            <tr ng-repeat="if in current.public_interface[ifn]">
               <td><input type="text" class="form-control" ng-model="if.name"></td>
               <td><input type="text" class="form-control" ng-model="if.type"></td>
-              <td><button class="btn btn-default" ng-click="deleteItem(current.interfaces[ifn], if)">Delete</button></td>
+              <td><button class="btn btn-default" ng-click="deleteItem(current.public_interface[ifn], if)">Delete</button></td>
             </tr>
           </table>
-          <button class="btn btn-default btn-sm" ng-click="addItem(current.interfaces[ifn], {})">Add Interface</button>
+          <button class="btn btn-default btn-sm" ng-click="addItem(current.public_interface[ifn], {})">Add Interface</button>
         </div>
 
         <div style="margin-bottom: 20px;">
@@ -62,13 +62,13 @@
               <th></th>
             </tr>
             </tr>
-            <tr ng-repeat="param in current.parameters">
+            <tr ng-repeat="param in current.public_parameter">
               <td><input type="text" class="form-control" ng-model="param.key"></td>
               <td><input type="text" class="form-control" ng-model="param.value"></td>
-              <td><button class="btn btn-default" ng-click="deleteItem(current.parameters, param)">Delete</button></td>
+              <td><button class="btn btn-default" ng-click="deleteItem(current.public_parameter, param)">Delete</button></td>
             </tr>
           </table>
-          <button class="btn btn-default" ng-click="addItem(current.parameters, {key: null, value: null, expose: true})">Add Parameter</button>
+          <button class="btn btn-default" ng-click="addItem(current.public_parameter, {key: null, value: null, expose: true})">Add Parameter</button>
         </div>
 
     </form>

@@ -2458,14 +2458,14 @@ var $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined
 module.exports = function($scope, blocksStore, $http, serviceAuthoring, $stateParams, $state, $modal) {
   console.log('x');
   $scope.current = {
-    interfaces: {
+    public_interface: {
       'subscribers':[],
       'publishers':[],
       'services':[],
       'action_clients':[],
       'action_servers':[]
     },
-    parameters: []
+    public_parameter: []
   };
 
 
@@ -2559,7 +2559,6 @@ module.exports = function($scope, blocksStore, $http, serviceAuthoring, $statePa
    });
 
  };
-
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
