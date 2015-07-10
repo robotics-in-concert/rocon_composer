@@ -13,7 +13,7 @@
 <h2 class="blue">HIC apps</h2>
 <ul class="list-unstyled apps">
   <li ng-repeat="app in hic_apps" ui-sref="hic_apps_edit({hic_app_id: app.id})">
-    <h4>[[app.name]]</h4>
+    <h4>[[app.defaults.display]]</h4>
     <div class="description">[[app.defaults.description]]</div>
   </li>
 </ul>
