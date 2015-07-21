@@ -139,8 +139,8 @@ Blockly.Blocks['ros_subscribe'] = {
       .appendField('do')
       .appendField(new Blockly.FieldVariable('item'), 'DO_PARAM');
 
-    this.setPreviousStatement(false);
-    return this.setNextStatement(false);
+    this.setPreviousStatement(true);
+    return this.setNextStatement(true);
   },
 
   getVars: function(){
